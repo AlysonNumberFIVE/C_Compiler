@@ -1,0 +1,12 @@
+
+
+
+SYMBOL TABLE
+
+Data Structure
+The symbol table needs data structure representations for the following types of symbols:
+    - Function declarations and their prototypes
+    - Variables and their scoping
+    - Defines, typedefs, custom named structs and unions
+
+
