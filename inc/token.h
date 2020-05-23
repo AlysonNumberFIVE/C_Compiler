@@ -21,6 +21,8 @@
 #define OR      271`
 
 t_token *new_token(char *name, char *type);
+t_hashtable     *key_token(void);
 t_token *push_token(t_token *first, char *name, char *type);
+t_token     *scan(char *buffer, t_hashtable *table);
 
 #endif

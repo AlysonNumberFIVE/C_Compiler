@@ -1,6 +1,30 @@
 
 #include "../inc/compiler.h"
 
+void    print_table(t_hashtable *table)
+{
+    int i;
+
+    i = 0;
+    while (i < table->size)
+    {
+        if (table->items[i])
+        {
+            printf("inde : %d key : %s - value %s\n", i, table->items[i]->key,table->items[i]->value);
+            if (table->items[i]->next)
+            {
+                ht_item *trav = table->items[i]->next;
+                while (trav)
+                {
+                    printf("\t%s\n", trav->value);
+                    trav = trav->next;
+                }
+            }
+        }
+        i++;
+    }
+}
+
 
 ht_item *create_item(char *key, char *value)
 {
@@ -9,6 +33,7 @@ ht_item *create_item(char *key, char *value)
     item = (ht_item *)malloc(sizeof(ht_item));
     item->key = strdup(key);
     item->value = strdup(value);
+    item->next = NULL;
     return (item);
 }
 
@@ -61,6 +86,15 @@ void    free_table(t_hashtable *table)
     free(table);
 }
 
+ht_item   *handle_collision(ht_item *current_time, char *key, char *value)
+{
+    current_time->next = (ht_item *)malloc(sizeof(ht_item));
+    current_time->next->key = strdup(key);
+    current_time->next->value = strdup(value);
+    current_time->next->next = NULL;
+    return (current_time);
+}
+
 void    ht_insert(t_hashtable *table, char *key, char *value)
 {
     ht_item *current_item;
@@ -88,8 +122,23 @@ void    ht_insert(t_hashtable *table, char *key, char *value)
             table->items[index]->value = strdup(value);
             return ;
         }
-        // else collisiion
+        else
+            table->items[index] = handle_collision(table->items[index], key, value);    
     }
+}
+
+char    *searching_collision_field(ht_item *item, char *key)
+{
+    ht_item *trav;
+
+    trav = item;
+    while (trav)
+    {
+        if (strcmp(trav->key, key) == 0)
+            return (trav->value);
+        trav = trav->next;
+    }
+    return (NULL);
 }
 
 char    *ht_search(t_hashtable *table, char *key)
@@ -101,6 +150,10 @@ char    *ht_search(t_hashtable *table, char *key)
     item = table->items[index];
     if (item)
     {
+        if (item->next)
+        {
+            return (searching_collision_field(item, key));
+        }
         if (strcmp(item->key, key) == 0)
             return (item->value);
     }
@@ -110,17 +163,14 @@ char    *ht_search(t_hashtable *table, char *key)
 int main(void)
 {
     t_hashtable    *ht = create_table(CAPACITY);
-    ht_insert(ht, "1", "First address");
-    ht_insert(ht, "2", "Second address");
-    char *first = ht_search(ht, "1");
-    char *second = ht_search(ht, "2");
+    ht_insert(ht, ">>=", "First address");
+    ht_insert(ht, "|=", "Second address");
+    
+    char *first = ht_search(ht, "|=");
+    char *second = ht_search(ht, ">>=");
     printf("first is %s\n",first);
     printf("second is %s\n", second);
     return (0);
-}*/
-
-
-
-
-
+}
+*/
 

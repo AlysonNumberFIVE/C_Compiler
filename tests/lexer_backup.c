@@ -237,13 +237,19 @@ t_token     *id_found(char *buffer, size_t index)
         var_name = charpush(var_name, buffer[index]);
         index++;
     }
-    while (isalnum(buffer[index]) || buffer[index] == '_'); 
+    while (isalnum(buffer[index]) || buffer[index] == '_'); // ||
+      //     buffer[index] == '-' || buffer[index] == '>' || 
+      //     buffer[index] == '.');
+    //
+    // Add a check for checking for reserved words.
+    //
+    
     read_count = index;
     if (reserved_word(var_name) == true)
         token = new_token(var_name, "KEYWORD");
     else
         token = new_token(var_name, "ID");
-    free(var_name);
+    //free(var_name);
     return (token);
 }
 
@@ -257,7 +263,7 @@ t_token     *single_token(char *buffer, size_t index, char *tok_name)
     index++;
     read_count = index;
     tok = new_token(var_name, tok_name);
-    free(var_name);
+    //free(var_name);
     return tok;
 }
 void        print_range(char *buffer, size_t start, size_t end)
@@ -272,8 +278,31 @@ void        print_range(char *buffer, size_t start, size_t end)
     printf("\n\n\n");
 }
 
+/*
+t_token     *two_sym_token(char *buffer,size_t index, char first, char second, 
+            char *first_name, char *second_name)
+{
+    char    *var_name;
+    t_token *token;
+    char    *which;
 
-t_token     *double_token(char *buffer, size_t index, t_hashtable *table, char *first_name)
+    var_name = NULL;
+    var_name = charpush(var_name, first);
+    which = first_name;
+    if (buffer[index + 1] == second)
+    {
+        var_name = charpush(var_name, second);
+        which = second_name;
+    }
+    token = new_token(var_name, which);
+    read_count = index + 2;
+    free(var_name);
+    return token;
+} */
+
+t_hashtable *key_token(void);
+
+t_token     *two_sym_token(char *buffer, size_t index, t_hashtable *table, char *first_name)
 {
     char    *value;
     char    *var_name;
@@ -286,7 +315,7 @@ t_token     *double_token(char *buffer, size_t index, t_hashtable *table, char *
     var_name = charpush(var_name, buffer[index]);
     test = charpush(test, buffer[index]);
     test = charpush(test, buffer[index + 1]);
-    value = ht_search(table, test); 
+    value = ht_search(table, test);
     if (value == NULL)
     {
         token = new_token(var_name, first_name);
@@ -328,45 +357,85 @@ t_token     *scan(char *buffer, t_hashtable *table)
     }
     read_count = i + 1;
     printf("LIne is %zu\n", line);
-
+    switch (buffer[i])
+    {
+        /*
+        case '&':
+            if (buffer[i + 1] == '&') 
+            {
+                read_count = i + 2;
+                return new_token("&&", "AND"); 
+   L         }
+            else return new_token("&", "BITAND");
+        case '|':
+            if (buffer[i + 1] == '|') 
+            {
+                read_count = i + 2;
+                return new_token("||", "OR"); 
+            }
+            else return new_token("|", "BITOR");
+        case '=':
+            if (buffer[i + 1] == '=') 
+            {
+                read_count = i + 2;
+                return new_token("==", "EQ"); 
+            }
+            else return new_token("=", "ASSIGN");
+        case '!':
+            if (buffer[i + 1] == '=') 
+            {
+                read_count = i + 2;
+                return new_token("!=", "NE");
+            }
+            else return new_token("!", "NOT");  */
+        case '<':
+            if (buffer[i + 1] == '=') 
+            {
+                read_count = i + 2;
+                return new_token("<=", "LE"); 
+            }
+            else if (isalpha(buffer[i + 1]))
+                return header_found(buffer, read_count);
+            else return new_token("<", "LESS");
+       /*
+        case '>':
+            if (buffer[i + 1] == '=') 
+            {
+                read_count = i + 2;
+                return new_token(">=", "GE"); 
+            }
+            else return new_token(">", "GREATER");
+        */   
+    }
     read_count = i; 
-    // handle comments
     if (buffer[read_count] == '/' && (buffer[read_count + 1] == '/' || buffer[read_count + 1] == '*'))
         return (skip_comments(buffer, read_count));
-    
-    // handle header/includes 
-    if (buffer[read_count] == '<' && isalpha(buffer[read_count + 1]))
-        return (header_found(buffer, read_count));
-    
-    // handle all tokens of double character (i.e ==, >=, !=, || ...)
-    if (buffer[read_count] == '<') return (double_token(buffer, read_count, table, "LESS"));
-    if (buffer[read_count] == '&') return (double_token(buffer, read_count, table, "BINTAND"));
-    if (buffer[read_count] == '|') return (double_token(buffer, read_count, table, "BITOR"));
-    if (buffer[read_count] == '=') return (double_token(buffer, read_count, table, "ASSIGN"));
-    if (buffer[read_count] == '!') return (double_token(buffer, read_count, table, "NOT"));
-    if (buffer[read_count] == '>') return (double_token(buffer, read_count, table, "GREATER"));
-    if (buffer[read_count] == '%') return (double_token(buffer, read_count, table, "MOD"));
-    if (buffer[read_count] == '+') return (double_token(buffer, read_count, table, "PLUS"));
-    if (buffer[read_count] == '-') return (double_token(buffer, read_count, table, "MINUS"));
-    if (buffer[read_count] == '/') return (double_token(buffer, read_count, table, "DIV"));
-    if (buffer[read_count] == '*') return (double_token(buffer, read_count, table, "MULTI"));
-    if (buffer[read_count] == '^') return (double_token(buffer, read_count, table, "XOR"));
-    
-    // handle IDs and Digits
+
+    if (buffer[read_count] == '&') return (two_sym_token(buffer, read_count, table, "BINTAND"));
+    if (buffer[read_count] == '|') return (two_sym_token(buffer, read_count, table, "BITOR"));
+    if (buffer[read_count] == '=') return (two_sym_token(buffer, read_count, table, "ASSIGN"));
+    if (buffer[read_count] == '!') return (two_sym_token(buffer, read_count, table, "NOT"));
+    if (buffer[read_count] == '>') return (two_sym_token(buffer, read_count, table, "GREATER"));
+    if (buffer[read_count] == '%') return (two_sym_token(buffer, read_count, table, "MOD"));
+    if (buffer[read_count] == '+') return (two_sym_token(buffer, read_count, table, "PLUS"));
+    if (buffer[read_count] == '-') return (two_sym_token(buffer, read_count, table, "MINUS"));
+    if (buffer[read_count] == '/') return (two_sym_token(buffer, read_count, table, "DIV"));
+    if (buffer[read_count] == '*') return (two_sym_token(buffer, read_count, table, "MULTI"));
+    if (buffer[read_count] == '^') return (two_sym_token(buffer, read_count, table, "XOR"));
+    /*
+    if (buffer[read_count] == '&') return (two_sym_token(buffer, read_count, '&', '&', "BITAND", "AND"));
+    if (buffer[read_count] == '|') return (two_sym_token(buffer, read_count, '|', '|', "BITOR", "OR"));
+    if (buffer[read_count] == '=') return (two_sym_token(buffer, read_count, '=', '=', "ASSIGN", "EQ"));
+    if (buffer[read_count] == '!') return (two_sym_token(buffer, read_count, '!', '=', "NOT", "NE"));;
+    if (buffer[read_count] == '>') return (two_sym_token(buffer, read_count, '>', '=', "GREATER", "GE"));
+    */
+    read_count = i;
     if (isalpha(buffer[read_count]) || buffer[read_count] == '_') 
         return (id_found(buffer, read_count));
     if (isdigit(buffer[read_count])) return (number_found(buffer, read_count));
-    
-    // handle preprocessor macros
     if (buffer[read_count] == '#') return (macro_found(buffer, read_count));
-
-    // handle literals/strings
     if (buffer[read_count] == '\"') return (literal_found(buffer, read_count));
-
-    // handle single characters
     if (buffer[read_count] == '\'') return (character_found(buffer, read_count));
-
-    // handlie all single tokens.
     if (buffer[read_count] == ';') return (single_token(buffer, read_count, "SEMICOLON"));
     if (buffer[read_count] == '(') return (single_token(buffer, read_count, "OPENBRACKET"));
     if (buffer[read_count] == ')') return (single_token(buffer, read_count, "CLOSEBRACKET")); 
@@ -385,8 +454,8 @@ t_token     *scan(char *buffer, t_hashtable *table)
     if (buffer[read_count] == '.') return (single_token(buffer, read_count, "DOT"));
     if (buffer[read_count] == '\\') return (single_token(buffer, read_count, "LINECONT"));
     if (buffer[read_count] == '~') return (single_token(buffer, read_count, "TILDE"));
-    if (buffer[read_count] == '^') return (single_token(buffer, read_count, "XOR"));
-    if (buffer[read_count] == '?') return (single_token(buffer, read_count, "QUESTIONMARK"));
+    if (buffer[read_count] == '^') return (single_token(buffer, read_count, "^"));
+
     return (NULL);
 }
 

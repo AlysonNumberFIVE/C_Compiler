@@ -1,0 +1,10 @@
+value >>= 3;
+value >>= 7;
+value << 8;
+value <= 9;
+value >> 10;
+value % 4;
+value %=0;
+value++;
+value+1;
+value += 42;

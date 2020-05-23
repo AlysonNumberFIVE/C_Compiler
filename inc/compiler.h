@@ -97,6 +97,7 @@ typedef struct ht_item
 {
     char *key;
     char *value;
+    struct ht_item *next;
 }   ht_item;
 
 typedef struct Hashtable {
