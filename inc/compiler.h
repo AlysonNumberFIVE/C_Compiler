@@ -117,6 +117,9 @@ void        init_datatypes(void);
 t_hashtable *create_table(int size);
 char        *ht_search(t_hashtable *table, char *key);
 void        ht_insert(t_hashtable *table, char *key, char *value);
+char        *file_content(int argc, char **argv);
+char        *join_files(char *all_files, char *current_file);
+char        *read_file(char *filename);
 
 #endif
 

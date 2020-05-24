@@ -5,7 +5,6 @@
 void    init_datatypes(void)
 {
     extern struct s_datatype  datatypes[13];
-    extern char               reserved;
     int counter;
 
     // normal stuff
