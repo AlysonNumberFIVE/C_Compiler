@@ -5,11 +5,39 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+
+t_token     *ellipse_found(char *buffer, size_t index, char *real_name)
+{
+    char            *var_name;
+    extern size_t   read_count;
+    size_t          count;
+    char            *name;
+    t_token         *token;
+
+    count = 0;
+    var_name = NULL;
+    var_name = charpush(var_name, buffer[index]);
+    index++;
+    name = real_name;
+    if (buffer[index] == '.' && buffer[index + 1] == '.')
+    {
+        var_name = charpush(var_name, buffer[index]);
+        index++;
+        var_name = charpush(var_name, buffer[index]);
+        index++;
+        name = "ELLIPSE";
+    }
+    read_count = index;
+    token = new_token(var_name, name);
+    free(var_name);
+    return (token);
+}
+
 t_token     *number_found(char *buffer, size_t index)
 {
     char    *var_name;
     bool    is_float;
-    extern int read_count;
+    extern size_t read_count;
 
     is_float = false;
     var_name = NULL;
@@ -33,7 +61,7 @@ t_token     *number_found(char *buffer, size_t index)
 t_token     *skip_comments(char *buffer, size_t index)
 {
     extern int line;
-    extern int read_count;
+    extern size_t read_count;
 
     index++;
     if (buffer[index] == '/')
@@ -69,7 +97,7 @@ t_token     *literal_found(char *buffer, size_t index)
 {
     char    *var_name;
     t_token *token;
-    extern int read_count;
+    extern size_t read_count;
 
     var_name = NULL;
     do
@@ -92,7 +120,7 @@ t_token     *character_found(char *buffer, size_t index)
     t_token *token;
     int counter;
     int max;
-    extern int read_count;
+    extern size_t read_count;
 
     max = 2;
     counter = 0;
@@ -148,7 +176,7 @@ t_token     *macro_found(char *buffer, size_t index)
 {
     char    *var_name;
     t_token *token;
-    extern int read_count;
+    extern size_t read_count;
 
     var_name = NULL;
     do
@@ -167,7 +195,7 @@ t_token     *header_found(char *buffer, size_t index)
 {
     char    *var_name;
     t_token *token;
-    extern int read_count;
+    extern size_t read_count;
 
     var_name = NULL;
     do
@@ -188,7 +216,7 @@ t_token     *id_found(char *buffer, size_t index)
 {
     char    *var_name;
     t_token *token;
-    extern int read_count;
+    extern size_t read_count;
 
     var_name = NULL;
     do

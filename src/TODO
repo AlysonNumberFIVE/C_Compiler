@@ -9,4 +9,5 @@ The symbol table needs data structure representations for the following types of
     - Variables and their scoping
     - Defines, typedefs, custom named structs and unions
 
-
+Lexer - add support for elipse token "...."
+      - 

@@ -1,0 +1,33 @@
+
+alphabet    -> [a-zA-Z]
+
+arith       ->  +  -  /  * && || !
+
+term        -> arith | keywords | digit
+
+bool        -> true | false
+
+expression  -> digit arith digit | bool
+
+nonterm     -> literal | term | expression | digits
+
+if          -> if ( expression ) { statement }
+
+STATEMENT
+--------
+
+IF_BLOCK     if \( EXPRESSION \) { STATEMENT } |
+             IF_BLOCK ( else (IF_BLOCK | STATEMENT) )* |
+             IF_BLOCK (else STATEMENT)+
+
+WHILE        while \( EXPRESSION \) { STATEMENT }
+
+DO           do { STATEMENT } while \( EXPRESSION \)
+
+SWITCH       switch ( EXPRESSION ) { ( case EXPRESSION: STATEMENT )*[default: STATEMENT].}
+
+
+
+
+
+

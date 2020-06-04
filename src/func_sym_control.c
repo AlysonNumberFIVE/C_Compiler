@@ -1,29 +1,41 @@
 
 #include "../inc/compiler.h"
 
-t_function  *new_function(char *function_name, char **variable_types)
+/*
+typedef struct  s_functin_table
+{
+    char *function_name;
+    char *datatype;
+    int depth;
+    char **datatype_list;
+    struct s_function_table *next;
+}   t_function;
+*/
+
+t_function  *new_function(char *function_name, char **variable_types,
+        char *datatype, int depth)
 {
     t_function  *function;
 
     function = (t_function *)malloc(sizeof(t_function));
     function->function_name = strdup(function_name);
     function->datatype_list = variable_types;
+    function->datatype = strdup(datatype);
+    function->depth = depth;
     function->next = NULL;
     return (function);
 } 
 
 t_function  *add_function(t_function *function_list, char *function_name,
-        char **variable_types)
+        char **variable_types, char *dataype, int depth)
 {
     t_function  *new_funct;
     
     new_funct = function_list;
     while (new_funct->next)
         new_funct = new_funct->next;
-    new_funct->next = (t_function *)malloc(sizeof(t_function));
-    new_funct->next->function_name = strdup(function_name);
-    new_funct->next->datatype_list = datatype_list;
-    new_funct->next->next = NULL;
+    new_funct->next = new_function(function_name, avriable_types,
+        datatype, depth);
     return (new_funct);
 }
 

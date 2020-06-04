@@ -28,6 +28,31 @@
 #define TYPEDEF         2
 #define CAPACITY        500000
 
+#define STACK           1
+#define HEAP            2
+
+// hashtable
+
+typedef struct ht_item
+{
+    char *key;
+    char *value;
+    struct ht_item *next;
+}   ht_item;
+
+typedef struct  s_variable 
+{
+    char        *var;
+    char        *content;
+    struct s_variable   *next;
+}   t_var;
+
+typedef struct Hashtable {
+    ht_item     **items;
+    int         size;
+    int         count;
+}   t_hashtable;
+
 typedef struct s_datatype
 {
     char *name;
@@ -54,13 +79,16 @@ static char reserved[33][9] = {
 
 typedef struct  s_symbols
 {
-    char    *name;
-    char    *datatype;
-    short   size;
-    char    *value;
-    uint32_t decl_line;
-    uint32_t usage_line;
-    struct s_symbols *next;
+    char                *name;
+    char                *datatype;
+    short               size;
+    struct s_symbols    **array;
+    size_t              array_size;
+    uint32_t            decl_line;
+    uint32_t            usage_line;
+    short               mem_type;
+    t_var               *value;
+    struct s_symbols    *next;
 }   t_symbol;
 
 typedef struct  s_scope
@@ -76,11 +104,20 @@ typedef struct  s_scope
 typedef struct  s_functin_table
 {
     char *function_name;
+    char *datatype;
+    int depth;
     char **datatype_list;
     struct s_function_table *next;
 }   t_function;
 
 // alias info
+
+typedef struct  s_preproc
+{
+    char    *define;
+    char    *value;
+    struct s_preproc *next;
+}   t_preproc;
 
 typedef struct  s_alias
 {
@@ -91,21 +128,6 @@ typedef struct  s_alias
     struct s_alias  *next;
 }   t_alias;
 
-// hashtable
-
-typedef struct ht_item
-{
-    char *key;
-    char *value;
-    struct ht_item *next;
-}   ht_item;
-
-typedef struct Hashtable {
-    ht_item     **items;
-    int         size;
-    int         count;
-}   t_hashtable;
-
 typedef struct  token {
     char        *name;
     char        *type;
@@ -113,13 +135,14 @@ typedef struct  token {
 }   t_token;
 
 void        init_datatypes(void);
-
 t_hashtable *create_table(int size);
 char        *ht_search(t_hashtable *table, char *key);
 void        ht_insert(t_hashtable *table, char *key, char *value);
-char        *file_content(int argc, char **argv);
+char        *file_content(char *filename);
 char        *join_files(char *all_files, char *current_file);
 char        *read_file(char *filename);
+void        print_table(t_hashtable *table);
+
 
 #endif
 

@@ -62,6 +62,7 @@ t_token     *scan(char *buffer, t_hashtable *table)
     if (buffer[read_count] == '\'') return (character_found(buffer, read_count));
 
     // handlie all single tokens.
+    if (buffer[read_count] == '.') return (ellipse_found(buffer, read_count, "DOT"));
     if (buffer[read_count] == ';') return (single_token(buffer, read_count, "SEMICOLON"));
     if (buffer[read_count] == '(') return (single_token(buffer, read_count, "OPENBRACKET"));
     if (buffer[read_count] == ')') return (single_token(buffer, read_count, "CLOSEBRACKET")); 
@@ -77,7 +78,7 @@ t_token     *scan(char *buffer, t_hashtable *table)
     if (buffer[read_count] == ':') return (single_token(buffer, read_count, "COLON"));
     if (buffer[read_count] == '[') return (single_token(buffer, read_count, "OPENSQUARE"));
     if (buffer[read_count] == ']') return (single_token(buffer, read_count, "CLOSESQUARE"));
-    if (buffer[read_count] == '.') return (single_token(buffer, read_count, "DOT"));
+    //if (buffer[read_count] == '.') return (single_token(buffer, read_count, "DOT"));
     if (buffer[read_count] == '\\') return (single_token(buffer, read_count, "LINECONT"));
     if (buffer[read_count] == '~') return (single_token(buffer, read_count, "TILDE"));
     if (buffer[read_count] == '^') return (single_token(buffer, read_count, "XOR"));
@@ -141,6 +142,7 @@ t_hashtable     *key_token(void)
     ht_insert(table, "++", "INC_OP");
     ht_insert(table, "--", "DEC_OP");
     ht_insert(table, "!=", "NE_OP");;
+    ht_insert(table, "...", "ELLIPSE");
     ht_insert(table, "->", "PTR_OP");
     return (table);
 }
@@ -165,5 +167,4 @@ int main(int argc, char **argv)
     return (0);
 }
 
-*/
-
+ */

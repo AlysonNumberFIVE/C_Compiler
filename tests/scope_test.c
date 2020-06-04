@@ -17,11 +17,11 @@ bool    scope_variable_test(void)
     inherited_variable = NULL;
     printf("Adding inherited, top level variables.\n");
     inherited_variable = insert_variable(inherited_variable, "c", datatypes[CHAR].name,
-        datatypes[CHAR].size, "x", 4, 0);
+        datatypes[CHAR].size, "x", 4, 0, false, 0);
     inherited_variable = insert_variable(inherited_variable, "x",  datatypes[INT].name,
-        datatypes[INT].size, "214",5, 0);
+        datatypes[INT].size, "214",5, 0, false, 0);
     inherited_variable = insert_variable(inherited_variable, "k", datatypes[LONG].name,
-        datatypes[LONG].size, "12414213567", 6, 0);
+        datatypes[LONG].size, "12414213567", 6, 0, false, 0);
 
     function_env = push_scope(function_env, inherited_variable);
     printf("Scope of Depth == 1 and variables set\n");
@@ -35,11 +35,11 @@ bool    scope_variable_test(void)
     }
     printf("Current scope variables.\n");
     function_env->symbols = insert_variable(function_env->symbols, "l", datatypes[INT].name,
-        datatypes[INT].size, "42", 11, 0);
+        datatypes[INT].size, "42", 11, 0, false, 0);
     function_env->symbols = insert_variable(function_env->symbols, "h", datatypes[INT].name,
-        datatypes[INT].size, "84", 12, 0);
+        datatypes[INT].size, "84", 12, 0, false, 0);
     function_env->symbols = insert_variable(function_env->symbols, "i", datatypes[INT].name,
-        datatypes[INT].size, "125", 13, 0);
+        datatypes[INT].size, "125", 13, 0, false, 0);
     
     printf("{\n");
     start = function_env->symbols;
@@ -65,11 +65,11 @@ bool    variable_test(void)
     variables = NULL;
     t_symbol *throwaway = variables;
     variables = insert_variable(variables, "c", datatypes[CHAR].name,
-            datatypes[CHAR].size, NULL, 4, 0);
+            datatypes[CHAR].size, NULL, 4, 0, false, 0);
     variables = insert_variable(variables, "i", datatypes[INT].name,
-            datatypes[INT].size, NULL, 5, 0);
+            datatypes[INT].size, NULL, 5, 0, false, 0);
     variables = insert_variable(variables, "x", datatypes[UNSIGNED_INT].name,
-            datatypes[UNSIGNED_INT].size, NULL, 6, 0);
+            datatypes[UNSIGNED_INT].size, NULL, 6, 0, false, 0);
     t_symbol *start = variables;
     printf("3 variables created\n");
     checker = 0;
