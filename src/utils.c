@@ -12,6 +12,8 @@ char    *file_content(char *filename)
     size_t  size;
 
     fd = open(filename, O_RDONLY);
+    if (fd < 0)
+        return (NULL);
     fstat(fd, &info);
     size = info.st_size;
     content = (char *)malloc(sizeof(char) * size + 1);

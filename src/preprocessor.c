@@ -1,9 +1,14 @@
 
 
+#include "../inc/preprocessor.h"
 #include "../inc/compiler.h"
 
-size_t line = 0;
-size_t global_counter = 0;
+size_t  line = 1;
+size_t  global_counter = 0;
+size_t  start = 0;
+size_t  end = 0;
+t_macro *head = NULL;
+bool    rewrite = false;
 
 t_preproc *new_processor(char *define, char *value)
 {
@@ -138,6 +143,7 @@ char         *get_macro_name(char *content, size_t index, size_t size)
         name = charpush(name, content[index]);
         index++;
     }
+    global_counter = index;
     return (name);
 }
 
@@ -157,25 +163,57 @@ char        *handle_macros(char *content, size_t size)
     if (content[i] == '\'') return (skip_char(content, i, size));
     if (content[i] == '#')
     {
+        start = i;
         i++;
         i = skip_whitespace(content, i, size);
         macro_name = get_macro_name(content, i, size);
-        printf("amcro is %s\n", macro_name);
+        rewrite = true;
+        return (macro_name);
     }
     global_counter =i;
     return (NULL);
 }
 
-void        scan_file(char *content)
+// char  *handle_include(char *content, size_t sizei, char *filename)
+
+char        *insertion(char *content, char *to_add)
+{
+    char    *new;
+
+    new = (char *)malloc(sizeof(char) * (strlen(content) - (end - start) + strlen(to_add)));
+    strncpy(new, content, start);
+    strncpy(&new[start], to_add, strlen(to_add));
+    strncpy(&new[start + strlen(to_add)], &content[end], strlen(content) - end + 1);
+    printf("new is %s\n", new);
+    return (new);
+}
+
+char        *scan_file(char *content, char *filename)
 {
     size_t size;
+    char *segment;
     char *string;
+    char *newstring;
     global_counter = 0;
+    t_macro *trav;
 
     size = strlen(content);
     while (global_counter < size)
     {
         string = handle_macros(content, size);
+        if (string && strcmp(string, "include") == 0)
+        {
+            segment = handle_include(content, global_counter, filename); 
+            if (segment)
+            {
+                newstring = insertion(content, segment);
+                return (scan_file(newstring, filename));
+            }
+        }
+       /* else if (string && (strcmp(string, "define") == 0)) 
+        {
+            trav = 
+        }*/
         global_counter++; 
     }
 }
@@ -190,7 +228,7 @@ t_preproc   *handle_preprocessor(int argc, char **argv)
     while (count < argc)
     {
         content = file_content(argv[count]);
-        scan_file(content);
+        scan_file(content, argv[count]);
         //handle_macros(content, strlen(content));
         count++;
     }

@@ -6,6 +6,20 @@
 #include <fcntl.h>
 
 
+void        free_token(t_token *token)
+{
+    t_token *temp;
+
+    while (token)
+    {
+        temp = token;
+        token = token->next;
+        free(temp->name);
+        free(temp->type);
+        free(temp);
+    }
+}
+
 t_token     *single_token(char *buffer, size_t index, char *tok_name)
 {
     char    *var_name;

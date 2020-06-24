@@ -146,11 +146,34 @@ t_hashtable     *key_token(void)
     ht_insert(table, "->", "PTR_OP");
     return (table);
 }
+
+t_token     *lexer(char *file_content)
+{
+    t_hashtable *table;
+    t_token     *list;
+    t_token     *temp;
+    size_t      size;
+
+    list = NULL;
+    table = key_token();
+    size = strlen(file_content);
+    while (read_count < size)
+    {
+        temp = scan(file_content, table);
+        if (temp)
+        {
+            list = push_token(list, temp->name, temp->type);
+            free_token(temp); 
+        }
+    }
+    return (list);
+}
 /*
 int main(int argc, char **argv)
 {
     char *buffer = test_file(argv[1]);
     //printf("%s\n", buffer);
+    
     t_hashtable *table;
     
     table = key_token(); 
@@ -162,9 +185,9 @@ int main(int argc, char **argv)
         if (temp)
             list = push_token(list, temp->name, temp->type);
     }
+    t_token *list = lexer(buffer);
     print_token(list);
 
     return (0);
 }
-
- */
+*/
