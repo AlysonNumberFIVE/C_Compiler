@@ -40,12 +40,6 @@ typedef struct ht_item
     struct ht_item *next;
 }   ht_item;
 
-typedef struct  s_variable 
-{
-    char        *var;
-    char        *content;
-    struct s_variable   *next;
-}   t_var;
 
 typedef struct Hashtable {
     ht_item     **items;
@@ -57,12 +51,36 @@ typedef struct s_datatype
 {
     char *name;
     int size;
+    struct s_datatype   *next;
 }   t_datatype;
 
 struct s_datatype datatypes[13];
 
 static char hashes[5][10] = {
     "#include\0", "#define\0", "#ifndef\0", "#define\0", "#endif\0"
+};
+
+static char first_order[4][9] = {
+    "unsigned\0",
+    "static\0",
+    "extern\0",
+    "typedef\0"
+};
+
+
+static char primitives[33][9] = {
+    "char\0",
+    "const\0",
+    "void\0",
+    "struct\0",
+    "int\0",
+    "short\0",
+    "double\0",
+    "float\0",
+    "size_t\0",
+    "long\0",
+    "signed\0",
+    "void\0",
 };
 
 static char reserved[33][9] = {
@@ -73,30 +91,25 @@ static char reserved[33][9] = {
     "struct\0",   "switch\0",   "typedef\0",  "union\0",
     "unsigned\0", "void\0",     "volatile\0", "while\0",
     "double\0",   "else\0",     "enum\0",     "extern\0",
-    "float\0",     "for\0",     "goto\0",     "if\0",
+    "float\0",     "for\0",     "gaoto\0",     "if\0",
     "size_t\0"
 };
 
-typedef struct  s_symbols
+
+typedef struct  s_variable
 {
-    char                *name;
-    char                *datatype;
-    short               size;
-    struct s_symbols    **array;
-    size_t              array_size;
-    uint32_t            decl_line;
-    uint32_t            usage_line;
-    short               mem_type;
-    t_var               *value;
-    struct s_symbols    *next;
-}   t_symbol;
+    char    *name;
+    char    *datatype;
+    char    *value;
+    struct s_variable   *next;
+}   t_variable;
+
 
 typedef struct  s_scope
 {
-    struct s_symbols *symbols;
-    struct s_symbols *inherited_symbols;
     int depth;
     struct s_scope *next;
+    struct t_variable *variables;
 }   t_scope;
 
 // function info
@@ -108,7 +121,7 @@ typedef struct  s_functin_table
     int depth;
     char **datatype_list;
     struct s_function_table *next;
-}   t_function;
+}   t_function_table;
 
 // alias info
 
@@ -134,6 +147,14 @@ typedef struct  token {
     struct token    *next;
 }   t_token;
 
+typedef struct  s_amcro_env {
+    char *name;
+    struct s_macro_env *next;
+}   t_macro;
+
+// semantic analysis 
+
+
 void        init_datatypes(void);
 t_hashtable *create_table(int size);
 char        *ht_search(t_hashtable *table, char *key);
@@ -142,7 +163,7 @@ char        *file_content(char *filename);
 char        *join_files(char *all_files, char *current_file);
 char        *read_file(char *filename);
 void        print_table(t_hashtable *table);
-
+int         eval_expr_is_legal(char **tokens);
 
 #endif
 

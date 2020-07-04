@@ -32,5 +32,9 @@ void	free2d(char **array);
 int		count_args(char *str);
 char	*charpush(char *str, char c);
 char	*trim(char *str);
+int     startswith(char *string, char start);
+int     endswith(char *string, char end);
+
+
 
 #endif

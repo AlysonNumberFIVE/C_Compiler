@@ -20,6 +20,8 @@
 #define NUM     270
 #define OR      271`
 
+t_token     *lexer(char *file_content);
+void        free_token(t_token *token);
 t_token *new_token(char *name, char *type);
 t_hashtable     *key_token(void);
 t_token *push_token(t_token *first, char *name, char *type);

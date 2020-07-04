@@ -16,8 +16,6 @@ t_scope     *new_scope(t_symbol *inherited_symbols)
     t_scope *new_scope;
 
     new_scope = (t_scope *)malloc(sizeof(t_scope));
-    new_scope->inherited_symbols = inherited_symbols;
-    new_scope->symbols = NULL;
     new_scope->next = NULL;
     new_scope->depth = 0;
     return (new_scope);
@@ -37,8 +35,6 @@ t_scope     *add_scope(t_scope *head, t_symbol *inherited_symbols)
     }
     depth_counter++;
     trav->next = (t_scope *)malloc(sizeof(t_scope));
-    trav->next->inherited_symbols = inherited_symbols;
-    trav->next->symbols = NULL;
     trav->next->depth = depth_counter;
     trav->next->next = NULL;
     return (trav);
