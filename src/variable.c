@@ -61,7 +61,7 @@ char    *equ_content(t_token *token)
     return (value);
 }
 
-t_variable    *save_variable(t_token *token)
+t_variable    *save_variable(t_token *token, char *stop)
 {
     t_variable  *var;
     t_token     *list;
@@ -103,7 +103,7 @@ t_variable    *save_variable(t_token *token)
             name = strdup(list->name);
             counter = 3;
         }
-        else if (counter == 2 && strcmp(list->name, ";") == 0)
+        else if (counter == 2 && strcmp(list->name, stop) == 0)
             break ;
         else if (counter == 3 && strcmp(list->name, "=") == 0)
         {

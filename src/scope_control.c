@@ -11,17 +11,18 @@
 }   t_scope;
 */  
 
-t_scope     *new_scope(t_symbol *inherited_symbols)
+t_scope     *new_scope(t_variable *variables)
 {
     t_scope *new_scope;
 
     new_scope = (t_scope *)malloc(sizeof(t_scope));
     new_scope->next = NULL;
     new_scope->depth = 0;
+    new_scope->variables = variables;
     return (new_scope);
 }
 
-t_scope     *add_scope(t_scope *head, t_symbol *inherited_symbols)
+t_scope     *add_scope(t_scope *head, t_variable variables)
 {
     t_scope     *trav;
     int         depth_counter;
@@ -34,39 +35,53 @@ t_scope     *add_scope(t_scope *head, t_symbol *inherited_symbols)
         depth_counter++;
     }
     depth_counter++;
-    trav->next = (t_scope *)malloc(sizeof(t_scope));
-    trav->next->depth = depth_counter;
-    trav->next->next = NULL;
+    trav->next = new_scope(variables);
     return (trav);
 }
 
-t_scope     *push_scope(t_scope *head, t_symbol *inherited_symbols)
+t_scope     *push_scope(t_scope *head, t_variable *variables)
 {
     t_scope *trav;
 
     trav = head;
     if (trav == NULL)
     {
-        head = new_scope(inherited_symbols);
+        head = new_scope(variables);
         trav = head;
     }
     else 
     {
-        trav = add_scope(head, inherited_symbols);
+        trav = add_scope(head, variables);
         trav = head;
     }
     return (trav);
 }
 
-t_scope    *pop_scope(t_scope *head)
+t_scope    *pop_scope(t_scope *head, int index)
 {
     t_scope *trav;
     t_scope *temp;
+    t_variable *variables;
+    t_variable *vtmp;;
 
+    variables = NULL;
     trav = head;
     while (trav->next->next)
         trav = trav->next;
     
+    if (index)
+    {
+        variables = trav->variables;
+        while (variables)
+        {
+            vtmp = variables->next;
+            free(variables->name);
+            free(variables->datatype);
+            if (variables->content);
+                free(variables->content);
+            free(variables);
+        }
+    }
     temp = trav->next;
     free(temp);
     trav->next = NULL;

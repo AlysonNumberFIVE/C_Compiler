@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "../inc/compiler.h"
+#include <time.h>
 #include <sys/stat.h>
 
 char labels[5][2] = {"*\0", "/\0", "^\0", "+\0", "-\0"};
@@ -94,17 +95,35 @@ int     eval_expr_is_legal(char **tokens)
         else if (is_symbol(tokens[count]) == true)
             sym = true;
         else if (sym == false && !atoi(tokens[count]))
-            error_and_exit();
+            return (false);
         count++;
     }
     if (bracket_depth != 0)
-        error_and_exit();
+        return (false);
     return (0);
 }
 
-char    evaluate_variable(t_scope *scope, char *var_name)
+int     character_to_int(char *value)
+{
+    char    *chr;
+    char    *psh;
+    char    *nbr;
+
+    chr = sub(value, 1, strlen(value) - 2);
+    if (chr[0] == '\\')
+        psh = &chr[1];
+    nbr = itoa(psh[0] - '0');
+    free(value);
+    free(chr);
+    return (nbr);
+}
+
+char    *evaluate_variable(t_scope *scope, char *var_name)
 {
     t_variable *var_list;
+    char        *value;
+
+    value = NULL;
     if (is_symbol(var_name) == true)
         return (strdup(var_name));
     var_list = scope->variables;
@@ -112,22 +131,46 @@ char    evaluate_variable(t_scope *scope, char *var_name)
     {
         if (strcmp(var_name, var_list->name) == 0)
         {
-            
+            value = strdup(var_list->value);
+            break ;
         }
+        var_list = var_list->next;
     }
+    if (value)
+    {
+        srand(time(0));
+        if (value[0] == '\"' || value[0] == '[')
+        {
+            free(value);
+            value = strdup(itoa(rand()));
+        }
+        else if (value[0] == '\'')
+            value = character_to_int(value);
+    }
+    return (value);
 }
 
-void    evaluate_expression(t_token *tokens, t_scope *scope)
+bool    evaluate_expression(t_token *tokens, t_scope *scope)
 {
     char    **array;
+    char    *tmp;
+    int     eval;
 
     array = NULL;
-    while (strcmp(tokens->name, ")") != 0 && tokens)
+    while (tokens->next && (strcmp(tokens->name, ")") != 0 && strcmp(tokens->next->name, "{") != 0))
     {
-        array = arraypush(array, tokens->name);
+        if (strcmp(tokens->type, "NUMBER") != 0)
+        {
+            tmp = evaluate_variable(scope, tokens->name);
+            array = arraypush(array, tmp);
+            free(tmp);
+        }
+        else
+            array = arraypush(array, tokens->name);
         tokens = tokens->next;
     }
-
+    eval = eval_expr_is_legal(array);
+    
 }
 
 
@@ -147,4 +190,6 @@ char    *file_content(char *filename)
     read(fd, content, size);
     content[size] = '\0';
     return (content);
+
+
 }

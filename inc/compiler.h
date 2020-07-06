@@ -118,8 +118,8 @@ typedef struct  s_functin_table
 {
     char *function_name;
     char *datatype;
-    int depth;
-    char **datatype_list;
+    t_variables *variavbles;
+    bool is_defined; 
     struct s_function_table *next;
 }   t_function_table;
 
@@ -163,6 +163,7 @@ char        *file_content(char *filename);
 char        *join_files(char *all_files, char *current_file);
 char        *read_file(char *filename);
 void        print_table(t_hashtable *table);
+int         eval_expr_is_legal(char **tokens);
 int         eval_expr_is_legal(char **tokens);
 
 #endif

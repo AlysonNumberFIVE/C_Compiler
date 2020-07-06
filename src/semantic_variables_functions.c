@@ -191,18 +191,7 @@ int    semantic_variable_function(t_token *tokens)
             function->variables = function_datatype_list(list);
             break;
         }
-        else if (counter == 3 && strcmp(list->name, "=") == 0)
-            break ;
-        list = list->next;
     }
-    function->datatype = datatype;
-    print_declaration(function);
-    if (strcmp(list->name, ";") == 0) 
-        return (DECLARATION);
-    else if (strcmp(list->name, "{") == 0)
-        return (DEFINITION);
-    else if (strcmp(list->name, "=") == 0)
-        return (ASSIGN);
     return (-1);
 }
 

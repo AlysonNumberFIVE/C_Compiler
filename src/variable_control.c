@@ -60,3 +60,18 @@ t_variable  *push_variable(t_variable *head, char *name,
     return (trav);
 }
 
+int     merge_variable_list(t_variable *current, t_variable *new)
+{
+    int index;
+    t_variable *list;
+
+    index = 0;
+    while (list)
+    {
+        list = list->next;
+        index++;
+    }
+    list = new;
+    return (index);
+}
+

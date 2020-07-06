@@ -14,9 +14,10 @@ void    semantic_if(t_token *token)
    if (strcmp(token->name, "(") != 0)
        return ;
 
-   list = token;
+   list = token->next;
    while (list)
    {
+        
    }
 }
 
