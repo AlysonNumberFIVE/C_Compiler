@@ -91,7 +91,6 @@ void    semantic_analysis(t_token *tokens)
        if (value == 2)
        {
            create_variable(&list);
-          // save_variable(&list, ";");
        }
        else if (value == 1)
        {
@@ -103,7 +102,6 @@ void    semantic_analysis(t_token *tokens)
        }
        list = list->next;
     }
-    printf("here\n");
 }
 
 
