@@ -51,7 +51,10 @@ t_variable  *push_variable(t_variable *head, char *name,
 
     trav = head;
     if (trav == NULL)
+    {
+        printf("eight\n");
         trav = new_variable(name, datatype, content); 
+    }
     else
     {
         trav = add_variable(head, name, datatype, content);

@@ -1,1 +1,1 @@
-gcc -o var variable.c variable_control.c lexer*  lib.a  semantic_utils.c hashtable.c token_control.c
+gcc -o sem semantic_analysis.c lexer* semantic_utils.c variable.c  token_control.c hashtable.c lib.a variable_control.c

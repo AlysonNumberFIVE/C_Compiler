@@ -20,7 +20,6 @@ bool    assert_second_order(char *to_check)
 
     for (i = 0; i < 12; i++)
     {
-        printf("%s\n", primitives[i]);
         if (strcmp(primitives[i], to_check) == 0)
             return (true);
     }
@@ -34,7 +33,6 @@ bool    assert_first_order(char *to_check)
 
     for (i = 0; i < 3; i++)
     {
-        printf("%s\n", first_order[i]);
         if (strcmp(first_order[i], to_check) == 0)
             return (true);
     }
