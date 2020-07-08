@@ -109,16 +109,17 @@ typedef struct  s_scope
 {
     int depth;
     struct s_scope *next;
-    struct t_variable *variables;
+    struct s_cope *prev;
+    t_variable *variables;
 }   t_scope;
 
 // function info
 
-typedef struct  s_functin_table
+typedef struct  s_function_table
 {
     char *function_name;
     char *datatype;
-    t_variables *variavbles;
+    t_variable *variables;
     bool is_defined; 
     struct s_function_table *next;
 }   t_function_table;
@@ -151,6 +152,12 @@ typedef struct  s_amcro_env {
     char *name;
     struct s_macro_env *next;
 }   t_macro;
+
+typedef struct  s_stack {
+    char *funct_name;
+    struct s_stack  *next;
+    struct s_stack  *prev;
+}   t_stack;
 
 // semantic analysis 
 
