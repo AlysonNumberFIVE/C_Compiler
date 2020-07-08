@@ -80,6 +80,7 @@ t_variable    *save_variable(t_token **token, char *stop)
     if (assert_second_order(list->name) == false)
         if (assert_first_order(list->name) == false)
            return (NULL);
+    printf("inside sav_variable\n");
     datatype = (char *)malloc(sizeof(char));
     bzero(datatype, sizeof(char));
         if (counter == 0 && assert_first_order(list->name) == true)
@@ -103,14 +104,17 @@ t_variable    *save_variable(t_token **token, char *stop)
         if (counter >= 2 && strcmp(list->type, "ID") == 0)
         {
             name = strdup(list->name);
+            printf("inside save_variable name is %s\n", name);
             counter = 3;
             list = list->next;
         }
         if (counter == 3 && strcmp(list->name, "=") == 0)
             value = equ_content(&list);
-         else if (counter == 3 && strcmp(list->name, stop) != 0)
+        else if (counter == 3 && strcmp(list->name, stop) != 0 )
         {
-            exit(1);
+            if (strcmp(list->name, ")") == 0 && strcmp(stop, ",") != 0)
+                exit(1);
+
         }
          printf("list after equ_content %s\n", list->name);
     if (name && datatype)

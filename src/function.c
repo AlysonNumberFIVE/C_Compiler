@@ -16,7 +16,7 @@ t_function_table    *new_function(char *name, char *datatype,
     return (new);
 }
 
-t_function_table    *add_function(t_function_table *head, char *name
+t_function_table    *add_function(t_function_table *head, char *name,
     char *datatype, bool is_defined, t_variable *variables)
 {
     t_function_table    *trav;
@@ -24,7 +24,7 @@ t_function_table    *add_function(t_function_table *head, char *name
     trav = head;
     while (trav->next)
         trav = trav->next;
-    trav->next = new_function(name, datatype, is_defined, varaibles);
+    trav->next = new_function(name, datatype, is_defined, variables);
     return (trav);
 }
 

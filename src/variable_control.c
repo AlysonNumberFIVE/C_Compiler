@@ -27,7 +27,8 @@ t_variable  *new_variable(char *name, char *datatype, char *content)
     new = (t_variable *)malloc(sizeof(t_variable));
     new->name = strdup(name);
     new->datatype = strdup(datatype);
-    new->value = strdup(content);
+    if (content)
+        new->value = strdup(content);
     new->next = NULL;
     return (new);
 }
@@ -60,6 +61,7 @@ t_variable  *push_variable(t_variable *head, char *name,
         trav = add_variable(head, name, datatype, content);
         trav = head;
     }
+    printf("return\n");
     return (trav);
 }
 

@@ -8,7 +8,7 @@
 #define VARIABLE 2
 
 t_scope             *g_symbol_table = NULL;
-t_function_table    *function_talbe = NULL;
+t_function_table    *function_table = NULL;
 t_variable          *g_var = NULL;
 
 t_token    *skip_stars(t_token *token)
@@ -94,10 +94,11 @@ void    semantic_analysis(t_token *tokens)
        }
        else if (value == 1)
        {
-           printf("value %d\n", value);
+           semantic_function(&list);
        }
        if (strcmp(list->name, "{") == 0)
        {
+           printf("creating new scope\n");
            g_symbol_table->variables = copy_variables(g_var);
        }
        list = list->next;
@@ -113,11 +114,12 @@ int     main(void)
     g_symbol_table->depth = 0;
     g_symbol_table->variables = NULL;
     g_symbol_table->next = NULL;
-    char test[] = "char *hello_world = \"42\";int again = 42;void *value = NULL;"; 
+    //char test[] = "char *hello_world = \"42\";int again = 42;\nvoid *value = NULL;\nchar *new_list(char *name);"; 
+    char test[] = "char **split(char *first, char second);char *str = 42;\nint i = 0;\nchar *string = \"hello world\";\nint main(void){return (0);}";
     list = lexer(test);
     semantic_analysis(list);
     t_variable  *variables;
-   
+    printf("%s\n", test);
     variables = g_symbol_table->variables;
     while (variables)
     {
