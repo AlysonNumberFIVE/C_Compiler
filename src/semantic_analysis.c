@@ -49,6 +49,7 @@ int     variable_or_function(t_token *tokens)
     return (-1);
 }
 
+
 t_token   *create_variable(t_token **list)
 {
     t_variable  *variable;
@@ -60,14 +61,13 @@ t_token   *create_variable(t_token **list)
     while (local_sym->next)
         local_sym = local_sym->next;
 
-    local_sym->variables = g_var; 
+  //  local_sym->variables = g_var; 
     token = *list;
     variable = save_variable(&token, ";");
     
     g_var = push_variable(g_var, variable->name, variable->datatype,
         variable->value);
     
-
     //printf("g_var->name is %s\n", g_var->name);
     free(variable->name);
     free(variable->datatype);
@@ -91,6 +91,8 @@ void    semantic_analysis(t_token *tokens)
        if (value == 2)
        {
            create_variable(&list);
+           g_symbol_table->variables = copy_variables(g_var);
+           print_variables(g_symbol_table->variables);
        }
        else if (value == 1)
        {
@@ -98,11 +100,11 @@ void    semantic_analysis(t_token *tokens)
        }
        if (strcmp(list->name, "{") == 0)
        {
-           printf("creating new scope\n");
            g_symbol_table->variables = copy_variables(g_var);
        }
        list = list->next;
     }
+    
 }
 
 
@@ -120,6 +122,8 @@ int     main(void)
     semantic_analysis(list);
     t_variable  *variables;
     printf("%s\n", test);
+
+    print_scope(g_symbol_table);
     variables = g_symbol_table->variables;
     while (variables)
     {

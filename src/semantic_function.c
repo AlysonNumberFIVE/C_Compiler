@@ -37,11 +37,9 @@ t_variable  *function_variables(t_token **tokens)
             (strcmp(list->next->name, "{") != 0 || 
              strcmp(list->next->name, ";") != 0)))
     {
-        printf("this is %s\n", list->name);
         if (strcmp(list->name, ";") == 0)
             break ;
         temp = save_variable(&list, ",");
-        printf("parameter name is %s\n", temp->name);
         variable = push_variable(variable, temp->name,
             temp->datatype, NULL);
         free(temp->name);
@@ -54,11 +52,10 @@ t_variable  *function_variables(t_token **tokens)
 }
 
 void    function_declaration(char *name, char *datatype,
-        t_variable *variables)
+        t_variable *variables, char *value)
 {
    extern  t_function_table *function_table;
    bool    is_declaration;
-   char     *value;
    t_function_table *trav;
 
    is_declaration = false;
@@ -134,8 +131,8 @@ int     semantic_function(t_token **tokens)
      
     if (list && (strcmp(list->name, ";") == 0 ||
          strcmp(list->name, "{")) == 0)
-        function_declaration(name, datatype, variables); 
-    printf("list is %s\n", list->name);
+        function_declaration(name, datatype, variables,
+            list->name); 
     *tokens = list;
-
+    return (0);
 }

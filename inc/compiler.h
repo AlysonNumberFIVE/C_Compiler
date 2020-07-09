@@ -124,7 +124,7 @@ typedef struct  s_function_table
     struct s_function_table *next;
 }   t_function_table;
 
-// alias info
+// alias info   
 
 typedef struct  s_preproc
 {
@@ -145,6 +145,8 @@ typedef struct  s_alias
 typedef struct  token {
     char        *name;
     char        *type;
+    int         line;
+    char        *filename;
     struct token    *next;
 }   t_token;
 
@@ -172,6 +174,9 @@ char        *read_file(char *filename);
 void        print_table(t_hashtable *table);
 int         eval_expr_is_legal(char **tokens);
 int         eval_expr_is_legal(char **tokens);
+void        print_scope(t_scope *scope);
+void        print_variables(t_variable *variables);
+void        print_function(t_function_table *functions);
 
 #endif
 

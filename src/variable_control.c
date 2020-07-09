@@ -71,8 +71,8 @@ t_variable  *copy_variables(t_variable *list)
     t_variable  *trav;
 
     ret = NULL;
-    trav = list;;
-    while (ret)
+    trav = list;
+    while (trav)
     {
         ret = push_variable(ret, trav->name, trav->datatype,
             trav->value);
