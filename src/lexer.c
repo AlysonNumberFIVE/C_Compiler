@@ -91,7 +91,7 @@ t_token     *scan(char *buffer, t_hashtable *table)
 void    print_token(t_token *token)
 {
     t_token *trav;
-
+    printf("here\n");
     trav = token;
     while (trav)
     {
@@ -168,7 +168,7 @@ t_token     *lexer(char *file_content)
     }
     return (list);
 }
-/*
+
 int main(int argc, char **argv)
 {
     char *buffer = test_file(argv[1]);
@@ -183,11 +183,17 @@ int main(int argc, char **argv)
     {
         t_token *temp = scan(buffer, table);
         if (temp)
+	{
             list = push_token(list, temp->name, temp->type);
+	    free(temp->name);
+	    free(temp->type);
+	    free(temp);
+	}   
     }
-    t_token *list = lexer(buffer);
+//    list = lexer(buffer);
+
     print_token(list);
 
     return (0);
 }
-*/
+
