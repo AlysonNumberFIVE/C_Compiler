@@ -1,6 +1,6 @@
 
 
-
+int value;
 
 int main(void)
 {

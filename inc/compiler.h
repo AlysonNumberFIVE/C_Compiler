@@ -59,7 +59,7 @@ struct s_datatype datatypes[13];
 static char hashes[5][10] = {
     "#include\0", "#define\0", "#ifndef\0", "#define\0", "#endif\0"
 };
-
+/*
 static char first_order[4][9] = {
     "unsigned\0",
     "static\0",
@@ -93,8 +93,7 @@ static char reserved[33][9] = {
     "double\0",   "else\0",     "enum\0",     "extern\0",
     "float\0",     "for\0",     "gaoto\0",     "if\0",
     "size_t\0"
-};
-
+};*/
 
 typedef struct  s_variable
 {

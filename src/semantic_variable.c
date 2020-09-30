@@ -134,7 +134,17 @@ char	*value_checker(char **components)
 	comma_flag = false;
 	while (components[counter] && strcmp(components[counter], ";") != 0)
 	{
-		if (comma_flag == false && (components[counter][0] == '\"' ||
+		if (strcmp(components[counter], "{") == 0)
+		{
+			array_value = join_with_space(array_value, components[counter]);
+			comma_flag = false;
+		}
+		else if (strcmp(components[counter], "}") == 0)
+		{
+			array_value = join_with_space(array_value, components[counter]);
+			comma_flag = true;
+		}
+		else if (comma_flag == false && (components[counter][0] == '\"' ||
 			components[counter][0] == '\'' ||
 			atoi(components[counter]))) // ||
 			// verify existence of variable if exists
@@ -199,7 +209,7 @@ bool	validate_variable(char **components)
 	printf("depth is %d\n", depth);
 	if (assignment == true)
 	{
-		value_checker(&components[counter]);
+		printf("%s\n", value_checker(&components[counter]));
 	}
 /*
 	if (assignment == true)
@@ -214,8 +224,9 @@ bool	validate_variable(char **components)
 int	main(void)
 {
 	char *variable = "unsigned long * str = { \'c\' , \'a\' , \'t\' } ;";	
+	variable = "char *str = { { 4 } , { 4 } , { 4 } } ;";
 	char **pieces = split(variable, ' ');
-	
+		
 	validate_variable(pieces);
 	return (0);
 }

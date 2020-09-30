@@ -3,6 +3,9 @@
 #include "../inc/compiler.h"
 
 
+
+
+
 bool	semantic_analysis(t_token *tokens)
 {
 	t_token	*trav;

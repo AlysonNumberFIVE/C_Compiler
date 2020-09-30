@@ -4,6 +4,7 @@ NAME = lib
 
 SRC_NAME = strtrim.c \
 	   arraylen.c \
+	   arraydup.c \
 	   arraypush.c \
            charpush.c \
            count_args.c \
