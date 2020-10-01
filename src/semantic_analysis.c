@@ -1,25 +1,80 @@
 
 
+
+#include "../inc/database.h"
+#include "../inc/semantic.h"
 #include "../inc/compiler.h"
 
+bool	value_found(char *value, char **to_scan)
+{
+	int		i;
+
+	i = 0;
+	while (to_scan[i])
+	{
+		if (strcmp(value, to_scan[i]) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+} 
 
 
+bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_token)
+{
+	char	*name;	
+	char 	*value;	
+	
 
+	if (validate_id(current_token) == true)
+		name = strdup("ID");
+	else
+		name = strdup(current_token);
+	printf("name is %s\n", name);
+	value = ht_search(ff_list, name);
+	if (value)
+	{
+		char *second;
+		char **pieces = split(value, ' ');
+		printf("value is %s\n", value);
+		if (validate_id(next_token) == true)
+			second = strdup("ID");
+		else
+			second = strdup(next_token);
+		
+		if (value_found(second, pieces) == true)
+			return (true);
+	}
+	return (false);
+}
 
 bool	semantic_analysis(t_token *tokens)
 {
-	t_token	*trav;
-	extern max_number; // Scope value.
-	
+	t_token		*trav;
+	char		**next;
+	char		**start;
+	t_hashtable	*ff_list;
+	extern int max_number; // Scope value.
 
-	trav = tokens;
-	while (trav)
+	//  init first and follow
+	start = split("char const void struct int short double float size_t long longlong signed void", ' ');
+        ff_list = first_and_follow();
+	if (value_found(tokens->name, start) == false)
 	{
-		if (strcmp(trav->name, "{") == 0)
-			max_number++;
-		else if (strcmp(trav->name, "}") == 0)
-			max_number--;
-		trav = trav->next;
+		printf("Your code is shit and you deserve to die\n");
+		return (false);
 	}
+	trav = tokens;	
+	while (trav->next)
+	{
+		if (check_next_token(ff_list, trav->next->name, trav->name) == true)
+			trav = trav->next;
+		else
+		{
+			printf("This was a failed expedition\n");
+			return (false);
+		}
+	}
+	return (true);
 }
 

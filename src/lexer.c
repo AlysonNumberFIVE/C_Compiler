@@ -87,7 +87,7 @@ t_token     *scan(char *buffer, t_hashtable *table)
 }
 
 
-
+/*
 void    print_token(t_token *token)
 {
     t_token *trav;
@@ -98,10 +98,10 @@ void    print_token(t_token *token)
         printf("%s : %s\n", trav->name, trav->type);
         trav = trav->next;
     }
-}
-
+}*/
 
 // testing 
+/*
 char    *test_file(char *filename)
 {
     int fd;
@@ -115,7 +115,7 @@ char    *test_file(char *filename)
     content[info.st_size] = '\0';
     close(fd);
     return (content);
-}
+}*/
 
 t_hashtable     *key_token(void)
 {
@@ -168,7 +168,7 @@ t_token     *lexer(char *file_content)
     }
     return (list);
 }
-
+/*
 int main(int argc, char **argv)
 {
     char *buffer = test_file(argv[1]);
@@ -195,5 +195,5 @@ int main(int argc, char **argv)
     print_token(list);
 
     return (0);
-}
+}*/
 

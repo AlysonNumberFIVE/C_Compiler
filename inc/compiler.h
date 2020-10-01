@@ -82,7 +82,7 @@ static char primitives[33][9] = {
     "signed\0",
     "void\0",
 };
-
+*/
 static char reserved[33][9] = {
     "auto\0",     "break\0",    "case\0",     "char\0", 
     "const\0",    "continue\0", "default\0",  "do\0",
@@ -93,7 +93,7 @@ static char reserved[33][9] = {
     "double\0",   "else\0",     "enum\0",     "extern\0",
     "float\0",     "for\0",     "gaoto\0",     "if\0",
     "size_t\0"
-};*/
+};
 
 typedef struct  s_variable
 {
@@ -176,6 +176,9 @@ int         eval_expr_is_legal(char **tokens);
 void        print_scope(t_scope *scope);
 void        print_variables(t_variable *variables);
 void        print_function(t_function_table *functions);
+t_hashtable *first_and_follow(void);
+bool        validate_id(char *str);
+
 
 #endif
 

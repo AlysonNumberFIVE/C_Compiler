@@ -2,9 +2,15 @@
 
 int value;
 
+
+char *hello()
+{
+	return ("1");
+}
+
 int main(void)
 {
-	char *u;
-	char **str = *u; 
+	int j;
+	int x = (int)hello();
 	return (0);
 }

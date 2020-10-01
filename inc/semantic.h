@@ -6,6 +6,7 @@
 
 #include "compiler.h"
 
+bool    semantic_analysis(t_token *tokens);
 char    *datatype_name(char *name, char *to_add);
 bool    assert_second_order(char *to_check);
 bool    assert_first_order(char *to_check);

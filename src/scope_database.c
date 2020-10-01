@@ -1,9 +1,10 @@
 
 
 #include "../inc/compiler.h"
+#include "../inc/database.h"
 
 int max_number = 0;
-
+/*
 typedef struct 	s_scope_database
 {
 	char	*type;
@@ -11,7 +12,7 @@ typedef struct 	s_scope_database
 	char	*value;
 	struct s_scope_database *next;
 }	t_db;
-
+*/
 t_db 	**list = NULL;
 
 t_db	*new_object(char *type, char *name, char *val)
@@ -116,11 +117,4 @@ void	add_new_table(void)
 {
 	max_number++;
 }
-
-int	main(void)
-{
-	return (0);
-}
-
-
 

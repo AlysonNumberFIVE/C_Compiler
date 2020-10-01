@@ -4,7 +4,7 @@
 #define FIRST_ORDER_LENGTH 4
 #define PRIMITIVES_LENGTH 12
 #define RESERVED_LENGTH 33
-
+/*
 static char reserved[33][9] = {
     "auto\0",     "break\0",    "case\0",     "char\0",
     "const\0",    "continue\0", "default\0",  "do\0",
@@ -15,7 +15,7 @@ static char reserved[33][9] = {
     "double\0",   "else\0",     "enum\0",     "extern\0",
     "float\0",     "for\0",     "gaoto\0",     "if\0",
     "size_t\0"
-};
+}; */
 
 static char first_order[4][9] = {
     "unsigned\0",
@@ -102,7 +102,6 @@ bool	validate_id(char *str)
 {
 	if (str[0] == '_' || isalpha(str[0]) && !array_search(reserved, RESERVED_LENGTH, str))
 		return (true);
-	printf("invalid naming for variables\n");
 	return (false);
 }
 
@@ -220,7 +219,7 @@ bool	validate_variable(char **components)
 
 }
 
-
+/*
 int	main(void)
 {
 	char *variable = "unsigned long * str = { \'c\' , \'a\' , \'t\' } ;";	
@@ -231,7 +230,7 @@ int	main(void)
 	return (0);
 }
 
-
+*/
 
 
 
