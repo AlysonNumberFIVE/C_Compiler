@@ -22,11 +22,12 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, "void", "* ID )");
 	ht_insert(ht, "*", "* ID )");
 	ht_insert(ht, "ID", "( ; = < > & + - / * ++ += >>= <<= >> << || && , )");
-	ht_insert(ht, "(", "char const void struct int short double float size_t long longlong signed void ID NUM");
-	ht_insert(ht, ";", "DONE }");
-	ht_insert(ht, "=", "ID NUM ( ");
+	ht_insert(ht, "(", "char const void struct int short double float size_t long longlong signed void ID NUM LITERAL");
+	ht_insert(ht, ";", "DONE } return char const void struct int short double float size_t long longlong signed void");
+	ht_insert(ht, "LITERAL", ") ; ,");
+	ht_insert(ht, "=", "ID NUM LITERAL ( ");
 	ht_insert(ht, ",", "ID NUM char const void struct int short double float size_t long longlong signed void");
-	ht_insert(ht, ")", "; { ID NUM");
+	ht_insert(ht, ")", "; { ID NUM LITERAL");
 	ht_insert(ht, "NUM", "+ - / * ) ;");
 	ht_insert(ht, "{", "ID char const void struct in short double float size_t long longlong signed void return");
 	ht_insert(ht, "}", "DONE");
