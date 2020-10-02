@@ -1,6 +1,6 @@
 
 
-
+#include <ctype.h>
 #include "../inc/database.h"
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
@@ -49,37 +49,50 @@ bool	validate_num(char *str)
 
 bool	validate_function(t_token *list)
 {
-	t_token 	*travel;
+	t_token 	*trav;
 	char		*name;
-	char		**parameteres;	
+	char		**parameters;	
 	t_hashtable	*variables;
 
 	parameters = NULL;
 	name = NULL;
-	travel = list;
+	trav = list;
 	if (value_found(trav->name, start) == true)
 		trav = trav->next;
+	else
+	{
+		printf("Datatype error\n");
+		return (false);
+	}
 	
 	while (strcmp(trav->name, "*") == 0)
 		trav = trav->next;
 
 	if (strcmp(trav->type, "ID") == 0)
 		trav = trav->next;
+	else
+	{
+		printf("Incorrect variable naming\n");
+		return (false);
+	}
 
 	if (strcmp(trav->name, ";") == 0)
 		printf("create variable with no value\n");
 
 	else if (strcmp(trav->name, "(") == 0)
 	{
+		trav = trav->next;
 		char *value;
-		value = NULL;
+		value = (char *)malloc(sizeof(char));
 		while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
 		{
-			if (strcmp(trav->name, ",") == 0)
+			if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
 			{
 				parameters = arraypush(parameters, value);
 				free(value);
 				value = NULL;
+				if (strcmp(trav->name, ")") == 0)
+					break;
 			}
 			else
 			{
@@ -88,16 +101,44 @@ bool	validate_function(t_token *list)
 					value = join(value, trav->name);
 					trav = trav->next;
 				}	
+				else
+				{
+					printf("Incorrect way to create parameter vars\n");
+					return (false);
+				}
 				while (trav && strcmp(trav->name, "*") == 0)
 				{
 					value = join(value, trav->name);
 					trav = trav->next;
 				}
-				if (
+				if (strcmp(trav->type, "ID") == 0)
+				{
+					value = join(value, trav->name);
+					trav = trav->next;
+
+				}
+				else
+				{
+					printf("Incorrect variable naming\n");	
+					return (false);
+				}
 			}
 		}	
 	}
+	printf("here we go\n");
+	return (true);
+}
 
+
+char	*determine_token_type(char *token)
+{
+	if (validate_id(token) == true)
+		return (strdup("ID"));
+	else if (validate_literal(token) == true)
+		return (strdup("LITERAL"));
+	else if (validate_num(token) == true)
+		return (strdup("NUM"));
+	return (strdup(token));
 }
 
 
@@ -106,15 +147,8 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 	char	*name;	
 	char 	*value;	
 	
-
-	if (validate_id(current_token) == true)
-		name = strdup("ID");
-	else if (validate_literal(current_token) == true)
-		name = strdup("LITERAL");
-	else if (validate_num(current_token))
-		name = strdup("NUM");
-	else
-		name = strdup(current_token);
+	
+	name = determine_token_type(current_token);
 	printf("name is %s\n", name);
 	value = ht_search(ff_list, name);
 	if (value)
@@ -123,15 +157,7 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 			return (true);
 		char *second;
 		char **pieces = split(value, ' ');
-		if (validate_id(next_token) == true)
-			second = strdup("ID");
-		else if (validate_literal(next_token) == true)
-			second = strdup("LITERAL");
-		else if (validate_num(next_token))
-			second = strdup("NUM"); 
-		else
-			second = strdup(next_token);
-		
+		second = determine_token_type(next_token);
 		if (value_found(second, pieces) == true)
 			return (true);
 	}
@@ -144,8 +170,9 @@ bool	semantic_analysis(t_token *tokens)
 	char		**next;
 	t_hashtable	*ff_list;
 	extern int max_number; // Scope value.
+	t_token		*head;
 
-	//  init first and follow
+		//  init first and follow
 	start = split("char const void struct int short double float size_t long longlong signed void", ' ');
         ff_list = first_and_follow();
 	if (value_found(tokens->name, start) == false)
@@ -154,9 +181,18 @@ bool	semantic_analysis(t_token *tokens)
 		return (false);
 	}
 	trav = tokens;	
+	head = trav;
 	while (trav->next)
 	{
-		if (check_next_token(ff_list, trav->next->name, trav->name) == true)
+		if (strcmp(trav->name, "{") == 0 || strcmp(trav->name, ";") == 0)
+		{
+			validate_function(head);
+
+			trav = trav->next;
+			head = trav;	
+			printf("process variable/function\n");
+		}
+		else if (check_next_token(ff_list, trav->next->name, trav->name) == true)
 			trav = trav->next;
 		else
 		{

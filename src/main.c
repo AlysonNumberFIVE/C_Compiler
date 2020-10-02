@@ -51,7 +51,6 @@ int	main(int argc, char **argv)
 	printf("%s\n", file);
 
 	tokens = lexer(file);
-	print_token(tokens);
 	semantic_analysis(tokens);
 	
 	return (0);	
