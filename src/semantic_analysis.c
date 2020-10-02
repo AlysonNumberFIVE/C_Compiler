@@ -89,10 +89,12 @@ bool	validate_function(t_token *list)
 			if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
 			{
 				parameters = arraypush(parameters, value);
+				printf("value %s\n", value);
 				free(value);
-				value = NULL;
+				value = (char *)malloc(sizeof(char));
 				if (strcmp(trav->name, ")") == 0)
 					break;
+				trav = trav->next;
 			}
 			else
 			{
@@ -146,7 +148,8 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 {
 	char	*name;	
 	char 	*value;	
-	
+	char 	*second;
+	char 	**pieces;	
 	
 	name = determine_token_type(current_token);
 	printf("name is %s\n", name);
@@ -155,8 +158,7 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 	{
 		if (strcmp(value, "DONE") == 0)
 			return (true);
-		char *second;
-		char **pieces = split(value, ' ');
+		pieces = split(value, ' ');
 		second = determine_token_type(next_token);
 		if (value_found(second, pieces) == true)
 			return (true);

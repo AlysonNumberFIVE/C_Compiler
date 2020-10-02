@@ -1,6 +1,7 @@
 
 
-char *function(char *name) {
+
+char *function(char *name, char **second, int third) {
 
 }
 
