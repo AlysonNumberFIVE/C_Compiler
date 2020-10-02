@@ -5,6 +5,10 @@
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
 
+t_function *functions = NULL;
+t_token	*to_evaluate = NULL;
+char	**start = NULL;
+
 bool	value_found(char *value, char **to_scan)
 {
 	int		i;
@@ -19,12 +23,83 @@ bool	value_found(char *value, char **to_scan)
 	return (false);
 } 
 
+
+
 bool	validate_literal(char *str)
 {
 	if (str[0] == '\"' && str[strlen(str) - 1] == '\"')
 		return (true);
 	return (false);
 }
+
+bool	validate_num(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!isdigit(str[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+
+bool	validate_function(t_token *list)
+{
+	t_token 	*travel;
+	char		*name;
+	char		**parameteres;	
+	t_hashtable	*variables;
+
+	parameters = NULL;
+	name = NULL;
+	travel = list;
+	if (value_found(trav->name, start) == true)
+		trav = trav->next;
+	
+	while (strcmp(trav->name, "*") == 0)
+		trav = trav->next;
+
+	if (strcmp(trav->type, "ID") == 0)
+		trav = trav->next;
+
+	if (strcmp(trav->name, ";") == 0)
+		printf("create variable with no value\n");
+
+	else if (strcmp(trav->name, "(") == 0)
+	{
+		char *value;
+		value = NULL;
+		while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
+		{
+			if (strcmp(trav->name, ",") == 0)
+			{
+				parameters = arraypush(parameters, value);
+				free(value);
+				value = NULL;
+			}
+			else
+			{
+				if (value_found(trav->name, start) == true)
+				{
+					value = join(value, trav->name);
+					trav = trav->next;
+				}	
+				while (trav && strcmp(trav->name, "*") == 0)
+				{
+					value = join(value, trav->name);
+					trav = trav->next;
+				}
+				if (
+			}
+		}	
+	}
+
+}
+
 
 bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_token)
 {
@@ -36,7 +111,7 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 		name = strdup("ID");
 	else if (validate_literal(current_token) == true)
 		name = strdup("LITERAL");
-	else if (atoi(current_token))
+	else if (validate_num(current_token))
 		name = strdup("NUM");
 	else
 		name = strdup(current_token);
@@ -52,7 +127,7 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 			second = strdup("ID");
 		else if (validate_literal(next_token) == true)
 			second = strdup("LITERAL");
-		else if (atoi(next_token))
+		else if (validate_num(next_token))
 			second = strdup("NUM"); 
 		else
 			second = strdup(next_token);
@@ -67,7 +142,6 @@ bool	semantic_analysis(t_token *tokens)
 {
 	t_token		*trav;
 	char		**next;
-	char		**start;
 	t_hashtable	*ff_list;
 	extern int max_number; // Scope value.
 
