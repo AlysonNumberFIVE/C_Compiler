@@ -2,26 +2,23 @@
 
 #include "../inc/compiler.h"
 
-bool is_valid_equation(t_token *tokens)
+bool is_valid_equation(char **equation)
 {
         extern int max_number;
-        extern t_db **list;
-    
-	t_token *equation;
+//      extern t_db **list;
         int counter;
         bool symbol;
-  //      char *db_value;
+//      char *db_value;
         int brackets;
 
 	brackets = 0;
         symbol = false;
         counter = 0;
-	equation = tokens;
-        while (equations && strcmp(equations->name, ";") != 0)
+        while (equation[counter])
         {
-                if (strcmp(equation->name, "(") == 0)
+                if (strcmp(equation[counter], "(") == 0)
                         brackets++;
-                else if (strcmp(equation->name, ")") == 0)
+                else if (strcmp(equation[counter], ")") == 0)
                         brackets--;
                 else if (symbol == false)
                 {

@@ -160,6 +160,7 @@ bool	validate_function(t_token *list)
 	else if (strcmp(trav->name, "=") == 0)
 	{
 		printf("assert variable assignment\n");
+		
 	}
 	printf("here we go\n");
 	return (true);

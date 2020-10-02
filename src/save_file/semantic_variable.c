@@ -107,26 +107,22 @@ bool	validate_id(char *str)
 
 
 
-char	*value_checker(t_token *components)
+char	*value_checker(char **components)
 {
 	int 	counter;
 	char 	*array_value;	
 	bool	comma_flag;
 
 	counter = 0;
-	if (strcmp(components->type, "LITERAL") == 0 &&
-		strcmp(components->next->name, ";") == 0)
-		return (strdup(components->name));
+	if ((components[0][0] == '\"' || components[0][0] == '\'') && 
+		arraylen(components) == 2 &&
+		strcmp(components[1], ";") == 0)
+		return (strdup(components[0]));
 
-	if (strcmp(components->type, "NUM") == 0 &&
-		strcmp(components->next->name, ";") == 0)
-		return (strdup(components->name));
+	if (atoi(components[0]) && arraylen(components) == 2 &&
+		strcmp(components[1], ";") == 0)
+		return (strdup(components[0]));
 	
-	if (strcmp(components->type, "ID") == 0 || 
-		(strcmp(components->name, "&") == 0 && 
-		strcmp(components->next->type, "ID") == 0))
-		printf("check if variable exists\n");	
-
 	if (validate_id(components[0]))
 		printf("check that ID exists in variable table\n");
 		
