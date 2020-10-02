@@ -51,14 +51,19 @@ bool	validate_function(t_token *list)
 {
 	t_token 	*trav;
 	char		*name;
-	char		**parameters;	
+	char		*type;
+	int		depth;
 	t_hashtable	*variables;
 
-	parameters = NULL;
+	depth = 0;
+	type = NULL;
 	name = NULL;
 	trav = list;
 	if (value_found(trav->name, start) == true)
+	{
+		type = strdup(trav->name);
 		trav = trav->next;
+	}
 	else
 	{
 		printf("Datatype error\n");
@@ -66,10 +71,15 @@ bool	validate_function(t_token *list)
 	}
 	
 	while (strcmp(trav->name, "*") == 0)
+	{
+		depth++;
 		trav = trav->next;
-
+	}
 	if (strcmp(trav->type, "ID") == 0)
+	{
+		name = strdup(trav->name);
 		trav = trav->next;
+	}
 	else
 	{
 		printf("Incorrect variable naming\n");
@@ -81,26 +91,47 @@ bool	validate_function(t_token *list)
 
 	else if (strcmp(trav->name, "(") == 0)
 	{
+		functions = push_function(functions, name, type, depth);
+		if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
+			(strcmp(trav->next->next->next->name, ";") == 0 ||
+			strcmp(trav->next->next->next->name, "{") == 0))
+			return (true);
+				
 		trav = trav->next;
-		char *value;
-		value = (char *)malloc(sizeof(char));
+		char *pname;
+		char *ptype;
+		int pdepth;
+		pname = NULL;
+		ptype = NULL;
+		pdepth = 0;
+		t_fvars *variables;
 		while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
 		{
 			if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
 			{
-				parameters = arraypush(parameters, value);
-				printf("value %s\n", value);
-				free(value);
-				value = (char *)malloc(sizeof(char));
+				if (!pname || !ptype)
+				{
+					printf("error : incorrect variable naming convention\n");
+					return (false);
+				}
+				variables = create_new_parameter(pname, ptype, depth);
+				functions = new_parameter(functions, name, variables);
+				param_free(variables);
+				free_and_null(&pname);
+				free_and_null(&ptype);
+				pdepth = 0;
 				if (strcmp(trav->name, ")") == 0)
+				{
+					trav = trav->next;
 					break;
+				}
 				trav = trav->next;
 			}
 			else
 			{
 				if (value_found(trav->name, start) == true)
 				{
-					value = join(value, trav->name);
+					ptype = strdup(trav->name);
 					trav = trav->next;
 				}	
 				else
@@ -110,14 +141,13 @@ bool	validate_function(t_token *list)
 				}
 				while (trav && strcmp(trav->name, "*") == 0)
 				{
-					value = join(value, trav->name);
+					depth++;
 					trav = trav->next;
 				}
 				if (strcmp(trav->type, "ID") == 0)
 				{
-					value = join(value, trav->name);
+					pname = strdup(trav->name);
 					trav = trav->next;
-
 				}
 				else
 				{
@@ -126,6 +156,10 @@ bool	validate_function(t_token *list)
 				}
 			}
 		}	
+	}
+	else if (strcmp(trav->name, "=") == 0)
+	{
+		printf("assert variable assignment\n");
 	}
 	printf("here we go\n");
 	return (true);
@@ -184,15 +218,15 @@ bool	semantic_analysis(t_token *tokens)
 	}
 	trav = tokens;	
 	head = trav;
-	while (trav->next)
+	while (trav)
 	{
 		if (strcmp(trav->name, "{") == 0 || strcmp(trav->name, ";") == 0)
 		{
 			validate_function(head);
-
+			head = trav;
 			trav = trav->next;
-			head = trav;	
-			printf("process variable/function\n");
+			if (strcmp(head->name, ";") == 0)
+				head = head->next;
 		}
 		else if (check_next_token(ff_list, trav->next->name, trav->name) == true)
 			trav = trav->next;
@@ -202,6 +236,7 @@ bool	semantic_analysis(t_token *tokens)
 			return (false);
 		}
 	}
+	print_functions(functions);
 	return (true);
 }
 

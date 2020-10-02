@@ -41,4 +41,12 @@ t_function *new_function(char *function_name, char *type, int depth);
 t_function      *add_function(t_function *head, char *function_name, char *type, int depth);
 t_function      *push_function(t_function *head, char *function_name, char *type, int depth);
 
+t_fvars         *create_new_parameter(char *name, char *type, int depth);
+void            param_free(t_fvars *parameter);
+t_function      *new_parameter(t_function *all_functions, char *function_name, t_fvars *new_param);
+void		print_functions(t_function *functions);
+
 #endif
+
+
+

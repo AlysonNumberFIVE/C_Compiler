@@ -43,14 +43,23 @@ t_function	*add_function(t_function *head, char *function_name, char *type, int 
 t_function	*push_function(t_function *head, char *function_name, char *type, int depth)
 {
 	t_function *trav;
+	t_function *duplicate;
 
 	trav = head;
 	if (trav == NULL)
-	{
 		trav = new_function(function_name, type, depth);
-	}
 	else
 	{
+		duplicate = head;
+		while (duplicate)
+		{
+			if (strcmp(function_name, duplicate->function_name) == 0)
+			{
+				printf("error : Redefinition of function \"%s\"\n", function_name);
+				return (head);
+			}
+			duplicate = duplicate->next;
+		}
 		trav = add_function(head, function_name, type, depth);
 		trav = head;
 	}
@@ -137,6 +146,21 @@ t_function 	*new_parameter(t_function *all_functions, char *function_name, t_fva
 	}
 	if (this_function == NULL)
 		printf("You're quite the hackerman, aren't you\n");
+
+	int duplicate;
+	duplicate = 0;
+	
+	if (this_function->parameters)
+		while (duplicate < this_function->param_number)
+		{
+			printf("%s\n", this_function->parameters[duplicate]->name); 
+			if (strcmp(new_param->name, this_function->parameters[duplicate]->name) == 0)
+			{
+				printf("error : a fuckup with the variables\n");
+				return (all_functions);
+			}
+			duplicate++;
+		} 
 	this_function->parameters = add_to_param_list(
 		this_function->parameters,
 		new_param, 
@@ -146,9 +170,31 @@ t_function 	*new_parameter(t_function *all_functions, char *function_name, t_fva
 	return (all_functions);
 }
 
+
+void	print_functions(t_function *functions)
+{
+	t_function *funct;
+
+	funct = functions;
+	while (funct)
+	{
+		printf("%s %d %s\n(\n",funct->type, funct->depth, funct->function_name);
+		int i = 0;
+		while (i < funct->param_number)
+		{
+			printf("\t%s %d %s", funct->parameters[i]->type, funct->parameters[i]->depth,
+				funct->parameters[i]->name);
+			printf(",\n");
+			i++;
+		}
+		printf(")");
+		funct = funct->next;
+	}
+}
+
 // char	**split(char *str, char c);
 // char *join(char *s1, char *s2);
-
+/*
 int	main(void)
 {
 	t_function *functions = NULL;
@@ -182,8 +228,7 @@ int	main(void)
 	printf("parameter 2 : %s\n", functions->next->parameters[1]->name);
 	return (0);
 }
-
-
+*/
 
 
 
