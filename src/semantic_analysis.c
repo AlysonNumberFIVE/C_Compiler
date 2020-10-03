@@ -47,6 +47,8 @@ bool	validate_num(char *str)
 }
 
 
+
+
 bool	validate_function(t_token *list)
 {
 	t_token 	*trav;

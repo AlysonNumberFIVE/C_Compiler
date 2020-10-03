@@ -153,12 +153,12 @@ typedef struct  s_amcro_env {
     char *name;
     struct s_macro_env *next;
 }   t_macro;
-
+/*
 typedef struct  s_stack {
     char *funct_name;
     struct s_stack  *next;
     struct s_stack  *prev;
-}   t_stack;
+}   t_stack; */
 
 // semantic analysis 
 

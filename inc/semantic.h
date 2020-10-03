@@ -25,6 +25,12 @@ typedef struct  s_function_list
         struct s_function_list *next;
 }       t_function;
 
+typedef struct	s_sstack
+{
+	int scope_name;
+	struct s_sstack *next;
+	struct s_sstack *prev;
+}	t_stack;
 
 bool    semantic_analysis(t_token *tokens);
 char    *datatype_name(char *name, char *to_add);
@@ -45,6 +51,12 @@ t_fvars         *create_new_parameter(char *name, char *type, int depth);
 void            param_free(t_fvars *parameter);
 t_function      *new_parameter(t_function *all_functions, char *function_name, t_fvars *new_param);
 void		print_functions(t_function *functions);
+
+
+t_stack		*new_stack(int scope_name);
+t_stack		*add_stack(t_stack *head, int scope_name);
+t_stack		*push_stack(t_stack *head, int scope_name);
+t_stack		*pop_stack(t_stack *head);
 
 #endif
 

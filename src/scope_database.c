@@ -84,7 +84,17 @@ void	insert_into_db(char *type, char *name, char *val, int depth)
 		list[0] = push_object(list[0], type, name, val, depth);
 	}
 	else 	
-	{	
+	{
+		t_db *object = list[max_number];
+		while (object)
+		{
+			if (strcmp(name, object->name) == 0)
+			{
+				printf("error : variable %s already defined\n", name);
+				return ;	
+			}
+			object = object->next;
+		}	
 		list[max_number] = push_object(list[max_number], type, name, val, depth);
 	}
 
