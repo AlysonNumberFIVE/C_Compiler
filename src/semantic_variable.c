@@ -105,13 +105,12 @@ bool	validate_id(char *str)
 	return (false);
 }
 
-/*
-
 char	*value_checker(t_token *components)
 {
 	int 	counter;
 	char 	*array_value;	
 	bool	comma_flag;
+	char 	*db_checker;
 
 	counter = 0;
 	if (strcmp(components->type, "LITERAL") == 0 &&
@@ -125,14 +124,28 @@ char	*value_checker(t_token *components)
 	if (strcmp(components->type, "ID") == 0 || 
 		(strcmp(components->name, "&") == 0 && 
 		strcmp(components->next->type, "ID") == 0))
-		printf("check if variable exists\n");	
-
-	if (validate_id(components[0]))
-		printf("check that ID exists in variable table\n");
-		
+	{
+		db_checker = get_from_db(components->next->name);
+		if (!db_checker)
+		{
+			printf("error : variable does not exist\n");
+			return (NULL);
+		}
+		return (strdup(db_checker) == 0);
+	}
+	if (validate_id(components->name))
+	{
+		db_checker = get_from_db(components->name);
+		if (!db_checker)
+		{
+			printf("error : variable does not exist\n"); 
+			return (NULL);
+		}
+		return (strdup(db_checker));
+	}	
 	// handling those shit arrays.
-	if (strcmp(components[0], "{") == 0)
-		counter++;
+	if (strcmp(components->name, "{") == 0)
+		components = components->next;
 	array_value = strdup("{");
 	comma_flag = false;
 	while (components[counter] && strcmp(components[counter], ";") != 0)
