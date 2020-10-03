@@ -11,6 +11,6 @@ char *hello()
 int main(void)
 {
 	int j;
-	int x = (int)hello();
+	int x = (int)hello() + &j;
 	return (0);
 }
