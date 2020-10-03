@@ -24,7 +24,10 @@ t_db	*new_object(char *type, char *name, char *val, int depth)
 	new = (t_db *)malloc(sizeof(t_db));
 	new->type = strdup(type);
 	new->name = strdup(name);
-	new->value = strdup(val);
+	if (val)
+		new->value = strdup(val);
+	else
+		new->value = NULL;
 	new->depth = depth;
 	new->next = NULL;
 	return (new); 
@@ -73,7 +76,7 @@ void	free_db(t_db *db)
 	}
 }
 
-void	insert_into_db(char *type, char *name, char *val, int depth)
+bool	insert_into_db(char *type, char *name, char *val, int depth)
 {
 	t_db	*object;
 
@@ -91,13 +94,13 @@ void	insert_into_db(char *type, char *name, char *val, int depth)
 			if (strcmp(name, object->name) == 0)
 			{
 				printf("error : variable %s already defined\n", name);
-				return ;	
+				return (false);	
 			}
 			object = object->next;
 		}	
 		list[max_number] = push_object(list[max_number], type, name, val, depth);
 	}
-
+	return (true);
 }
 
 char	*get_from_db(char *variable)
@@ -182,6 +185,7 @@ int	main(void)
 	add_new_table();
 	insert_into_db("int", "load", "NULL", 0);
 	insert_into_db("void", "value", "ptr", 1);
+	insert_into_db("int", "value", "cheese", 2);
 	add_new_table();
 	print_variables();
 	val = get_from_db("load");
@@ -196,7 +200,6 @@ int	main(void)
 	return (9);
 }
 */
-
 
 
 

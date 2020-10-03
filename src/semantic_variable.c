@@ -105,7 +105,7 @@ bool	validate_id(char *str)
 	return (false);
 }
 
-
+/*
 
 char	*value_checker(t_token *components)
 {
@@ -169,8 +169,7 @@ char	*value_checker(t_token *components)
 	if (strcmp(components[counter], ";") != 0 || arraylen(components) - 1 != counter)
 		printf("error in length of line\n");
 	return (array_value);		
-}
-
+}*/
 
 bool	validate_variable(char **components)
 {
@@ -210,11 +209,11 @@ bool	validate_variable(char **components)
 	printf("datatype is %s\n", datatype);
 	printf("variable name %s\n", variable_name);
 	printf("depth is %d\n", depth);
-	if (assignment == true)
+/*	if (assignment == true)
 	{
 		printf("%s\n", value_checker(&components[counter]));
 	}
-/*
+
 	if (assignment == true)
 	{
 		

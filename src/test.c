@@ -1,6 +1,4 @@
-
-
-
+char *first;
 char *function(char *name, char **second, int third);
 char *str(char *name);
 int constant(void);

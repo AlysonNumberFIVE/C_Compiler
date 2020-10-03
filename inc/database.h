@@ -19,7 +19,7 @@ t_db    *new_object(char *type, char *name, char *val, int depth);
 t_db    *add_object(t_db *db, char *type, char *name, char *val, int depth);
 t_db    *push_object(t_db *db, char *type, char *name, char *val, int depth);
 void    free_db(t_db *db);
-void    insert_into_db(char *type, char *name, char *val, int depth);
+bool    insert_into_db(char *type, char *name, char *val, int depth);
 char    *get_from_db(char *variable);
 void    drop_last_table(void);
 void    add_new_table(void);

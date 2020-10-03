@@ -49,7 +49,7 @@ bool	validate_num(char *str)
 
 
 
-bool	validate_function(t_token *token)
+bool	validate_function(t_token *list)
 {
 	t_token 	*trav;
 	char		*name;
@@ -62,7 +62,7 @@ bool	validate_function(t_token *token)
 	depth = 0;
 	type = NULL;
 	name = NULL;
-	trav = token;
+	trav = list;
 	if (value_found(trav->name, start) == true)
 	{
 		type = strdup(trav->name);
@@ -91,10 +91,8 @@ bool	validate_function(t_token *token)
 	}
 
 	if (strcmp(trav->name, ";") == 0)
-	{
-		printf("DONE\n");
 		insert_into_db(type, name, NULL, depth);
-	}
+
 	else if (strcmp(trav->name, "(") == 0)
 	{
 		functions = push_function(functions, name, type, depth);
@@ -243,7 +241,6 @@ bool	semantic_analysis(t_token *tokens)
 			return (false);
 		}
 	}
-	print_variables();
 	print_functions(functions);
 	return (true);
 }
