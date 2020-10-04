@@ -8,6 +8,8 @@ char *hello()
 }
 int main(void)
 {
-	int str[3] =  {(!1 + 42) && 42, 2};
+	for (int *v = {1, 2, 3};;) {
+
+	}
 	return (0);
 }

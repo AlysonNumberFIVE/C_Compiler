@@ -1,42 +1,53 @@
 
 
-
-
+#include "../inc/token.h"
+#include "../inc/semantic.h"
 #include "../inc/compiler.h"
 
-bool	validate_for_loop(char **components)
+t_token	*semantic_for(char *prev, t_token *components)
 {
 	int commas;
-	int counter;
-	char **sub_sequence;
+	t_token	*sub_sequence;
 
 	sub_sequence = NULL;
-	counter = 0;
 	commas = 0;
-	while (components[counter] && strcmp(components[counter], ")") != 0)
+	components = components->next;
+	while (components && handle_native_csg(prev, components->name) != SCOPE)
 	{
-		if (strcmp(components[counter], ";") == 0)
+		if (strcmp(components->name, ";") == 0)
 		{
-			printf("process sub_squence\n");
+			t_token *h = sub_sequence;
+			while (h)
+			{
+				printf("%s\n", h->name);
+				h = h->next;
+			}
+			printf("==============\n");
 			commas++;
-			free2d(sub_sequence);
 			sub_sequence = NULL;
 		} 
 		else
-			sub_sequence = arraypush(sub_sequence, components[counter]);
-		counter++;
+		{
+			//sub_sequence = arraypush(sub_sequence, components[counter]);
+			sub_sequence = push_token(sub_sequence, 
+				components->name, components->type);
+		}
+		prev = components->name;
+		components = components->next;	
 	}
+	printf("EXITING for loop %s\n", components->name);
 	if (commas > 2)
 		printf("too many commas\n");
+	return (components);
 }
-
+/*
 int 	main(void)
 {
 	char *str = "( i = 0 ; 2141231241 ; 9109421 ; ; )";
 	char **components = split(str, ' ');
 	validate_for_loop(components);
 	return (0);
-}
+} */
 
 
 

@@ -1,6 +1,6 @@
 
 #include "../inc/compiler.h"
-
+#include "../inc/semantic.h"
 
 
 #define FUNCTION 1
@@ -8,14 +8,14 @@
 #define IF 3
 #define FOR 4
 #define DO 5
-
+/*
 typedef struct	s_sstack
 {
 	int	scope_name;
 	struct s_sstack	*next;
 	struct s_sstack	*prev;
 }	t_stack;
-
+*/
 t_stack		*new_stack(int scope_name)
 {
 	t_stack	*new;

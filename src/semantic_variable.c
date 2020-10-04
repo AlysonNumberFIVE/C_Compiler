@@ -192,7 +192,7 @@ char	*value_checker(t_token *components)
 	}
 	if (is_valid_equation(components, ";"))
 	{
-		return strdup("AVLID\n");
+		return strdup("AVLID ");
 	}
 	if (strcmp(components->name, ";") != 0)
 		printf("error in length of line\n");
@@ -200,72 +200,6 @@ char	*value_checker(t_token *components)
 	array_value = strdup("VALID ARRAY\n");
 	return (array_value);		
 }
-
-bool	validate_variable(char **components)
-{
-	int	counter;
-	int 	depth;	
-	char 	*datatype;
-	char 	*variable_name;
-	char	**sub_sequence;
-	bool	assignment;
-	
-	assignment = false;
-	depth = 0;
-	datatype = NULL;
-	sub_sequence = NULL;
-	counter = 0;
-	while (components[counter])
-	{
-		if (array_search(reserved, RESERVED_LENGTH, components[counter]))
-			datatype = is_datatype(datatype, components[counter]);
-	
-		else if (strcmp(components[counter], "*") == 0)
-			depth++;
-			
-		else if (datatype && validate_id(components[counter]))
-			variable_name = strdup(components[counter]);
-	
-		else if (strcmp(components[counter], "=") == 0)
-		{
-			assignment = true;
-			break;
-		}
-		else if (strcmp(components[counter], ";") == 0)
-			break;
-		counter++;
-	}
-	counter++;
-	printf("datatype is %s\n", datatype);
-	printf("variable name %s\n", variable_name);
-	printf("depth is %d\n", depth);
-/*	if (assignment == true)
-	{
-		printf("%s\n", value_checker(&components[counter]));
-	}
-
-	if (assignment == true)
-	{
-		
-	}
-*/
-
-}
-
-/*
-int	main(void)
-{
-	char *variable = "unsigned long * str = { \'c\' , \'a\' , \'t\' } ;";	
-	variable = "char *str = { { 4 } , { 4 } , { 4 } } ;";
-	char **pieces = split(variable, ' ');
-		
-	validate_variable(pieces);
-	return (0);
-}
-
-*/
-
-
 
 
 

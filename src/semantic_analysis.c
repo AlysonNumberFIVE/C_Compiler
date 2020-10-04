@@ -4,10 +4,15 @@
 #include "../inc/database.h"
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
-
+#define FUNCTION 1
+#define WHILE 2
+#define IF 3
+#define FOR 4
+#define DO 5
 t_function *functions = NULL;
 t_token	*to_evaluate = NULL;
 char	**start = NULL;
+t_stack *stack = NULL;
 
 bool	value_found(char *value, char **to_scan)
 {
@@ -48,7 +53,6 @@ bool	validate_num(char *str)
 
 
 
-
 bool	validate_function(t_token *token)
 {
 	t_token 	*trav;
@@ -72,6 +76,7 @@ bool	validate_function(t_token *token)
 	}
 	else
 	{
+		printf("curr %s\n", trav->name);
 		printf("stdup %s\n", trav->next->name);
 		printf("Datatype error\n");
 		return (false);
@@ -170,6 +175,7 @@ bool	validate_function(t_token *token)
 	{
 		trav = trav->next;
 		value = value_checker(trav);
+//		update_variable_value(name, value);
 		insert_into_db(type, name, value, depth);
 		//return (is_valid_equation(trav, ";"));
 	}
@@ -212,36 +218,104 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 	return (false);
 }
 
+bool	scan_commands(char **commands, char *to_find)
+{
+	int i;
+
+	i = 0;
+	while (commands[i])
+	{
+		if (strcmp(commands[i], to_find) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+char	**command_blocks(void)
+{
+	char **blocks;
+	char *list = "for while if";
+	blocks = split(list, ' ');
+	return (blocks);
+}
+
 bool	semantic_analysis(t_token *tokens)
 {
 	t_token		*trav;
 	char		**next;
+	char		**commands;
 	char		*prev;
+	bool		flag_token;
+	bool		in_function;
 	t_hashtable	*ff_list;
 	t_token		*head;
-
+	extern int	max_number;
+	
+	max_number= 0;
+	in_function = false;
 	start = split("char const void struct int short double float size_t long longlong signed void", ' ');
         ff_list = first_and_follow();
+	commands = command_blocks();
 	if (value_found(tokens->name, start) == false)
 	{
 		printf("Your code is shit and you deserve to die\n");
 		return (false);
 	}
-	trav = tokens;	
+	flag_token = false;
+	trav = tokens;
 	head = trav;
 	while (trav)
 	{
-		if (handle_native_csg(prev, trav->name) == SCOPE
+		if (handle_native_csg(prev, trav->name) == 3)
+		{
+			drop_last_table();
+			stack = pop_stack(stack);
+			if (trav->next == NULL)
+				break ;
+			 trav = trav->next;
+		}
+		else if (flag_token == true)
+		{
+			if (strcmp(trav->name, "for") == 0)
+				trav = semantic_for(prev, trav);
+			/*
+			else if (strcmp(trav->name, "if") == 0) printf("handle if statement\n");
+			else if (strcmp(trav->name, "while") == 0) printf("handle while loop\n");
+			*/
+			stack = push_stack(stack, FOR);
+			add_new_table();
+			prev = trav->name;
+			trav = trav->next;
+			head = trav;
+			flag_token = false;
+		}
+		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
 			validate_function(head);
 			head = trav;
 			trav = trav->next;
+			if (strcmp(trav->name, "{") == 0)
+				add_new_table();
 			if (head && strcmp(head->name, ";") == 0)
 				head = head->next;
+			else if (head && strcmp(head->name, "{") == 0 && in_function == false)
+			{
+				stack = push_stack(stack, FUNCTION);
+				in_function = true;
+			}
 		}
 		else if (check_next_token(ff_list, trav->next->name, trav->name) == true)
 		{
+			if (scan_commands(commands, trav->name) && in_function == true)
+			{
+				flag_token = true;
+				continue ;
+			}
+			else if (scan_commands(commands, trav->name) && in_function == false)
+				printf("error : can't have %s outside function scope\n",
+					trav->name);
 			prev = trav->name;
 			trav = trav->next;
 		}
@@ -249,15 +323,13 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			printf("This was a failed expedition : %s\n", trav->name);
 			// skipping entire line.
-			while (trav)
-			{
-				if (strcmp(trav->name, ";") == 0)
-					break;
-				trav = trav->next;
-			}
-			trav = trav->next;
+			return (false);
 		}
+		if (strcmp(trav->name, "}") && trav->next == NULL)
+			break ;
+		//trav = trav->next;
 	}
+	printf("SUMMARY =====\n");
 	print_variables();
 	print_functions(functions);
 	return (true);

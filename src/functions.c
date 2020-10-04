@@ -187,7 +187,7 @@ void	print_functions(t_function *functions)
 			printf(",\n");
 			i++;
 		}
-		printf(")");
+		printf(")\n");
 		funct = funct->next;
 	}
 }

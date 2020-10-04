@@ -124,6 +124,7 @@ char	*get_from_db(char *variable)
 
 void	drop_last_table(void)
 {
+	printf("max_number %d\n", max_number);
 	free(list[max_number]);
 	list[max_number] = NULL;
 	max_number--;
@@ -132,6 +133,37 @@ void	drop_last_table(void)
 void	add_new_table(void)
 {
 	max_number++;
+}
+
+bool	update_variable_value(char *variable, char *new_value)
+{
+	int current_number;
+	t_db *object;
+
+	if (list == NULL)
+	{
+		printf("error : variable doens't exist\n");
+		return (false);
+	}
+	current_number = max_number;
+	while (current_number > -1)
+	{
+		object = list[current_number];
+		while (object) 
+		{
+			if (strcmp(object->name, variable) == 0)
+			{
+				if (object->value)
+					free(object->value);
+				object->value = strdup(new_value);
+				return (true);
+			}
+			object = object->next;
+		}
+		current_number--;
+	}
+	printf("error : variable doesn't exist\n");
+	return (false);
 }
 
 bool	does_variable_exist(char *variable)
@@ -173,7 +205,7 @@ void	print_variables(void)
 		else
 			while (object)
 			{
-				printf("%s ->", object->name);
+				printf("%s  %s ->", object->name, object->value);
 				object = object->next;
 			}
 		printf("\n");
@@ -190,21 +222,18 @@ int	main(void)
 	add_new_table();
 	insert_into_db("int", "load", "NULL", 0);
 	insert_into_db("void", "value", "ptr", 1);
-	insert_into_db("int", "value", "cheese", 2);
+	insert_into_db("int", "v2", "cheese", 2);
 	add_new_table();
 	print_variables();
+	update_variable_value("str", "goodbye");
 	val = get_from_db("load");
 	printf("val is %s\n", val);
-	drop_last_table();
-	drop_last_table();
 	val = get_from_db("load");
-	if (val)
+	if (!val)
 		printf("failed\n");
 	printf("%d\n", max_number);
-	
+	print_variables();
 	return (9);
 }
+
 */
-
-
-
