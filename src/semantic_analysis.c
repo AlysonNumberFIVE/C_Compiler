@@ -273,20 +273,21 @@ bool	semantic_analysis(t_token *tokens)
 			stack = pop_stack(stack);
 			if (trav->next == NULL)
 				break ;
-			 trav = trav->next;
+		//	 trav = trav->next;
 		}
 		else if (flag_token == true)
 		{
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav);
+			else if (strcmp(trav->name, "while") == 0)
+				trav = semantic_while(prev, trav);
 			/*
 			else if (strcmp(trav->name, "if") == 0) printf("handle if statement\n");
-			else if (strcmp(trav->name, "while") == 0) printf("handle while loop\n");
 			*/
 			stack = push_stack(stack, FOR);
 			add_new_table();
 			prev = trav->name;
-			trav = trav->next;
+		//	trav = trav->next;
 			head = trav;
 			flag_token = false;
 		}
@@ -295,7 +296,7 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			validate_function(head);
 			head = trav;
-			trav = trav->next;
+		//	trav = trav->next;
 			if (strcmp(trav->name, "{") == 0)
 				add_new_table();
 			if (head && strcmp(head->name, ";") == 0)
@@ -317,7 +318,7 @@ bool	semantic_analysis(t_token *tokens)
 				printf("error : can't have %s outside function scope\n",
 					trav->name);
 			prev = trav->name;
-			trav = trav->next;
+		//	trav = trav->next;
 		}
 		else
 		{
@@ -327,7 +328,7 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;
-		//trav = trav->next;
+		trav = trav->next;
 	}
 	printf("SUMMARY =====\n");
 	print_variables();

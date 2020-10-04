@@ -24,6 +24,7 @@ char    *get_from_db(char *variable);
 void    drop_last_table(void);
 void    add_new_table(void);
 void	print_variables(void);
+bool	update_variable_value(char *variable, char *new_value);
 
 
 #endif

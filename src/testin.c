@@ -1,5 +1,8 @@
 
 
+
+
+
 int value;
 void	myName(void);
 char *hello()
@@ -8,8 +11,10 @@ char *hello()
 }
 int main(void)
 {
-	for (int *v = {1, 2, 3};;) {
-
+	int i = 4;
+	while ( int j + 1 <<= 4 + 1 >> 8) {
+		return (1);
 	}
+	
 	return (0);
 }
