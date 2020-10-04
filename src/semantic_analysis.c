@@ -173,7 +173,6 @@ bool	validate_function(t_token *token)
 		insert_into_db(type, name, value, depth);
 		//return (is_valid_equation(trav, ";"));
 	}
-	printf("here we go\n");
 	return (true);
 }
 
@@ -219,10 +218,8 @@ bool	semantic_analysis(t_token *tokens)
 	char		**next;
 	char		*prev;
 	t_hashtable	*ff_list;
-//	extern int max_number; // Scope value.
 	t_token		*head;
 
-		//  init first and follow
 	start = split("char const void struct int short double float size_t long longlong signed void", ' ');
         ff_list = first_and_follow();
 	if (value_found(tokens->name, start) == false)
@@ -250,12 +247,18 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else
 		{
-			printf("trav->next->name %s\n", trav->next->type);
 			printf("This was a failed expedition : %s\n", trav->name);
-			return (false);
+			// skipping entire line.
+			while (trav)
+			{
+				if (strcmp(trav->name, ";") == 0)
+					break;
+				trav = trav->next;
+			}
+			trav = trav->next;
 		}
 	}
-//	print_variables();
+	print_variables();
 	print_functions(functions);
 	return (true);
 }
