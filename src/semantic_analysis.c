@@ -54,12 +54,14 @@ bool	validate_function(t_token *token)
 	t_token 	*trav;
 	char		*name;
 	char		*type;
+	char		*value;
 	int		depth;
 	extern int	max_number;
 	extern t_db	*list;
 	t_hashtable	*variables;
 
 	depth = 0;
+	value = NULL;
 	type = NULL;
 	name = NULL;
 	trav = token;
@@ -70,6 +72,7 @@ bool	validate_function(t_token *token)
 	}
 	else
 	{
+		printf("stdup %s\n", trav->next->name);
 		printf("Datatype error\n");
 		return (false);
 	}
@@ -165,8 +168,10 @@ bool	validate_function(t_token *token)
 	}
 	else if (strcmp(trav->name, "=") == 0)
 	{
-		printf("assert variable assignment\n");
-		
+		trav = trav->next;
+		value = value_checker(trav);
+		insert_into_db(type, name, value, depth);
+		//return (is_valid_equation(trav, ";"));
 	}
 	printf("here we go\n");
 	return (true);
@@ -181,6 +186,8 @@ char	*determine_token_type(char *token)
 		return (strdup("LITERAL"));
 	else if (validate_num(token) == true)
 		return (strdup("NUM"));
+	else if (token[0] == '\'' && token[strlen(token) - 1] == '\'')
+		return (strdup("CHAR"));
 	return (strdup(token));
 }
 
@@ -193,7 +200,6 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 	char 	**pieces;	
 	
 	name = determine_token_type(current_token);
-	printf("name is %s\n", name);
 	value = ht_search(ff_list, name);
 	if (value)
 	{
@@ -211,6 +217,7 @@ bool	semantic_analysis(t_token *tokens)
 {
 	t_token		*trav;
 	char		**next;
+	char		*prev;
 	t_hashtable	*ff_list;
 //	extern int max_number; // Scope value.
 	t_token		*head;
@@ -227,23 +234,28 @@ bool	semantic_analysis(t_token *tokens)
 	head = trav;
 	while (trav)
 	{
-		if (strcmp(trav->name, "{") == 0 || strcmp(trav->name, ";") == 0)
+		if (handle_native_csg(prev, trav->name) == SCOPE
+			 || strcmp(trav->name, ";") == 0)
 		{
 			validate_function(head);
 			head = trav;
 			trav = trav->next;
-			if (strcmp(head->name, ";") == 0)
+			if (head && strcmp(head->name, ";") == 0)
 				head = head->next;
 		}
 		else if (check_next_token(ff_list, trav->next->name, trav->name) == true)
+		{
+			prev = trav->name;
 			trav = trav->next;
+		}
 		else
 		{
-			printf("This was a failed expedition\n");
+			printf("trav->next->name %s\n", trav->next->type);
+			printf("This was a failed expedition : %s\n", trav->name);
 			return (false);
 		}
 	}
-	print_variables();
+//	print_variables();
 	print_functions(functions);
 	return (true);
 }

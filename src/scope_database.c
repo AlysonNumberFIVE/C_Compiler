@@ -157,7 +157,12 @@ bool	does_variable_exist(char *variable)
 void	print_variables(void)
 {
 	int current;
-
+	
+	if (list == NULL)
+	{
+		printf("No variables stored\n");
+		return ;
+	}
 	current = 0;
 	while (current < max_number + 1)
 	{

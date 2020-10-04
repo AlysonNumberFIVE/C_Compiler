@@ -58,6 +58,9 @@ t_stack		*add_stack(t_stack *head, int scope_name);
 t_stack		*push_stack(t_stack *head, int scope_name);
 t_stack		*pop_stack(t_stack *head);
 
+bool		is_valid_equation(t_token *tokens, char *end_token);
+char		*value_checker(t_token *components);
+
 #endif
 
 

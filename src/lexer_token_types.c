@@ -55,7 +55,7 @@ t_token     *number_found(char *buffer, size_t index)
     read_count = index;
     if (is_float == true)
         return new_token(var_name, "FLOAT");
-    return new_token(var_name, "NUMBER");
+    return new_token(var_name, "NUM");
 }
 
 t_token     *skip_comments(char *buffer, size_t index)

@@ -159,7 +159,7 @@ bool    evaluate_expression(t_token *tokens, t_scope *scope)
     array = NULL;
     while (tokens->next && (strcmp(tokens->name, ")") != 0 && strcmp(tokens->next->name, "{") != 0))
     {
-        if (strcmp(tokens->type, "NUMBER") != 0)
+        if (strcmp(tokens->type, "NUM") != 0)
         {
             tmp = evaluate_variable(scope, tokens->name);
             array = arraypush(array, tmp);

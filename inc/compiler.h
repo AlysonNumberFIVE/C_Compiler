@@ -31,6 +31,8 @@
 #define STACK           1
 #define HEAP            2
 
+#define ARRAY		1
+#define SCOPE		2
 // hashtable
 
 typedef struct ht_item
@@ -178,6 +180,7 @@ void        print_scope(t_scope *scope);
 void        print_function(t_function_table *functions);
 t_hashtable *first_and_follow(void);
 bool        validate_id(char *str);
+int	    handle_native_csg(char *prev, char *current);
 
 
 #endif

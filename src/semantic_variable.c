@@ -1,5 +1,7 @@
 
 #include <ctype.h>
+#include "../inc/semantic.h"
+#include "../inc/database.h"
 #include "../inc/compiler.h"
 #define FIRST_ORDER_LENGTH 4
 #define PRIMITIVES_LENGTH 12
@@ -112,6 +114,7 @@ char	*value_checker(t_token *components)
 	bool	comma_flag;
 	char 	*db_checker;
 
+	printf(" >>>> components %s\n", components->name);
 	counter = 0;
 	if (strcmp(components->type, "LITERAL") == 0 &&
 		strcmp(components->next->name, ";") == 0)
@@ -131,7 +134,7 @@ char	*value_checker(t_token *components)
 			printf("error : variable does not exist\n");
 			return (NULL);
 		}
-		return (strdup(db_checker) == 0);
+		return (strdup(db_checker));
 	}
 	if (validate_id(components->name))
 	{
@@ -145,44 +148,58 @@ char	*value_checker(t_token *components)
 	}	
 	// handling those shit arrays.
 	if (strcmp(components->name, "{") == 0)
+	{
 		components = components->next;
 	array_value = strdup("{");
 	comma_flag = false;
-	while (components[counter] && strcmp(components[counter], ";") != 0)
+	while (components && strcmp(components->name, ";") != 0)
 	{
-		if (strcmp(components[counter], "{") == 0)
+	
+		if (strcmp(components->name, "{") == 0)
 		{
-			array_value = join_with_space(array_value, components[counter]);
+			//array_value = join_with_space(array_value, components-name);
 			comma_flag = false;
 		}
-		else if (strcmp(components[counter], "}") == 0)
+		else if (strcmp(components->name, "}") == 0)
 		{
-			array_value = join_with_space(array_value, components[counter]);
+			//array_value = join_with_space(array_value, components->name);
 			comma_flag = true;
 		}
-		else if (comma_flag == false && (components[counter][0] == '\"' ||
-			components[counter][0] == '\'' ||
-			atoi(components[counter]))) // ||
+		else if (comma_flag == false) // ||
 			// verify existence of variable if exists
 		{
-			printf("here we are\n");	
-			array_value = join_with_space(array_value, components[counter]);
+			printf("here we are\n");
+			printf("components %s\n", components->name);
+			if (!is_valid_equation(components, ","))
+			{
+				printf("error: invalid assignment of arrays\n");
+				return (NULL);	
+			}
+			// array_value = join_with_space(array_value, components[counter]);
 			comma_flag = true;
 			printf("afterwards\n");
 		}
-		else if (comma_flag == true && (strcmp(components[counter], ",") == 0))
+		else if (comma_flag == true && (strcmp(components->name, ",") == 0))
 		{
-			array_value = join_with_space(array_value, components[counter]);
+			//array_value = join_with_space(array_value, components[counter]);
 			comma_flag = false;
 		}
 		else
 			printf("Error : incorrect variable blah blah\n");
-		counter++;
+	
+		components = components->next;
 	}
-	if (strcmp(components[counter], ";") != 0 || arraylen(components) - 1 != counter)
+	}
+	if (is_valid_equation(components, ";"))
+	{
+		return strdup("AVLID\n");
+	}
+	if (strcmp(components->name, ";") != 0)
 		printf("error in length of line\n");
+	printf("EXITING...\n");
+	array_value = strdup("VALID ARRAY\n");
 	return (array_value);		
-}*/
+}
 
 bool	validate_variable(char **components)
 {

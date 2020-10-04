@@ -1,5 +1,6 @@
 
-
+#include "../inc/semantic.h"
+#include "../inc/database.h"
 #include "../inc/compiler.h"
 
 bool valid_operator(char *token)
@@ -28,11 +29,11 @@ bool valid_operator(char *token)
 }
 
 
-bool is_valid_equation(t_token *tokens)
+bool is_valid_equation(t_token *tokens, char *end_token)
 {
         extern int max_number;
         extern t_db **list;
-    
+    	char *db_value;
 	t_token *equation;
         bool symbol;
         int brackets;
@@ -40,8 +41,10 @@ bool is_valid_equation(t_token *tokens)
 	brackets = 0;
         symbol = false;
 	equation = tokens;
-        while (equations && strcmp(equations->name, ";") != 0)
+        while (equation && (strcmp(equation->name, end_token)))
         {
+		if (strcmp(equation->name, ";") == 0)
+			break ;
                 if (strcmp(equation->name, "(") == 0)
                         brackets++;
                 else if (strcmp(equation->name, ")") == 0)
@@ -56,11 +59,18 @@ bool is_valid_equation(t_token *tokens)
                                         printf("Error found at this fucking pooint\n");
                                 	return (false);
 				}
-                        }
-                        else if (strcmp(equation->type, "NUM") == 0)
+                        } 
+                        else if (strcmp(equation->type, "NUM") == 0 ||
+				strcmp(equation->type, "CHAR") == 0 ||
+				strcmp(equation->type, "LITERA") == 0)
+			{
 				symbol = true;
+				if (strcmp(equation->type, "NUM") != 0)
+					printf("Warning : mismatch in datatypes\n");
+			}
 			else
 			{
+				printf("equ : %s\n", equation->name);
 				printf("error : A token or something is out of place\n");
 				return (false);
 			}
