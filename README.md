@@ -8,9 +8,9 @@ The following books were a great help in programming this project:</br>
 - <a href="https://www.amazon.com/Compilers-Principles-Techniques-Tools-2nd/dp/0321486811">Compilers: Principals, Techniques and Tools</a> by Alfred Aho and Monica Lam<br>
 - <a href="https://www.amazon.com/Engineering-Compiler-Keith-Cooper/dp/012088478X">Engineering: A Compiler</a> by Kieth Cooper and Linda Torczon
 - <a href="https://www.amazon.com/Introduction-Bit-Assembly-Programming-Linux/dp/1484921909">Introduction to 64-bit Assembly Programming for Linux and OSX</a> by Ray Seyfarth
-<br>
+<br><br>
 And lastly, the following course was a great overview of the project:</br>
-- <a href="https://www.udemy.com/course/compiler-design-n/">Compiler Design</a> by Edutainer India (on Udemy)
+ - <a href="https://www.udemy.com/course/compiler-design-n/">Compiler Design</a> by Edutainer India (on Udemy)
 <br>
 I opted to build my compiler in C using only the theoretical knowledge gained from the courses to test my understanding of the theoretical concepts. <b>I strongly recommend against coding a compiler in C</b>.
 And without further ado, here's a brief overview of my design approach and overall progress (so far, this will change as I get further along).
@@ -27,3 +27,7 @@ Verifying the correctness of each token and it's position in the source file. Er
 Once all the code is verified as correct, this step is where the C code is translated into intermediate code in no particular language. The code at this point is similar to its assembly counterpart in structure but is kept custom to allow for the eventual translation from it into the target assembly of the system it's compiled on.
 
 My compiler is planned to go as far as this step as I'm not completely clear on how to translate a lot of C's data structures into assembly like linked lists and multidimensional arrays.
+
+## Detailed Apprach
+### Lexing
+For the lexing process, I created a linked list, with each node being an individual token
