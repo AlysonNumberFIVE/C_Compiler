@@ -151,11 +151,19 @@ typedef struct  token {
     struct token    *next;
 }   t_token;
 
+
+typedef struct	s_files
+{
+	char 		**content;
+	char		*filename;
+	struct s_files	*next;
+}	t_file;
+/*
 typedef struct  s_amcro_env {
     char *name;
     struct s_macro_env *next;
 }   t_macro;
-/*
+
 typedef struct  s_stack {
     char *funct_name;
     struct s_stack  *next;
@@ -181,7 +189,7 @@ void        print_function(t_function_table *functions);
 t_hashtable *first_and_follow(void);
 bool        validate_id(char *str);
 int	    handle_native_csg(char *prev, char *current);
-
+t_file	    *push_file(t_file *head, char *filename, char *file_content);
 
 #endif
 

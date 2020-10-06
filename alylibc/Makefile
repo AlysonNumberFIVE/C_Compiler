@@ -3,6 +3,7 @@
 NAME = lib
 
 SRC_NAME = strtrim.c \
+	   strsplit.c \
 	   arraylen.c \
 	   arraydup.c \
 	   arraypush.c \
