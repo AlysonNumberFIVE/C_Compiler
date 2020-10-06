@@ -2,7 +2,7 @@
 A C compiler written in C (similar to Java_Compiler)
 
 ## Summary
-This is my first attempt at implementing a compiler from scrath. I've tried my hand at a CoreWar assembler but felt I wanted to do the kind
+This is my first attempt at implementing a compiler from scratch. I've tried my hand at a CoreWar assembler but felt I wanted to do the kind
 of project that made use of practical computer science concepts in a real application.</br>
 The following books were a great help in programming this project:</br>
 - <a href="https://www.amazon.com/Compilers-Principles-Techniques-Tools-2nd/dp/0321486811">Compilers: Principals, Techniques and Tools</a> by Alfred Aho and Monica Lam<br>
