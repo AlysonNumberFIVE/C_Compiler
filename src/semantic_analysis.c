@@ -279,9 +279,9 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav);
+			/*
 			else if (strcmp(trav->name, "while") == 0)
 				trav = semantic_while(prev, trav);
-			/*
 			else if (strcmp(trav->name, "if") == 0) printf("handle if statement\n");
 			*/
 			stack = push_stack(stack, FOR);

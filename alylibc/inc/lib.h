@@ -4,6 +4,7 @@
 # include <string.h>
 # include <stdlib.h>
 
+char	**strsplit(char *str, char c);
 char	**arraydup(char **array);
 void	map_file(unsigned char **content, size_t *size, char *filename);
 char	*ft_strchr(const char *s, int c);
