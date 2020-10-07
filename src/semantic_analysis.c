@@ -73,6 +73,8 @@ t_temp_var      *create_temp_var(t_token *token)
 
         temp = (t_temp_var *)malloc(sizeof(t_temp_var));
         temp->depth = 0;
+	temp->name = NULL;
+	temp->type = NULL;
         trav = token;
         if (value_found(trav->name, start) == true)
         {
@@ -98,13 +100,20 @@ t_temp_var      *create_temp_var(t_token *token)
         return (temp);
 }
 
+void	free_temp_var(t_temp_var *block)
+{
+	free(block->name);
+	free(block->type);
+	free(block);
+}
 
+void	save_function
 
 bool	validate_function(t_token *token)
 {
 	t_token 	*trav;
-	char		*name;
 	char		*type;
+	char		*possible_function_name;
 	char		*value;
 	int		depth;
 	extern int	max_number;
@@ -112,82 +121,38 @@ bool	validate_function(t_token *token)
 	t_hashtable	*variables;
 	t_temp_var 	*temp_var;
 
+
 	temp_var = create_temp_var(token);
 	if (temp_var == NULL)
 		return (false);
-	name = temp_var->name;
-	type = temp_var->type;
-	depth = temp_var->depth;
-	trav = temp_var->curr; 
-/*	depth = 0;
-	value = NULL;
-	type = NULL;
-	name = NULL;
-	trav = token;
-	if (value_found(trav->name, start) == true)
-	{
-		type = strdup(trav->name);
-		trav = trav->next;
-	}
-	else
-	{
-		printf("curr %s\n", trav->name);
-		printf("stdup %s\n", trav->next->name);
-		printf("Datatype error\n");
-		return (false);
-	}
+	possible_function_name = strdup(temp_var->name);
+	trav = temp_var->curr;
 	
-	while (strcmp(trav->name, "*") == 0)
-	{
-		depth++;
-		trav = trav->next;
-	}
-	if (strcmp(trav->type, "ID") == 0)
-	{
-		name = strdup(trav->name);
-		trav = trav->next;
-	}
-	else
-	{
-		printf("Incorrect variable naming\n");
-		return (false);
-	} */
 	if (strcmp(trav->name, ";") == 0)
-	{
-		printf("DONE\n");
-		insert_into_db(type, name, NULL, depth);
-	}
+		insert_into_db(temp_var->type, temp_var->name, NULL, temp_var->depth);
 	else if (strcmp(trav->name, "(") == 0)
 	{
-		functions = push_function(functions, name, type, depth);
+		functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
 		if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
 			(strcmp(trav->next->next->next->name, ";") == 0 ||
 			strcmp(trav->next->next->next->name, "{") == 0))
 			return (true);
 				
 		trav = trav->next;
-		char *pname;
-		char *ptype;
-		int pdepth;
-		pname = NULL;
-		ptype = NULL;
-		pdepth = 0;
 		t_fvars *variables;
 		while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
 		{
 			if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
 			{
-				if (!pname || !ptype)
+				if (!temp_var->name || !temp_var->type)
 				{
 					printf("error : incorrect variable naming convention\n");
 					return (false);
 				}
-				variables = create_new_parameter(pname, ptype, depth);
-				functions = new_parameter(functions, name, variables);
+				variables = create_new_parameter(temp_var->name, temp_var->type, temp_var->depth);
+				functions = new_parameter(functions, possible_function_name, variables);
 				param_free(variables);
-				free_and_null(&pname);
-				free_and_null(&ptype);
-				pdepth = 0;
+				free_temp_var(temp_var);
 				if (strcmp(trav->name, ")") == 0)
 				{
 					trav = trav->next;
@@ -197,37 +162,8 @@ bool	validate_function(t_token *token)
 			}
 			else
 			{
-			
 				temp_var = create_temp_var(trav);
-				pname = temp_var->name;
-				ptype = temp_var->type;
-				pdepth = temp_var->depth;
 				trav = temp_var->curr;
-				/*if (value_found(trav->name, start) == true)
-				{
-					ptype = strdup(trav->name);
-					trav = trav->next;
-				}	
-				else
-				{
-					printf("Incorrect way to create parameter vars\n");
-					return (false);
-				}
-				while (trav && strcmp(trav->name, "*") == 0)
-				{
-					depth++;
-					trav = trav->next;
-				}
-				if (strcmp(trav->type, "ID") == 0)
-				{
-					pname = strdup(trav->name);
-					trav = trav->next;
-				}
-				else
-				{
-					printf("Incorrect variable naming\n");	
-					return (false);
-				}*/
 			}
 		}	
 	}
@@ -235,9 +171,7 @@ bool	validate_function(t_token *token)
 	{
 		trav = trav->next;
 		value = value_checker(trav);
-//		update_variable_value(name, value);
-		insert_into_db(type, name, value, depth);
-		//return (is_valid_equation(trav, ";"));
+		insert_into_db(temp_var->type, temp_var->name, value, temp_var->depth);
 	}
 	return (true);
 }
