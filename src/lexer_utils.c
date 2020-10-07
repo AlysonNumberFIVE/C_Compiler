@@ -25,12 +25,14 @@ t_token     *single_token(char *buffer, size_t index, char *tok_name)
     char    *var_name;
     t_token *tok;
     extern int read_count;
+    extern size_t line;
+    extern char *current_file;
 
     var_name = NULL;
     var_name = charpush(var_name, buffer[index]);
     index++;
     read_count = index;
-    tok = new_token(var_name, tok_name);
+    tok = new_token(var_name, tok_name, line, current_file);
     free(var_name);
     return tok;
 }
@@ -42,6 +44,8 @@ t_token     *double_token(char *buffer, size_t index, t_hashtable *table, char *
     char        *test;
     t_token     *token;
     extern int  read_count;
+    extern size_t line;
+    extern char *current_file;
 
     var_name = NULL;
     token = NULL;
@@ -52,7 +56,7 @@ t_token     *double_token(char *buffer, size_t index, t_hashtable *table, char *
     value = ht_search(table, test);
     if (value == NULL)
     {
-        token = new_token(var_name, first_name);
+        token = new_token(var_name, first_name, line, current_file);
         index++;
     }
     else
@@ -64,7 +68,7 @@ t_token     *double_token(char *buffer, size_t index, t_hashtable *table, char *
             value = ht_search(table, test);
             index++;
         }
-        token = new_token(test, value);
+        token = new_token(test, value, line, current_file);
         index += 2;
     }
     read_count = index;

@@ -20,11 +20,11 @@
 #define NUM     270
 #define OR      271`
 
-t_token     *lexer(char *file_content);
+t_token     *lexer(t_file *f);
 void        free_token(t_token *token);
-t_token *new_token(char *name, char *type);
+t_token *new_token(char *name, char *type, size_t line, char *current_file);
 t_hashtable     *key_token(void);
-t_token *push_token(t_token *first, char *name, char *type);
+t_token *push_token(t_token *first, char *name, char *type, int line, char *filename);
 t_token     *scan(char *buffer, t_hashtable *table);
 
 // lexer_utils.c

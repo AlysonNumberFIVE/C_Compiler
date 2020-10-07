@@ -156,6 +156,7 @@ typedef struct	s_files
 {
 	char 		**content;
 	char		*filename;
+	char		*solidcontent;
 	struct s_files	*next;
 }	t_file;
 /*

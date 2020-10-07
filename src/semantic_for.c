@@ -30,7 +30,8 @@ t_token	*semantic_for(char *prev, t_token *components)
 		{
 			//sub_sequence = arraypush(sub_sequence, components[counter]);
 			sub_sequence = push_token(sub_sequence, 
-				components->name, components->type);
+				components->name, components->type, -1, 
+				"thing");
 		}
 		prev = components->name;
 		components = components->next;	

@@ -8,7 +8,7 @@
 size_t  read_count = 0;
 size_t  line = 0;
 t_hashtable *table = NULL;
-
+char	*current_file;
 
 t_token     *scan(char *buffer, t_hashtable *table)
 {
@@ -23,7 +23,6 @@ t_token     *scan(char *buffer, t_hashtable *table)
         else if (buffer[i] == '\n') line++;
         else break;
     }
-
     read_count = i; 
     // handle comments
     if (buffer[read_count] == '/' && (buffer[read_count + 1] == '/' || buffer[read_count + 1] == '*'))
@@ -57,7 +56,7 @@ t_token     *scan(char *buffer, t_hashtable *table)
 
     // handle literals/strings
     if (buffer[read_count] == '\"') return (literal_found(buffer, read_count));
-
+    
     // handle single characters
     if (buffer[read_count] == '\'') return (character_found(buffer, read_count));
 
@@ -147,24 +146,33 @@ t_hashtable     *key_token(void)
     return (table);
 }
 
-t_token     *lexer(char *file_content)
+t_token     *lexer(t_file *file_list)
 {
     t_hashtable *table;
     t_token     *list;
     t_token     *temp;
     size_t      size;
+    t_file	*next_file;
 
     list = NULL;
     table = key_token();
-    size = strlen(file_content);
-    while (read_count < size)
-    {
-        temp = scan(file_content, table);
-        if (temp)
-        {
-            list = push_token(list, temp->name, temp->type);
-            free_token(temp); 
+    next_file = file_list;
+    while (next_file)
+    {    
+        line = 0;
+        read_count = 0;
+    	size = strlen(file_list->solidcontent);
+	current_file = strdup(file_list->filename);   
+	while (read_count < size)
+    	{
+	    temp = scan(file_list->solidcontent, table);
+            if (temp)
+            {
+            	list = push_token(list, temp->name, temp->type, line, file_list->filename);
+            	free_token(temp); 
+            }
         }
+	next_file = next_file->next;
     }
     return (list);
 }

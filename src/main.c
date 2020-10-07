@@ -18,7 +18,7 @@ char    *read_file(char *filename)
     fstat(fd, &info);
     content = (char *)malloc(sizeof(char) * info.st_size + 1);
     read(fd, content, info.st_size);
-    content[info.st_size - 1] = '\0';
+    content[info.st_size] = '\0';
     close(fd);
     return (content);
 }
@@ -61,7 +61,7 @@ void	print_files(t_file *files)
 {
 	t_file	*trav;
 
-	trav = files->next;
+	trav = files;
 	while (trav)
 	{
 		printf("name : %s\n", trav->filename);
@@ -71,8 +71,6 @@ void	print_files(t_file *files)
 			printf("line %d %s", i + 1, trav->content[i]);
 			i++;
 		}
-		if (trav->next == NULL)
-			printf("NULL\n");
 		trav = trav->next;
 	}
 }
@@ -81,18 +79,18 @@ int	main(int argc, char **argv)
 {
 	t_file *files;
 	t_token *tokens;
-
+	char *f;
 	if (argc < 2)
 	{
 		printf("Usage: %s [c_file] - only 1 file is supported\n", argv[0]);
 		return (1);
 	}
 	files = get_files(argc, argv);
-	print_files(files);
-//	printf("%s\n", file);
+	f = read_file(argv[1]);
+//	print_files(files);
 
-//	tokens = lexer(file);
+	tokens = lexer(files);
 //	semantic_analysis(tokens);
-	
+	print_token(tokens);	
 	return (0);	
 }

@@ -10,6 +10,8 @@ t_token     *ellipse_found(char *buffer, size_t index, char *real_name)
 {
     char            *var_name;
     extern size_t   read_count;
+    extern size_t   line;
+    extern char	    *current_file;
     size_t          count;
     char            *name;
     t_token         *token;
@@ -28,7 +30,7 @@ t_token     *ellipse_found(char *buffer, size_t index, char *real_name)
         name = "ELLIPSE";
     }
     read_count = index;
-    token = new_token(var_name, name);
+    token = new_token(var_name, name, line, current_file);
     free(var_name);
     return (token);
 }
@@ -38,6 +40,8 @@ t_token     *number_found(char *buffer, size_t index)
     char    *var_name;
     bool    is_float;
     extern size_t read_count;
+    extern size_t line;
+    extern char *current_file;
 
     is_float = false;
     var_name = NULL;
@@ -54,13 +58,13 @@ t_token     *number_found(char *buffer, size_t index)
     while (isdigit(buffer[index]));
     read_count = index;
     if (is_float == true)
-        return new_token(var_name, "FLOAT");
-    return new_token(var_name, "NUM");
+        return new_token(var_name, "FLOAT", line, current_file);
+    return new_token(var_name, "NUM", line, current_file);
 }
 
 t_token     *skip_comments(char *buffer, size_t index)
 {
-    extern int line;
+    extern size_t line;
     extern size_t read_count;
 
     index++;
@@ -98,6 +102,8 @@ t_token     *literal_found(char *buffer, size_t index)
     char    *var_name;
     t_token *token;
     extern size_t read_count;
+    extern size_t line;
+    extern char *current_file;
 
     var_name = NULL;
     do
@@ -109,7 +115,7 @@ t_token     *literal_found(char *buffer, size_t index)
     var_name = charpush(var_name, buffer[index]);
     index++;
     read_count = index;
-    token =  new_token(var_name, "LITERAL");
+    token =  new_token(var_name, "LITERAL", line, current_file);
     free(var_name);
     return (token);
 }
@@ -121,6 +127,8 @@ t_token     *character_found(char *buffer, size_t index)
     int counter;
     int max;
     extern size_t read_count;
+    extern size_t line;
+    extern char *current_file;
 
     max = 2;
     counter = 0;
@@ -137,7 +145,7 @@ t_token     *character_found(char *buffer, size_t index)
     var_name = charpush(var_name, buffer[index]);
     index++;
     read_count = index;
-    token = new_token(var_name, "CHAR");
+    token = new_token(var_name, "CHAR", line, current_file);
     free(var_name);
     return token;
 }
@@ -177,6 +185,8 @@ t_token     *macro_found(char *buffer, size_t index)
     char    *var_name;
     t_token *token;
     extern size_t read_count;
+    extern size_t line;
+    extern char *current_file;
 
     var_name = NULL;
     do
@@ -186,7 +196,7 @@ t_token     *macro_found(char *buffer, size_t index)
     }
     while (isalnum(buffer[index]) || buffer[index] == '_');
     read_count = index;
-    token = new_token(var_name, "MACRO");
+    token = new_token(var_name, "MACRO", line, current_file);
     free(var_name);
     return token;
 }
@@ -196,6 +206,8 @@ t_token     *header_found(char *buffer, size_t index)
     char    *var_name;
     t_token *token;
     extern size_t read_count;
+    extern size_t line;
+    extern char *current_file;
 
     var_name = NULL;
     do
@@ -207,7 +219,7 @@ t_token     *header_found(char *buffer, size_t index)
     index++;
     read_count = index;
 
-    token = new_token(var_name, "HEADER");
+    token = new_token(var_name, "HEADER", line, current_file);
     free(var_name);
     return token;
 }
@@ -217,6 +229,8 @@ t_token     *id_found(char *buffer, size_t index)
     char    *var_name;
     t_token *token;
     extern size_t read_count;
+    extern size_t line;
+    extern char *current_file;
 
     var_name = NULL;
     do
@@ -227,9 +241,9 @@ t_token     *id_found(char *buffer, size_t index)
     while (isalnum(buffer[index]) || buffer[index] == '_');
     read_count = index;
     if (reserved_word(var_name) == true)
-        token = new_token(var_name, "KEYWORD");
+        token = new_token(var_name, "KEYWORD", line, current_file);
     else
-        token = new_token(var_name, "ID");
+        token = new_token(var_name, "ID", line, current_file);
     free(var_name);
     return (token);
 }
