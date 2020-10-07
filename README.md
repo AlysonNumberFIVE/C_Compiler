@@ -41,9 +41,9 @@ typedef struct  token {
 }   t_token;
 ```
 Where the `name` is the token in its string form (i.e "int", "{", "}", "i").<br>The `type` is determines what kind of token it is. The most important types of a language are as follows:<br>
-KEYWORDS: (also known as "Terminals" in compsci speak); these are reserved tokens that are part of the language and may not be used in any other context such as variable names.<br>
-IDs (also known as "nonterminals" alongside literal strings and characters, possibly numbers too but probably not).<br>
-NUMs basically all numbers. I've included floats as part of these but considering separating them out.<br><br>
+ - KEYWORDS: (also known as "Terminals" in compsci speak); these are reserved tokens that are part of the language and may not be used in any other context such as variable names.<br>
+ - IDs (also known as "nonterminals" alongside literal strings and characters, possibly numbers too but probably not).<br> 
+ - NUMs basically all numbers. I've included floats as part of these but considering separating them out.<br><br>
 
 The `line` variable determines at what line number in the source file this token is located. This will be used when handling errors in semantic analysis. A separate structure with all source file names and their source code will be referenced and the `line` number will be used to index into the file to when printing out the error in the format
 ```
