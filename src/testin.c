@@ -1,7 +1,13 @@
 
-
-
-
+struct b {
+	int d;
+};
+struct a {
+	int c; 
+	struct x {
+		char val;
+	} next;
+};
 
 int value;
 void	myName(void);

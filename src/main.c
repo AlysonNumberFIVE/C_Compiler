@@ -79,14 +79,12 @@ int	main(int argc, char **argv)
 {
 	t_file *files;
 	t_token *tokens;
-	char *f;
 	if (argc < 2)
 	{
 		printf("Usage: %s [c_file] - only 1 file is supported\n", argv[0]);
 		return (1);
 	}
 	files = get_files(argc, argv);
-	f = read_file(argv[1]);
 //	print_files(files);
 
 	tokens = lexer(files);
