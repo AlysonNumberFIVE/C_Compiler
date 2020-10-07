@@ -1,6 +1,10 @@
 
+
+
+//string str = NULL;
+
+
 struct b {
-	int d;
 };
 struct a {
 	int c; 
@@ -9,18 +13,15 @@ struct a {
 	} next;
 };
 
-int value;
 void	myName(void);
 char *hello()
 {
 	return ("1");
 }
+
+char str[4] = {1};
 int main(void)
 {
 	int i = 4;
-	while ( int j + 1 <<= 4 + 1 >> 8) {
-		return (1);
-	}
-	
 	return (0);
 }

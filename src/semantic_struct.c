@@ -1,6 +1,10 @@
 
 
 
+
+
+
+
 bool	semantic_struct(t_token *tokens)
 {
 	t_token	*trav;

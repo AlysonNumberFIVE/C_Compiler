@@ -88,7 +88,7 @@ int	main(int argc, char **argv)
 //	print_files(files);
 
 	tokens = lexer(files);
-//	semantic_analysis(tokens);
-	print_token(tokens);	
+	semantic_analysis(tokens);
+//	print_token(tokens);	
 	return (0);	
 }

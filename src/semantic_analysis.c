@@ -53,6 +53,53 @@ bool	validate_num(char *str)
 
 
 
+
+typedef struct s_variable_block
+{
+        char *name;
+        char *type;
+        t_token *curr;
+        int depth;
+}       t_temp_var;
+
+t_temp_var      *create_temp_var(t_token *token)
+{
+        int             depth;
+        extern int      max_number;
+        extern t_db     *list;
+        t_hashtable     *variables;
+        t_temp_var      *temp;
+	t_token		*trav;
+
+        temp = (t_temp_var *)malloc(sizeof(t_temp_var));
+        temp->depth = 0;
+        trav = token;
+        if (value_found(trav->name, start) == true)
+        {
+                temp->type = strdup(trav->name);
+                trav = trav->next;
+        }
+        else
+                return (NULL);
+
+        while (strcmp(trav->name, "*") == 0)
+        {
+                temp->depth++;
+                trav = trav->next;
+        }
+        if (strcmp(trav->type, "ID") == 0)
+        {
+                temp->name = strdup(trav->name);
+                trav = trav->next;
+        }
+        else
+                return (NULL);
+        temp->curr = trav;
+        return (temp);
+}
+
+
+
 bool	validate_function(t_token *token)
 {
 	t_token 	*trav;
@@ -63,8 +110,16 @@ bool	validate_function(t_token *token)
 	extern int	max_number;
 	extern t_db	*list;
 	t_hashtable	*variables;
+	t_temp_var 	*temp_var;
 
-	depth = 0;
+	temp_var = create_temp_var(token);
+	if (temp_var == NULL)
+		return (false);
+	name = temp_var->name;
+	type = temp_var->type;
+	depth = temp_var->depth;
+	trav = temp_var->curr; 
+/*	depth = 0;
 	value = NULL;
 	type = NULL;
 	name = NULL;
@@ -96,8 +151,7 @@ bool	validate_function(t_token *token)
 	{
 		printf("Incorrect variable naming\n");
 		return (false);
-	}
-
+	} */
 	if (strcmp(trav->name, ";") == 0)
 	{
 		printf("DONE\n");
@@ -143,7 +197,13 @@ bool	validate_function(t_token *token)
 			}
 			else
 			{
-				if (value_found(trav->name, start) == true)
+			
+				temp_var = create_temp_var(trav);
+				pname = temp_var->name;
+				ptype = temp_var->type;
+				pdepth = temp_var->depth;
+				trav = temp_var->curr;
+				/*if (value_found(trav->name, start) == true)
 				{
 					ptype = strdup(trav->name);
 					trav = trav->next;
@@ -167,7 +227,7 @@ bool	validate_function(t_token *token)
 				{
 					printf("Incorrect variable naming\n");	
 					return (false);
-				}
+				}*/
 			}
 		}	
 	}
