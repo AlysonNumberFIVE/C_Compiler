@@ -118,23 +118,17 @@ t_struct	*create_struct(t_token *tokens)
 	char *struct_name;
 
 	trav = tokens->next;
-	while (trav)
+	if (strcmp(trav->type, "ID") == 0)
 	{
-		if (strcmp(trav->type, "ID") == 0)
-		{
-			struct_name = strdup(trav->name);
-			trav = trav->next;
-		}
-		else
-		{
-			return (false);
-		}
-		if (strcmp(trav->name, "{") == 0)
-		{
-			trav = trav->next;
-			`
-		}
+		struct_name = strdup(trav->name);
+		trav = trav->next;
 	}
+	else
+		return (false);
+	if (strcmp(trav->name, "{") == 0)
+		trav = trav->next;
+		
+	
 }
 
 

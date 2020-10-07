@@ -150,22 +150,16 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 bool	validate_function(t_token *token)
 {
 	t_token 	*trav;
-	char		*type;
 	char		*possible_function_name;
-	char		*value;
-	int		depth;
-	extern int	max_number;
 	extern t_db	*list;
-	t_hashtable	*variables;
 	t_temp_var 	*temp_var;
-
+	char		*value;
 
 	temp_var = create_temp_var(token);
 	if (temp_var == NULL)
 		return (false);
 	possible_function_name = strdup(temp_var->name);
-	trav = temp_var->curr;
-	
+	trav = temp_var->curr;	
 	if (strcmp(trav->name, ";") == 0)
 		insert_into_db(temp_var->type, temp_var->name, NULL, temp_var->depth);
 	else if (strcmp(trav->name, "(") == 0)
