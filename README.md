@@ -49,4 +49,51 @@ The `line` variable determines at what line number in the source file this token
 ```
 error : [filename] [line number] [message]
 ```
-but that's still to come.
+but that's still to come. <br><br>
+### Lexer pseudocode
+The main lexer loop uses the following 2 logic functions (written in a Python-esque style for ease of readability).<br>
+The first is the lexer that loops over each of the files passed into the compiler as arguments and the second is a scanner, enclosed in the main lexer loop the returns individual tokens from each of the files.<br><br>
+Pseudocode for `scan()`.
+```
+line_number = 0 // the current line number in the source file
+
+function scan(source_code, file_name):
+    
+    for character in source_code:
+         if character is whitespace:
+             continue
+         else if character is newline:
+             line_number += 1
+         break
+        
+    if character is token:
+        return token_object{token_name, token_type, line_number, file_name}
+    return NULL
+```
+This is the formular for grabbing each token. The function above is enclosed further in a loop that iterates over the names of each of the files passed in as arguments to the compiler.
+```
+
+function lexer(files):
+    token_list = Tokens()
+
+    for file in files:
+        file_name = file.name
+        
+        for source_code in file.source_code:
+            token = scan(source_code, file_name)
+            token_list.push_token(tokens)
+```
+ This is the basic formular for iterating over the source file. It's a bit simplistic as the concenpt of a memory address position was hard to translate into this pseudocode. You can assume that `source_code` in the above in C uses the same rule as the concept of using `&source_code[i]` if source code is a `char *` variable and `i` is an index into the string.
+ 
+ The source code for the lexer can be seen in `src/lexer.c`.
+ 
+        
+        
+
+
+
+
+
+
+
+
