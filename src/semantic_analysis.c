@@ -107,7 +107,45 @@ void	free_temp_var(t_temp_var *block)
 	free(block);
 }
 
-void	save_function
+bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name) 
+{
+                functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
+                if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
+                        (strcmp(trav->next->next->next->name, ";") == 0 ||
+                        strcmp(trav->next->next->next->name, "{") == 0))
+                        return (true);
+
+                trav = trav->next;
+                t_fvars *variables;
+                while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
+                {
+                        if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
+                        {
+                                if (!temp_var->name || !temp_var->type)
+                                {
+                                        printf("error : incorrect variable naming convention\n");
+                                        return (false);
+                                }
+                                variables = create_new_parameter(temp_var->name, temp_var->type, temp_var->depth);
+                                functions = new_parameter(functions, function_name, variables);
+                                param_free(variables);
+                                free_temp_var(temp_var);
+                                if (strcmp(trav->name, ")") == 0)
+                                {
+                                        trav = trav->next;
+                                        break;
+                                }
+                                trav = trav->next;
+                        }
+                        else
+                        {
+                                temp_var = create_temp_var(trav);
+                                trav = temp_var->curr;
+                        }
+                }
+	return (true);
+}
+
 
 bool	validate_function(t_token *token)
 {
@@ -131,42 +169,7 @@ bool	validate_function(t_token *token)
 	if (strcmp(trav->name, ";") == 0)
 		insert_into_db(temp_var->type, temp_var->name, NULL, temp_var->depth);
 	else if (strcmp(trav->name, "(") == 0)
-	{
-		functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
-		if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
-			(strcmp(trav->next->next->next->name, ";") == 0 ||
-			strcmp(trav->next->next->next->name, "{") == 0))
-			return (true);
-				
-		trav = trav->next;
-		t_fvars *variables;
-		while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
-		{
-			if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
-			{
-				if (!temp_var->name || !temp_var->type)
-				{
-					printf("error : incorrect variable naming convention\n");
-					return (false);
-				}
-				variables = create_new_parameter(temp_var->name, temp_var->type, temp_var->depth);
-				functions = new_parameter(functions, possible_function_name, variables);
-				param_free(variables);
-				free_temp_var(temp_var);
-				if (strcmp(trav->name, ")") == 0)
-				{
-					trav = trav->next;
-					break;
-				}
-				trav = trav->next;
-			}
-			else
-			{
-				temp_var = create_temp_var(trav);
-				trav = temp_var->curr;
-			}
-		}	
-	}
+		save_function(temp_var, trav, possible_function_name);
 	else if (strcmp(trav->name, "=") == 0)
 	{
 		trav = trav->next;
