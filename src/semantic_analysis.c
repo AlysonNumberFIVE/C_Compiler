@@ -53,7 +53,7 @@ bool	validate_num(char *str)
 
 
 
-
+/*
 typedef struct s_variable_block
 {
         char *name;
@@ -61,6 +61,7 @@ typedef struct s_variable_block
         t_token *curr;
         int depth;
 }       t_temp_var;
+*/
 
 t_temp_var      *create_temp_var(t_token *token)
 {
@@ -264,7 +265,10 @@ bool	semantic_analysis(t_token *tokens)
 			stack = pop_stack(stack);
 			if (trav->next == NULL)
 				break ;
-		//	 trav = trav->next;
+		}
+		else if (strcmp(trav->name, "struct") == 0)
+		{
+			struct_loop(trav);	
 		}
 		else if (flag_token == true)
 		{
@@ -278,7 +282,6 @@ bool	semantic_analysis(t_token *tokens)
 			stack = push_stack(stack, FOR);
 			add_new_table();
 			prev = trav->name;
-		//	trav = trav->next;
 			head = trav;
 			flag_token = false;
 		}
@@ -287,7 +290,6 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			validate_function(head);
 			head = trav;
-		//	trav = trav->next;
 			if (strcmp(trav->name, "{") == 0)
 				add_new_table();
 			if (head && strcmp(head->name, ";") == 0)
@@ -309,12 +311,10 @@ bool	semantic_analysis(t_token *tokens)
 				printf("error : can't have %s outside function scope\n",
 					trav->name);
 			prev = trav->name;
-		//	trav = trav->next;
 		}
 		else
 		{
 			printf("This was a failed expedition : %s\n", trav->name);
-			// skipping entire line.
 			return (false);
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)

@@ -173,7 +173,16 @@ typedef struct  s_stack {
 
 // semantic analysis 
 
+typedef struct s_variable_block
+{
+        char *name;
+        char *type;
+        t_token *curr;
+        int depth;
+}       t_temp_var;
 
+
+t_temp_var      *create_temp_var(t_token *token);
 void        init_datatypes(void);
 t_hashtable *create_table(int size);
 char        *ht_search(t_hashtable *table, char *key);
@@ -191,6 +200,7 @@ t_hashtable *first_and_follow(void);
 bool        validate_id(char *str);
 int	    handle_native_csg(char *prev, char *current);
 t_file	    *push_file(t_file *head, char *filename, char *file_content);
+bool        value_found(char *s, char **str);
 
 #endif
 

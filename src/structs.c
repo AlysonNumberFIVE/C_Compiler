@@ -1,12 +1,14 @@
 
 
 #include "../inc/compiler.h"
-
+/*
 typedef struct s_struct
 {
 	char *struct_name;
 	int struct_param_number;
-	t_favs	*variables;	
+	t_favs	*variables;
+	struct s_struct *structs;
+	struct s_struct *next;
 }	t_struct;
 
 t_struct	*new_struct(char *struct_name)
@@ -15,6 +17,8 @@ t_struct	*new_struct(char *struct_name)
 
 	new = (t_struct *)malloc(sizeof(t_struct));
 	new->struct_name = strdup(struct_name);
+	new->variables = NULL;
+	enw->structs = NULL;
 	new->next = NULL;
 	return (new);
 }
@@ -65,8 +69,8 @@ t_struct	*add_struct_variable(t_struct *all_structs, char *struct_name,  t_fvars
 	trav->struct_param_number++;	
 	return (all_struct);
 }
-
-
+*/
+/*
 typedef struct s_variable_block
 {
 	char *name;
@@ -109,13 +113,68 @@ t_temp_var	*create_temp_var(t_token *token)
 	temp->curr = trav;
 	return (temp);
 }
+*/
 
+t_token		*struct_loop(t_token *token)
+{
+	t_token		*trav;
+	int		brackets;
+	t_temp_var	*temp_var;
+	bool		first_bracket_found;
+	extern char 	**start;
 
-
+	first_bracket_found = false;
+	brackets = 0;
+	trav = token;
+	trav = trav->next;
+	while (trav)
+	{
+		if (first_bracket_found == true && brackets == 0)
+			break;
+		else if (strcmp(trav->type, "ID") == 0 && first_bracket_found == false)
+		{
+		}	
+		else if (first_bracket_found == true && value_found(trav->name, start) == true)
+		{
+			if (strcmp(trav->name, "struct") == 0) 
+				trav = struct_loop(trav);
+			else 
+			{
+				temp_var = create_temp_var(trav);
+				printf(" >> %s\n", temp_var->name);
+				printf(" >> %s\n", temp_var->type);
+				trav = temp_var->curr; 
+			}
+		}	
+		else if (strcmp(trav->name, "{") == 0)
+		{
+			if (first_bracket_found == false)
+				first_bracket_found = true;
+			brackets++;
+		}
+		else if (strcmp(trav->name, "}") == 0)
+		{
+			brackets--;
+			trav = trav->next;
+			if (brackets == 0 && first_bracket_found == true)
+				break; 
+		}
+		else 
+			break;
+		trav = trav->next;
+	}
+	if (brackets == 0)
+		printf("pass\n");
+	else
+		printf("falied\n");
+	return (trav);
+}
+/*
 t_struct	*create_struct(t_token *tokens)
 {
-	t_token	*trav;
-	char *struct_name;
+	t_token		*trav;
+	char		*struct_name;
+	t_temp_vars	*temp;
 
 	trav = tokens->next;
 	if (strcmp(trav->type, "ID") == 0)
@@ -127,11 +186,21 @@ t_struct	*create_struct(t_token *tokens)
 		return (false);
 	if (strcmp(trav->name, "{") == 0)
 		trav = trav->next;
-		
-	
+	while (trav && strcmp(trav->name, ";") != 0)
+	{
+		temp_vars = create_temp_vars(trav);
+		trav = trav->next;
+		if (ttemp_vars->name == NULL) 
+		{
+			trav = temp_vars->cuurr;
+			break ;
+		}
+		trav = trav->next;
+	}
+	if (strcmp(trav->	
 }
 
-
+*/
 
 
 

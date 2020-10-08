@@ -64,6 +64,7 @@ bool		is_valid_equation(t_token *tokens, char *end_token);
 char		*value_checker(t_token *components);
 t_token		*semantic_for(char *prev, t_token *token);
 t_stack		*push_stack(t_stack *head, int scope_name);
+t_token		*struct_loop(t_token *val);
 
 #endif
 
