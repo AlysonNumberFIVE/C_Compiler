@@ -87,8 +87,9 @@ function lexer(files):
  
  The source code for the lexer can be seen in `src/lexer.c`.
  
-        
-        
+ ### Semantic Analysis
+ This step has to be the hardest part of this project. It's made worse by the fact that this step has a lot of room for some really nice class inheritance but as C doesn't support classes, there was a lot of repeated logic which (at time of writing) I'm currently working on fixing 
+ 
 
 
 
