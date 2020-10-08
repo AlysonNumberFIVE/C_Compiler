@@ -18,12 +18,15 @@ t_stack *stack = NULL;
 bool	value_found(char *value, char **to_scan)
 {
 	int		i;
+	char		**double_words;
 
 	i = 0;
 	while (to_scan[i])
 	{
 		if (strcmp(value, to_scan[i]) == 0)
+		{
 			return (true);
+		}
 		i++;
 	}
 	return (false);

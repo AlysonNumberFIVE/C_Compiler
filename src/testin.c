@@ -5,6 +5,7 @@
 
 
 struct b {
+	int x;
 };
 struct a {
 	int c; 
@@ -22,10 +23,7 @@ char *hello()
 char str[4] = {1};
 int main(void)
 {
-	
-	struct a **x;
-
-	x->c;
-	int i = 4;
+	struct b x;
+	struct b *y->x= 42;
 	return (0);
 }

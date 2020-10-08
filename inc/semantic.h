@@ -63,12 +63,12 @@ void            param_free(t_fvars *parameter);
 t_function      *new_parameter(t_function *all_functions, char *function_name, t_fvars *new_param);
 void		print_functions(t_function *functions);
 
-
+bool		does_variable_type_match(char *str, char *str2);
 t_stack		*new_stack(int scope_name);
 t_stack		*add_stack(t_stack *head, int scope_name);
 t_stack		*push_stack(t_stack *head, int scope_name);
 t_stack		*pop_stack(t_stack *head);
-
+char		*join_with_space(char *first, char *second);
 bool		is_valid_equation(t_token *tokens, char *end_token);
 char		*value_checker(t_token *components);
 t_token		*semantic_for(char *prev, t_token *token);

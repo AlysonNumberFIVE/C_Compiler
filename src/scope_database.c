@@ -185,6 +185,27 @@ bool	does_variable_exist(char *variable)
 	return (false);
 }
 
+bool	does_variable_type_match(char *datatype, char *variable)
+{
+	int current_number;
+	t_db *object;
+
+	current_number = max_number;
+	while (current_number > -1)
+	{
+		object = list[current_number];
+		while (object)
+		{
+			if (strcmp(object->name, variable) == 0 &&
+				strcmp(object->type, datatype) == 0)
+				return (true);
+			object = object->next;
+		}
+		current_number--;
+	}
+	return (false);
+}
+
 void	print_variables(void)
 {
 	int current;

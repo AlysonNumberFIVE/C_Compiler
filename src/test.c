@@ -10,6 +10,8 @@ struct _int {
 	char *number;
 };
 
+struct _int a;
+struct _int b;
 int n42 = 4;
 int c = 1 + 2 + 3;
 char *str = {'c', 'd', 'e'};
