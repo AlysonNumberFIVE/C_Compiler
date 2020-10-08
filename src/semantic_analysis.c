@@ -9,6 +9,7 @@
 #define IF 3
 #define FOR 4
 #define DO 5
+t_struct *all_structs = NULL;
 t_function *functions = NULL;
 t_token	*to_evaluate = NULL;
 char	**start = NULL;
@@ -268,7 +269,7 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
-			struct_loop(trav);	
+			trav = struct_loop(trav);	
 		}
 		else if (flag_token == true)
 		{

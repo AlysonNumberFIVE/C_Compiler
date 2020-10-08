@@ -22,6 +22,10 @@ char *hello()
 char str[4] = {1};
 int main(void)
 {
+	
+	struct a **x;
+
+	x->c;
 	int i = 4;
 	return (0);
 }

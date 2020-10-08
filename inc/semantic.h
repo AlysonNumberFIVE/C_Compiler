@@ -7,7 +7,6 @@
 #include "compiler.h"
 
 
-
 typedef struct	s_function_var
 {
 	char	*type;
@@ -16,6 +15,16 @@ typedef struct	s_function_var
 	int	depth;
 	char	*value;
 }	t_fvars;
+
+
+typedef struct s_struct
+{
+        char *struct_name;
+        int struct_param_number;
+	t_fvars  **variables;
+        struct s_struct *structs;
+        struct s_struct *next;
+}       t_struct;
 
 typedef struct  s_function_list
 {
@@ -65,6 +74,8 @@ char		*value_checker(t_token *components);
 t_token		*semantic_for(char *prev, t_token *token);
 t_stack		*push_stack(t_stack *head, int scope_name);
 t_token		*struct_loop(t_token *val);
+
+t_fvars         **add_to_param_list(t_fvars **array, t_fvars *to_add, size_t list_size);
 
 #endif
 
