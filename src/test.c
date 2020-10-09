@@ -9,7 +9,7 @@ struct _char {
 		char *y;	
 		struct _99 {
 			int _42;
-		} m;
+		} m
 	} z;
 };
 

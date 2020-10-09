@@ -2,22 +2,17 @@
 
 
 
-
-
-typedef struct	s_error
+t_token 	*error_message(t_token *trav, char *message)
 {
-	t_token	*recovery;
-}	t_error;
+	extern char **start;
 
-
-t_error		*new_error(t_token *token)
-{
-	t_error	*new;
-
-	new = (t_error *)malloc(sizeof(t_error));
-	new->recovery = tokoen;
-	new->next = NULL;
-	return (new);
+	while (trav)
+	{
+		if (value_found(trav->name, start))
+		{
+			printf("");
+			:
+		}
+	}
 }
 
-t_error
