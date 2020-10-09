@@ -4,10 +4,16 @@ struct _char {
 	char c;
 	int size;
 	char *x;
+	struct _char *next;
+	struct new {
+		char *y;	
+	} z;
 };
+struct _char x;
 
 struct _int {
 	char *number;
+	struct _int *next;
 };
 
 struct _int a;
@@ -31,4 +37,3 @@ void for_loop_test(void)
 	
 	}
 }
-

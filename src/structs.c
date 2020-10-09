@@ -1,4 +1,5 @@
 
+#include "../inc/token.h"
 #include "../inc/database.h"
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
@@ -106,17 +107,13 @@ void		create_struct_variable(char *struct_name, char *name, int depth, char *var
 {
 	char *token;
 	char *temp;
-	char *variable;
+	char *var;
 
-	if (depth > 1)
-		temp = join(name, "[]->");
-	else if (depth == 0)
-		temp = join(name, ".");
-	else if (depth == 1)
-		temp = join(name, "->");
-	variable = join(temp, var_name);
-	insert_into_db(struct_name, variable, NULL, depth);
+	temp = join(name, "->");
+	var = join(temp, var_name);
+	insert_into_db(struct_name, var, NULL, depth);
 	free(temp);
+	free(var);
 }
 
 bool		insert_struct_into_db(char *struct_name, char *name, int depth)
@@ -144,6 +141,41 @@ bool		insert_struct_into_db(char *struct_name, char *name, int depth)
 		trav = trav->next;
 	}
 	return (false);
+}
+t_token		*struct_loop(t_token *token);
+
+t_token		*handle_nested_struct(t_token *token)
+{
+	t_token *trav;
+	t_token	*head;
+	char *datatype_name;
+	t_temp_var *temp;
+	t_token *print;
+
+	trav = token;
+	print = trav;
+	head = NULL;
+	while (trav && strcmp(trav->name, ";") != 0 && strcmp(trav->name, "{") != 0)
+	{
+		head = push_token(head, trav->name, trav->type, 0,"NONE");
+		trav = trav->next;
+	}
+	printf("\n");	
+	if (strcmp(trav->name, ";") == 0)
+	{
+		temp = create_temp_var(head);
+		printf(" >> struct name %s\n", temp->name);
+		printf(" >> struct type %s\n", temp->type);
+		printf(" >> struct depth %d\n", temp->depth);
+	}
+	else if (strcmp(trav->name, "{") == 0)
+	{
+		printf("NEXT %s\n", trav->next->name);
+		trav = struct_loop(print);
+		trav = trav->next;
+	}	
+	printf("\n");
+	return trav;
 }
 
 t_token		*struct_loop(t_token *token)
@@ -187,7 +219,7 @@ t_token		*struct_loop(t_token *token)
 			insert_struct_into_db(datatype_name, name, depth);		
 		return (trav);
 	}
-	
+	start = arraypush(start, datatype_name);	
 	trav = trav->next;
 	first_bracket_found = false;
 	brackets = 0;
@@ -201,8 +233,13 @@ t_token		*struct_loop(t_token *token)
 		}	
 		else if (first_bracket_found == true && value_found(trav->name, start) == true)
 		{
+		
 			if (strcmp(trav->name, "struct") == 0) 
-				trav = struct_loop(trav);
+			{
+				printf("HANDLING NESTED STRUCT\n");
+				trav = handle_nested_struct(trav);
+				printf("RETRNING TO HERE %s\n", trav->next->next->name);
+			}
 			else 
 			{
 				temp_var = create_temp_var(trav);
@@ -233,8 +270,10 @@ t_token		*struct_loop(t_token *token)
 		printf("pass\n");
 	else
 		printf("falied\n");
-	start = arraypush(start, datatype_name);
+//	start = arraypush(start, datatype_name);
+
 	free(datatype_name);
+	printf("HERE WE ARE %s\n", trav->name);
 	return (trav);
 }
 

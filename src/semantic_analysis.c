@@ -82,7 +82,7 @@ t_temp_var      *create_temp_var(t_token *token)
 	temp->name = NULL;
 	temp->type = NULL;
         trav = token;
-	/*
+	
 	if (strcmp(trav->name, "struct") == 0)
 	{
 		struct_manager = join_with_space(trav->name, trav->next->name);
@@ -94,7 +94,7 @@ t_temp_var      *create_temp_var(t_token *token)
 			printf("trav after skipping is %s\n", trav->name);
 		}
 	}
-        else */if (value_found(trav->name, start) == true)
+        else if (value_found(trav->name, start) == true)
         {
                 temp->type = strdup(trav->name);
                 trav = trav->next;
@@ -341,6 +341,7 @@ bool	semantic_analysis(t_token *tokens)
 	}
 	printf("SUMMARY =====\n");
 	print_variables();
+	print_structs(all_structs);
 	print_functions(functions);
 	return (true);
 }
