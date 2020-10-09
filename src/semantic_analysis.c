@@ -1,14 +1,15 @@
 
 
+#include "../inc/token.h"
 #include <ctype.h>
 #include "../inc/database.h"
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
 #define FUNCTION 1
 #define WHILE 2
-#define IF 3
+//#define IF 3
 #define FOR 4
-#define DO 5
+//#define DO 5 
 t_struct *all_structs = NULL;
 t_function *functions = NULL;
 t_token	*to_evaluate = NULL;
@@ -285,8 +286,14 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
-			trav = struct_loop(trav);	
-			printf("%s\n", trav->name);
+			trav = struct_loop(trav);
+			t_token *error = NULL;
+			if (strcmp(trav->name, ";") != 0)
+			{
+				printf("FIXING\n");
+				trav = error_recover(trav, "Missing semicolon",
+					push_token(error, ";", "SEMICOLON", 0, "NULL"));	
+			}	
 		}
 		else if (flag_token == true)
 		{
@@ -308,6 +315,7 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			validate_function(head);
 			head = trav;
+			printf("VARIABLE FIXING %s\n", head->name);
 			if (strcmp(trav->name, "{") == 0)
 				add_new_table();
 			if (head && strcmp(head->name, ";") == 0)
@@ -332,6 +340,8 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else
 		{
+			printf("here we go\n");
+		//	trav = error_message(trav, "NV", trav);
 			printf("This was a failed expedition : %s\n", trav->name);
 			return (false);
 		}

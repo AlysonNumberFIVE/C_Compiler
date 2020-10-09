@@ -1,5 +1,7 @@
 
+
 #include <ctype.h>
+#include "../inc/token.h"
 #include "../inc/semantic.h"
 #include "../inc/database.h"
 #include "../inc/compiler.h"
@@ -113,7 +115,10 @@ char	*value_checker(t_token *components)
 	char 	*array_value;	
 	bool	comma_flag;
 	char 	*db_checker;
+	int	comma_count;
+	t_token *error;	
 
+	comma_count = 0;
 	printf(" >>>> components %s\n", components->name);
 	counter = 0;
 	if (strcmp(components->type, "LITERAL") == 0 &&
@@ -149,6 +154,7 @@ char	*value_checker(t_token *components)
 	// handling those shit arrays.
 	if (strcmp(components->name, "{") == 0)
 	{
+		comma_count++;
 		components = components->next;
 	array_value = strdup("{");
 	comma_flag = false;
@@ -157,11 +163,13 @@ char	*value_checker(t_token *components)
 	
 		if (strcmp(components->name, "{") == 0)
 		{
+			comma_count++;
 			//array_value = join_with_space(array_value, components-name);
 			comma_flag = false;
 		}
 		else if (strcmp(components->name, "}") == 0)
 		{
+			comma_count--;
 			//array_value = join_with_space(array_value, components->name);
 			comma_flag = true;
 		}
@@ -169,7 +177,6 @@ char	*value_checker(t_token *components)
 			// verify existence of variable if exists
 		{
 			printf("here we are\n");
-			printf("components %s\n", components->name);
 			if (!is_valid_equation(components, ","))
 			{
 				printf("error: invalid assignment of arrays\n");
@@ -190,6 +197,16 @@ char	*value_checker(t_token *components)
 		components = components->next;
 	}
 	}
+	if (strcmp(components->name, ";") != 0)
+	{
+		printf("testinG\n");
+		error = NULL;
+		components = error_recover(components, "Error : missing semicolon\n",
+			push_token(error, ";", "SEMICOLON", 0, "NULL"));
+		
+	}
+	printf("components->anme %s\n", components->name);
+	printf("COMA COUNT %d\n", comma_count);
 	if (is_valid_equation(components, ";"))
 	{
 		return strdup("AVLID ");

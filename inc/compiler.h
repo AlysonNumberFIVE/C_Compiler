@@ -201,6 +201,9 @@ bool        validate_id(char *str);
 int	    handle_native_csg(char *prev, char *current);
 t_file	    *push_file(t_file *head, char *filename, char *file_content);
 bool        value_found(char *s, char **str);
+t_token	    *error_recover(t_token *token, char *message, t_token *current);
+
+
 
 #endif
 

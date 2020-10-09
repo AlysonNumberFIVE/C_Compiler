@@ -1,5 +1,5 @@
 
-
+/*
 struct _char {
 	char c;
 	int size;
@@ -11,19 +11,19 @@ struct _char {
 			int _42;
 		} m
 	} z;
-};
-
-struct _char x;
+}
+struct _char eeeeeeee;
 struct _int {
 	char *number;
 	struct _int *next;
-}; 
+};
 struct _int a;
 struct _int b;
 struct _char *aosdi;
 int n42 = 4;
-int c = 1 + 2 + 3;
-char *str = {'c', 'd', 'e'};
+int c = 1 + 2 + 3; */
+char *str = {'c', 'd', 'e'}; 
+/*
 char *first;
 char *function(char *name, char **second, int third);
 char *var(char *name);
@@ -38,4 +38,4 @@ void for_loop_test(void)
 		int value = 42;
 	
 	}
-}
+}*/

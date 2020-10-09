@@ -198,6 +198,7 @@ t_token		*struct_loop(t_token *token)
 	t_fvars		*parameter;
 	extern t_struct	*all_structs;
 	char		*datatype_name;
+	t_token		*prev;
 
 	trav = token;
 	datatype_name = join_with_space(token->name, token->next->name);
@@ -273,6 +274,7 @@ t_token		*struct_loop(t_token *token)
 		}
 		else
 			break;
+		prev = trav;
 		trav = trav->next;
 	}
 	if (brackets == 0)
@@ -280,8 +282,8 @@ t_token		*struct_loop(t_token *token)
 	else
 		printf("falied\n");
 //	start = arraypush(start, datatype_name);
-
 	free(datatype_name);
+	printf("Prev is %s\n", prev->name);	
 	printf("HERE WE ARE %s\n", trav->name);
 	return (trav);
 }
