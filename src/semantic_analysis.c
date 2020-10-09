@@ -75,13 +75,26 @@ t_temp_var      *create_temp_var(t_token *token)
         t_hashtable     *variables;
         t_temp_var      *temp;
 	t_token		*trav;
+	char		*struct_manager;
 
         temp = (t_temp_var *)malloc(sizeof(t_temp_var));
         temp->depth = 0;
 	temp->name = NULL;
 	temp->type = NULL;
         trav = token;
-        if (value_found(trav->name, start) == true)
+	/*
+	if (strcmp(trav->name, "struct") == 0)
+	{
+		struct_manager = join_with_space(trav->name, trav->next->name);
+		if (value_found(struct_manager, start) == true)
+		{
+			temp->type = strdup(struct_manager);
+			printf("struct_manager :%s\n", struct_manager);
+			trav = trav->next->next;
+			printf("trav after skipping is %s\n", trav->name);
+		}
+	}
+        else */if (value_found(trav->name, start) == true)
         {
                 temp->type = strdup(trav->name);
                 trav = trav->next;
@@ -273,6 +286,7 @@ bool	semantic_analysis(t_token *tokens)
 		else if (strcmp(trav->name, "struct") == 0)
 		{
 			trav = struct_loop(trav);	
+			printf("%s\n", trav->name);
 		}
 		else if (flag_token == true)
 		{

@@ -12,6 +12,7 @@ struct _int {
 
 struct _int a;
 struct _int b;
+struct _char *aosdi;
 int n42 = 4;
 int c = 1 + 2 + 3;
 char *str = {'c', 'd', 'e'};
@@ -30,6 +31,4 @@ void for_loop_test(void)
 	
 	}
 }
-
-
 

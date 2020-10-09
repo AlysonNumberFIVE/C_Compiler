@@ -3,7 +3,7 @@
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
 
-
+int 	DEBUG = 1;
 t_struct	*new_struct(char *struct_name)
 {
 	t_struct	*new;
@@ -66,10 +66,8 @@ t_struct	*add_struct_variable(t_struct *all_structs, char *struct_name,  t_fvars
 
 bool	verify_struct(char *struct_type, char *var_name)
 {
-
 	if (!does_variable_type_match(struct_type, var_name))
 		return (false);
-
 	return (true);
 }
 
@@ -103,30 +101,43 @@ bool		assert_struct_token(t_token *token, char *sname, char *vname)
 	return (true);		
 }
 
+
+void		create_struct_variable(char *struct_name, char *name, int depth, char *var_name)
+{
+	char *token;
+	char *temp;
+	char *variable;
+
+	if (depth > 1)
+		temp = join(name, "[]->");
+	else if (depth == 0)
+		temp = join(name, ".");
+	else if (depth == 1)
+		temp = join(name, "->");
+	variable = join(temp, var_name);
+	insert_into_db(struct_name, variable, NULL, depth);
+	free(temp);
+}
+
 bool		insert_struct_into_db(char *struct_name, char *name, int depth)
 {
 	extern t_struct *all_structs;
 	t_struct *trav;
 	t_fvars **variables;
-	char **sname = split(struct_name, ' ');
+	int i;
+	char **sname;
+
+	sname = split(struct_name, ' ');
 	trav = all_structs;
 	while (trav)
 	{
-		printf("STRUCT NAME IS %s\n", trav->struct_name);
 		if (strcmp(trav->struct_name, sname[1]) == 0)
 		{	
 			variables = trav->variables;
 			int i = 0;
-			char *tk;
 			while (i < trav->struct_param_number)
 			{
-				if (depth == 0)
-					tk = strdup(".");
-				else
-					tk = strdup("->");	
-				char *variable_name = join(name, join(tk, variables[i]->name));
-				insert_into_db(struct_name, variable_name, NULL, depth);
-				return (true);
+				create_struct_variable(struct_name, name, depth, variables[i]->name);
 				i++;
 			}
 		}
@@ -174,14 +185,14 @@ t_token		*struct_loop(t_token *token)
 			assert_struct_token(trav, type, trav->next->name);
 		else if (strcmp(trav->name, ";") == 0)
 			insert_struct_into_db(datatype_name, name, depth);		
-	
-	
+		return (trav);
 	}
+	
+	trav = trav->next;
 	first_bracket_found = false;
 	brackets = 0;
-	trav = token->next;
 	while (trav)
-	{
+	{	
 		if (first_bracket_found == true && brackets == 0) break;
 		else if (strcmp(trav->type, "ID") == 0 && first_bracket_found == false) 
 		{
@@ -223,9 +234,7 @@ t_token		*struct_loop(t_token *token)
 	else
 		printf("falied\n");
 	start = arraypush(start, datatype_name);
-	printf("datatype name %s\n", datatype_name);
 	free(datatype_name);
-	print_structs(all_structs);
 	return (trav);
 }
 
