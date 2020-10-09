@@ -1,5 +1,5 @@
 
-/*
+
 struct _char {
 	char c;
 	int size;
@@ -21,8 +21,9 @@ struct _int a;
 struct _int b;
 struct _char *aosdi;
 int n42 = 4;
-int c = 1 + 2 + 3; */
-char *str = {'c', 'd', 'e'}; 
+int c = 1 + 2 + 3;
+char *str = {'c', 'd',
+int va = 8;
 /*
 char *first;
 char *function(char *name, char **second, int third);

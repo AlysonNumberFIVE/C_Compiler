@@ -28,7 +28,7 @@ char *hello()
 
 int main(void)
 {
-	va.val ='c';
-
+	int v[5] = {1, 2, 3
+	
 	return (0);
 }

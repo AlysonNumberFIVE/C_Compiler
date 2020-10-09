@@ -7,6 +7,7 @@
 #include "../inc/compiler.h"
 #define FUNCTION 1
 #define WHILE 2
+#define ARR 7
 //#define IF 3
 #define FOR 4
 //#define DO 5 
@@ -261,8 +262,16 @@ bool	semantic_analysis(t_token *tokens)
 	t_hashtable	*ff_list;
 	t_token		*head;
 	extern int	max_number;
-	
+	int		brackets;
+	t_token		*error;	
+	t_token		*back;
+	bool		IS_ARR;
+
+	IS_ARR = false;
+	error = NULL;
+	brackets = 0;
 	max_number= 0;
+	
 	in_function = false;
 	start = split("char const void struct int short double float size_t long longlong signed void", ' ');
         ff_list = first_and_follow();
@@ -277,6 +286,19 @@ bool	semantic_analysis(t_token *tokens)
 	head = trav;
 	while (trav)
 	{
+		printf("trav : %s\n", trav->name);
+		if (strcmp(trav->name, "{") == 0 )
+		{
+			if (prev && strcmp(prev, "=") == 0)
+			{
+				printf("IS_ARRAY IS HIKARI NO WILLPOWER\n");
+				IS_ARR = true;
+			}
+			brackets++;
+		}
+		else if (strcmp(trav->name, "}") == 0)
+			brackets--;
+
 		if (handle_native_csg(prev, trav->name) == 3)
 		{
 			drop_last_table();
@@ -287,7 +309,6 @@ bool	semantic_analysis(t_token *tokens)
 		else if (strcmp(trav->name, "struct") == 0)
 		{
 			trav = struct_loop(trav);
-			t_token *error = NULL;
 			if (strcmp(trav->name, ";") != 0)
 			{
 				printf("FIXING\n");
@@ -313,6 +334,10 @@ bool	semantic_analysis(t_token *tokens)
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
+			printf("================================\n");
+			printf("prev %s\n", prev);
+			printf("HEAD IS %s\n", head->name);
+			printf("Where we are %s\n", trav->name);
 			validate_function(head);
 			head = trav;
 			printf("VARIABLE FIXING %s\n", head->name);
@@ -326,9 +351,16 @@ bool	semantic_analysis(t_token *tokens)
 				in_function = true;
 			}
 		}
-		else if (check_next_token(ff_list, trav->next->name, trav->name) == true)
+		else if (trav->next && check_next_token(ff_list, trav->next->name, trav->name) == true)
 		{
-			if (scan_commands(commands, trav->name) && in_function == true)
+			if (strcmp(trav->name, ",") == 0 && IS_ARR == true && value_found(trav->next->name, start))
+			{
+				error = NULL;
+				trav = forward_recovery(trav, "Error : can only have literals in arrays",
+					push_token(error, "'CHAR'", "CHAR", 0, "NULL")); 
+				back = trav;
+			}
+			if (scan_commands(commands, trav->name) && in_function == true)	
 			{
 				flag_token = true;
 				continue ;
@@ -340,13 +372,56 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else
 		{
-			printf("here we go\n");
+			printf("FAILURE MUCH %s\n", trav->name);
+			if (strcmp(trav->type, "ID") == 0 || strcmp(trav->type, "NUM") == 0 || 
+				strcmp(trav->type, "LITERAL") == 0 || strcmp(trav->type, "CHAR") == 0)
+			{
+				printf("here\n");
+				if (stack && stack->scope_name == FOR)
+				{
+					error = NULL;
+					trav = error_recover(trav, "Error: missing semilcolon", 
+						push_token(error, ";", "SEMICOLON", 0, "NULL"));
+				}	
+				else if (brackets != 0)
+				{
+					error = NULL;
+					trav = forward_recovery(trav, "Error : missing a closing '}'",
+						push_token(error, "}", "CLOSINGBRACKET", 0, "NULL"));
+					brackets--;
+					printf("name is %s\n", trav->name);
+					back = trav;
+					prev = strdup(trav->name);
+				} 
+			}
+			else if (strcmp(trav->name, "}") == 0)
+			{
+				error = NULL;
+				trav = forward_recovery(trav, "Error: missing semicolon",
+					push_token(error, ";", "SEMICOLON", 0, "NULL"));
+				printf("next is %s\n", trav->name);
+				back = trav;
+				prev = strdup(trav->name);
+			}
+			else if (strcmp(trav->name, ",") == 0)
+			{
+				if (strcmp(back->type, "CHAR") == 0)
+				{
+					trav = forward_recovery(trav, "Error: Incomplete list",
+						push_token(error, "'C'", back->type, 0, "NULL"));
+					back = trav;
+					prev = strdup(trav->name);
+				}
+			}
+			printf("value %s\n", trav->name);
+			printf("here we go >>> \n");
 		//	trav = error_message(trav, "NV", trav);
-			printf("This was a failed expedition : %s\n", trav->name);
-			return (false);
+		//	printf("This was a failed expedition : %s\n", trav->name);
+		//	return (false);
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;
+		back = trav;
 		trav = trav->next;
 	}
 	printf("SUMMARY =====\n");

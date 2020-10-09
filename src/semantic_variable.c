@@ -8,6 +8,7 @@
 #define FIRST_ORDER_LENGTH 4
 #define PRIMITIVES_LENGTH 12
 #define RESERVED_LENGTH 33
+#define ARR 7
 /*
 static char reserved[33][9] = {
     "auto\0",     "break\0",    "case\0",     "char\0",
@@ -116,6 +117,7 @@ char	*value_checker(t_token *components)
 	bool	comma_flag;
 	char 	*db_checker;
 	int	comma_count;
+	extern t_stack *stack;
 	t_token *error;	
 
 	comma_count = 0;
@@ -154,13 +156,13 @@ char	*value_checker(t_token *components)
 	// handling those shit arrays.
 	if (strcmp(components->name, "{") == 0)
 	{
+		stack = push_stack(stack, ARR);
 		comma_count++;
 		components = components->next;
 	array_value = strdup("{");
 	comma_flag = false;
 	while (components && strcmp(components->name, ";") != 0)
 	{
-	
 		if (strcmp(components->name, "{") == 0)
 		{
 			comma_count++;
@@ -186,7 +188,7 @@ char	*value_checker(t_token *components)
 			comma_flag = true;
 			printf("afterwards\n");
 		}
-		else if (comma_flag == true && (strcmp(components->name, ",") == 0))
+		else if (comma_flag == true && components && (strcmp(components->name, ",") == 0))
 		{
 			//array_value = join_with_space(array_value, components[counter]);
 			comma_flag = false;
@@ -215,6 +217,7 @@ char	*value_checker(t_token *components)
 		printf("error in length of line\n");
 	printf("EXITING...\n");
 	array_value = strdup("VALID ARRAY\n");
+	stack = pop_stack(stack);
 	return (array_value);		
 }
 

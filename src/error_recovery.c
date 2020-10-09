@@ -5,7 +5,18 @@
 
 
 
+t_token		*forward_recovery(t_token *trav, char *message, t_token *recover)
+{
+	t_token	*next;
+	t_token *current;
 
+	current = trav;
+	next = trav->next;
+	trav->next = recover;
+	recover->next = next;
+	printf("Error : %s\n", message);
+	return (trav);
+}
 
 
 
