@@ -7,15 +7,17 @@ struct _char {
 	struct _char *next;
 	struct new {
 		char *y;	
+		struct _99 {
+			int _42;
+		} m;
 	} z;
 };
-struct _char x;
 
+struct _char x;
 struct _int {
 	char *number;
 	struct _int *next;
-};
-
+}; 
 struct _int a;
 struct _int b;
 struct _char *aosdi;

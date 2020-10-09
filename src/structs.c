@@ -144,13 +144,16 @@ bool		insert_struct_into_db(char *struct_name, char *name, int depth)
 }
 t_token		*struct_loop(t_token *token);
 
-t_token		*handle_nested_struct(t_token *token)
+t_token		*handle_nested_struct(t_token *token, char *struct_name)
 {
 	t_token *trav;
 	t_token	*head;
 	char *datatype_name;
 	t_temp_var *temp;
 	t_token *print;
+	t_temp_var *tvar;
+	t_fvars *parameter;
+	extern t_struct *all_structs;
 
 	trav = token;
 	print = trav;
@@ -172,7 +175,13 @@ t_token		*handle_nested_struct(t_token *token)
 	{
 		printf("NEXT %s\n", trav->next->name);
 		trav = struct_loop(print);
-		trav = trav->next;
+		print->next->next = trav;
+		tvar = create_temp_var(print);
+		trav = tvar->curr;
+		parameter = create_new_parameter(tvar->name, tvar->type, tvar->depth);
+                all_structs = add_struct_variable(all_structs, struct_name, parameter);
+                param_free(parameter);
+		//trav = trav->next;
 	}	
 	printf("\n");
 	return trav;
@@ -237,7 +246,7 @@ t_token		*struct_loop(t_token *token)
 			if (strcmp(trav->name, "struct") == 0) 
 			{
 				printf("HANDLING NESTED STRUCT\n");
-				trav = handle_nested_struct(trav);
+				trav = handle_nested_struct(trav, struct_name);
 				printf("RETRNING TO HERE %s\n", trav->next->next->name);
 			}
 			else 
