@@ -297,8 +297,10 @@ bool	semantic_analysis(t_token *tokens)
 			brackets++;
 		}
 		else if (strcmp(trav->name, "}") == 0)
+		{
+			IS_ARR = false;
 			brackets--;
-
+		}
 		if (handle_native_csg(prev, trav->name) == 3)
 		{
 			drop_last_table();
@@ -359,6 +361,7 @@ bool	semantic_analysis(t_token *tokens)
 				trav = forward_recovery(trav, "Error : can only have literals in arrays",
 					push_token(error, "'CHAR'", "CHAR", 0, "NULL")); 
 				back = trav;
+				prev = trav->name;
 			}
 			if (scan_commands(commands, trav->name) && in_function == true)	
 			{
@@ -385,11 +388,18 @@ bool	semantic_analysis(t_token *tokens)
 				}	
 				else if (brackets != 0)
 				{
+					
 					error = NULL;
 					trav = forward_recovery(trav, "Error : missing a closing '}'",
 						push_token(error, "}", "CLOSINGBRACKET", 0, "NULL"));
-					brackets--;
-					printf("name is %s\n", trav->name);
+					back = trav;
+					prev = strdup(trav->name);
+				}
+				else 
+				{
+					error = NULL;
+					trav = forward_recovery(trav, "Error : missing semicolon",
+						push_token(error, ";", "SEMICOLON", 0, "NULL"));
 					back = trav;
 					prev = strdup(trav->name);
 				} 
@@ -413,6 +423,7 @@ bool	semantic_analysis(t_token *tokens)
 					prev = strdup(trav->name);
 				}
 			}
+			else if (strcmpt
 			printf("value %s\n", trav->name);
 			printf("here we go >>> \n");
 		//	trav = error_message(trav, "NV", trav);

@@ -1,4 +1,4 @@
-
+/*
 
 struct _char {
 	char c;
@@ -20,13 +20,13 @@ struct _int {
 struct _int a;
 struct _int b;
 struct _char *aosdi;
-int n42 = 4;
-int c = 1 + 2 + 3;
-char *str = {'c', 'd',
-int va = 8;
-/*
+int n42 = 4;*/
+int c = 1 + 2 + 3
+char *str = {'c', 'd', 
+int va
 char *first;
-char *function(char *name, char **second, int third);
+char *function(char *name, char **second, int third)
+/*
 char *var(char *name);
 int constant(void);
 int main(int argc, char **argv);

@@ -11,7 +11,7 @@ struct a {
 	int c; 
 	struct x {
 		char val;
-	} *next = NULL;
+	} *next;
 } i42;
 
 struct x va;
@@ -19,16 +19,16 @@ struct x va;
 struct test {
 	struct test *next;
 };
-void	myName(void);
-char *hello()
-{
-	return ("1");
-}
+void	myName(void)
+
+int a;
+int b = aosig;
+int c;
+int d;
 
 
 int main(void)
 {
-	int v[5] = {1, 2, 3
 	
 	return (0);
 }
