@@ -123,7 +123,11 @@ This is where the First and Follow gets murky in C. But first a quick explanatio
  This is valid C code but is completely dependent on what `X` is for it to be computed. This can be interpreted as either `y` being multiplied by the value of `X`, or `y` being a pointer variable of the `typedef/define`d  data structure `X`. This grammar can't be computed without looking somewhere in memory for an explanation as to what `X` is.<br><br>
 
 The bad news is that C is both context free and context sensitive at the same time. The good news is that it's far more context free than it is sensitive. Understanding this will be important for understanding how to control the main semantic analysis loop because some tokens  that are context sensitive can't be checked as loosely as the language's other context free counterparts. One irritating example I still have nightmares about is the elusive `{` token. It's sometimes the start of a scope block and other times it's the start of an `array`. So with this token, you have to check that the previous token isn't a `=` variable. If it is, it's treated as an array and all other times it's treated as a scope block.<br><br>
-Simple enough, right? Yeah, I made the mistake of thinking that too.
+Simple enough, right? Yeah, I made the mistake of thinking that too. With this in mind, the First and Follow structure for the C language gets a layer of depth added to it that lends to its complexity. Details like; sure a `{` token is valid to follow after a `=` token but thats only in a special case and no other. Similarly unless we're ending an array, a `;` _cannot_ follow a `}`; another unique check with only one scenario.<br><br>
+But more on that in due time. I still have to fix my code.<br><br>
+Next, we'll discuss errors recovery. The idea makes use of the First and Follow concept. But more on that when I've made some headway on it.<br><br>
+
+### Work in Progress by AlysonBee (Alyson Ngonyama).
 
 
 
