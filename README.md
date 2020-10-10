@@ -93,7 +93,7 @@ function lexer(files):
 As the analysis step is far from ready for prime time, I thought I might prep your appetite with a little bit of theory that's necessarly to understand how to do semantic analysis correctly (althogh having said this, there's probably tons of ways to do it but these are the techniques I learnt from the above sources).<br>
 The two important concepts which took me a bit of work and further research apart from the above sources to understand are the concepts of <b>First and Follow</b> and <b>Context Free/Sensitive Grammars</b>. These ideas are critical when it comes to designing a compiler and, for the more ambitious ones of you out there, designing a language from scratch. A lot of my struggles came from translating the theory, which focuses on general langauge design, into practice with the C language's standard. So let's go over them briefly and look at some examples of what these concepts look like practically in C.<br><br>
 
-### First and Follow
+#### First and Follow
 First and Follow is the concept of tokens and what tokens are legallly allowed to follow after one another. So the <b>FIRST</b> token will have a list of tokens that are allowed to <b>FOLLOW</b>. In my program, this datastructure is a custom hashtable where the KEYs are the FIRST tokens and the VALUEs are the FOLLOW tokens.<br>
 Let's take the example of the following source code that demonstrates what I'm talking about:
 
@@ -111,6 +111,24 @@ Another example, using the same code snippet above would be the `=` token. The v
 {"=": ["ID", "FLOAT", "LITERAL", "CHAR", "{", ...]}
 ```
 It's simple enough to implement as C already has it's first and follow mapped out for us because it's existed for decades. I imagine it's a lot harder to implement if you had to make a language from scratch and design its ruleset. This concept is fairly straightforward I hope. If you'd like to know a little more about the theory of First and Follow, the best video I came across on YouTube was <a href="https://youtu.be/SBnjVW8dUqo" blank_="">this</a> one by Mifta Sintaha (incidentally, check out her Github here <a href="https://github.com/msintaha">@msintaha</a>. Her teachings were invaluable).<br>
+
+#### Context Free/Context Sensitive Grammar
+This is where the First and Follow gets murky in C. But first a quick explanation...<br><br>
+
+<b>Context Free Grammars</b> are languages (or 'grammars') with tokens (or 'terminals') that, when 'seen/scanned/parsed', their use is completely unambiguous and is understood without further context needed. Take the example of the token `=`. This token in C is completely context free because there's never a circumstance in C where this token is used for anything else but _assignment_ of the variable on the left with the contents on the right. It's completely context free, very unambiguous and an absolute dream to work with. The good thing is that C _is_ a context free language... sort of.<br><br>
+<b>Context Sensitive Grammar</b> are the grammars that require an 'explanation' before determining what the tokens are for and how they're being used. Let's use one of my favorite examples that always gets me a 'wow' when I show it to others.
+ ```
+ X * y
+ ```
+ This is valid C code but is completely dependent on what `X` is for it to be computed. This can be interpreted as either `y` being multiplied by the value of `X`, or `y` being a pointer variable of the `typedef/define`d  data structure `X`. This grammar can't be computed without looking somewhere in memory for an explanation as to what `X` is.<br><br>
+
+The bad news is that C is both context free and context sensitive at the same time. The good news is that it's far more context free than it is sensitive. Understanding this will be important for understanding how to control the main semantic analysis loop because some tokens  that are context sensitive can't be checked as loosely as the language's other context free counterparts. One irritating example I still have nightmares about is the elusive `{` token. It's sometimes the start of a scope block and other times it's the start of an `array`. So with this token, you have to check that the previous token isn't a `=` variable. If it is, it's treated as an array and all other times it's treated as a scope block.<br><br>
+Simple enough, right? Yeah, I made the mistake of thinking that too.
+
+
+
+ 
+ 
 
 
 
