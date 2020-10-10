@@ -85,37 +85,6 @@ t_token     *scan(char *buffer, t_hashtable *table)
     return (NULL);
 }
 
-
-/*
-void    print_token(t_token *token)
-{
-    t_token *trav;
-    printf("here\n");
-    trav = token;
-    while (trav)
-    {
-        printf("%s : %s\n", trav->name, trav->type);
-        trav = trav->next;
-    }
-}*/
-
-// testing 
-/*
-char    *test_file(char *filename)
-{
-    int fd;
-    struct stat info;
-    char *content;
-
-    fd = open(filename, O_RDONLY);
-    fstat(fd, &info);
-    content = (char *)malloc(sizeof(char) * info.st_size + 1);
-    read(fd, content, info.st_size);
-    content[info.st_size] = '\0';
-    close(fd);
-    return (content);
-}*/
-
 t_hashtable     *key_token(void)
 {
     t_hashtable *table;
@@ -146,62 +115,36 @@ t_hashtable     *key_token(void)
     return (table);
 }
 
-t_token     *lexer(t_file *file_list)
+t_token     *lexer(t_file *next_file)
 {
     t_hashtable *table;
     t_token     *list;
     t_token     *temp;
     size_t      size;
-    t_file	*next_file;
+    t_file	*file_list;
 
     list = NULL;
     table = key_token();
-    next_file = file_list;
-    while (next_file)
+    file_list = next_file;
+    while (file_list)
     {    
-        line = 0;
+        line = 1;
         read_count = 0;
     	size = strlen(file_list->solidcontent);
-	current_file = strdup(file_list->filename);   
+	current_file = strdup(file_list->filename); 
+	
 	while (read_count < size)
     	{
 	    temp = scan(file_list->solidcontent, table);
             if (temp)
             {
-            	list = push_token(list, temp->name, temp->type, line, file_list->filename);
+         	list = push_token(list, temp->name, temp->type, temp->line, file_list->filename);
             	free_token(temp); 
             }
         }
-	next_file = next_file->next;
+	file_list = file_list->next;
     }
+   
     return (list);
 }
-/*
-int main(int argc, char **argv)
-{
-    char *buffer = test_file(argv[1]);
-    //printf("%s\n", buffer);
-    
-    t_hashtable *table;
-    
-    table = key_token(); 
-    t_token *list = NULL;
-    size_t size = strlen(buffer);
-    while (read_count < size)
-    {
-        t_token *temp = scan(buffer, table);
-        if (temp)
-	{
-            list = push_token(list, temp->name, temp->type);
-	    free(temp->name);
-	    free(temp->type);
-	    free(temp);
-	}   
-    }
-//    list = lexer(buffer);
-
-    print_token(list);
-
-    return (0);
-}*/
 

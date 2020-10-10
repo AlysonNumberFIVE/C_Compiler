@@ -1,7 +1,7 @@
 
 #include "../inc/compiler.h"
 
-t_token *new_token(char *name, char *type, int line, char *filename)
+t_token *new_token(char *name, char *type, size_t line, char *filename)
 {
     t_token *new;
 
@@ -14,7 +14,7 @@ t_token *new_token(char *name, char *type, int line, char *filename)
     return (new);
 }
 
-t_token *add_token(t_token *first, char *name, char *type, int line, char *filename)
+t_token *add_token(t_token *first, char *name, char *type, size_t line, char *filename)
 {
     t_token *last;
 
@@ -27,12 +27,13 @@ t_token *add_token(t_token *first, char *name, char *type, int line, char *filen
     last->next->name = strdup(name);
     last->next->type = strdup(type);
     last->next->filename = strdup(filename);
+    last->next->line = line;
     last->next->next = NULL;
      
     return (last);
 }
 
-t_token *push_token(t_token *first, char *name, char *type, int line, char *filename)
+t_token *push_token(t_token *first, char *name, char *type, size_t line, char *filename)
 {
     t_token *last;
 

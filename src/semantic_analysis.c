@@ -417,13 +417,21 @@ bool	semantic_analysis(t_token *tokens)
 			{
 				if (strcmp(back->type, "CHAR") == 0)
 				{
+					error = NULL;
 					trav = forward_recovery(trav, "Error: Incomplete list",
 						push_token(error, "'C'", back->type, 0, "NULL"));
 					back = trav;
 					prev = strdup(trav->name);
 				}
 			}
-			else if (strcmpt
+			else if (value_found(trav->name, start) == true)
+			{
+				error = NULL;
+				trav = forward_recovery(trav, "Error: variable missing",
+					push_token(error, "X", "ID", 0, "NULL"));
+				back = trav;
+				prev = strdup(trav->name);
+			}
 			printf("value %s\n", trav->name);
 			printf("here we go >>> \n");
 		//	trav = error_message(trav, "NV", trav);

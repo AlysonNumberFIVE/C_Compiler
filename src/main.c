@@ -30,7 +30,7 @@ void    print_token(t_token *token)
     trav = token;
     while (trav)
     {
-        printf("%s : %s\n", trav->name, trav->type);
+        printf("line: %zu %s : %s\n", trav->line, trav->name, trav->type);
         trav = trav->next;
     }
 }
@@ -88,7 +88,7 @@ int	main(int argc, char **argv)
 //	print_files(files);
 
 	tokens = lexer(files);
-	semantic_analysis(tokens);
-//	print_token(tokens);	
+//	semantic_analysis(tokens);
+	print_token(tokens);	
 	return (0);	
 }
