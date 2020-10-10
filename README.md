@@ -89,11 +89,28 @@ function lexer(files):
  
  ### Semantic Analysis
  This step has to be the hardest part of this project. It's made worse by the fact that this step has a lot of room for some really nice class inheritance but as C doesn't support classes, there was a lot of repeated logic which (at time of writing) I'm currently working on fixing 
- 
 
+As the analysis step is far from ready for prime time, I thought I might prep your appetite with a little bit of theory that's necessarly to understand how to do semantic analysis correctly (althogh having said this, there's probably tons of ways to do it but these are the techniques I learnt from the above sources).<br>
+The two important concepts which took me a bit of work and further research apart from the above sources to understand are the concepts of <b>First and Follow</b> and <b>Context Free/Sensitive Grammars</b>. These ideas are critical when it comes to designing a compiler and, for the more ambitious ones of you out there, designing a language from scratch. A lot of my struggles came from translating the theory, which focuses on general langauge design, into practice with the C language's standard. So let's go over them briefly and look at some examples of what these concepts look like practically in C.<br><br>
 
+### First and Follow
+First and Follow is the concept of tokens and what tokens are legallly allowed to follow after one another. So the <b>FIRST</b> token will have a list of tokens that are allowed to <b>FOLLOW</b>. In my program, this datastructure is a custom hashtable where the KEYs are the FIRST tokens and the VALUEs are the FOLLOW tokens.<br>
+Let's take the example of the following source code that demonstrates what I'm talking about:
 
-
+```
+char *str = "42";
+```
+In the above, we'd start by looking at the `char` token. Using the above hashtable concept, the `char` is our KEY. Next, we'll need a list of tokens that are _allowed_ to follow after `char`. A few that come to mind are `*` or variable names and even `)` (for typecasting rules).
+Our First and Follow mapping for `char` would look like this.
+```
+{"char": ["*", "ID", ")"]}
+```
+These are legally, in at least 1 circumstance in the language, allowed to follow after the token `char`.<br><br>
+Another example, using the same code snippet above would be the `=` token. The values allowed to directly follow this token are `ID`s (variables), `(`, `NUM`s, `FLOAT`s, `LITERAL`s (strings) `CHAR`s (characters), `{` (for array initialization), `&` for variable referencing and probably a few others I'm forgetting. The `=` first and follow structure would then look something like this<br>
+```
+{"=": ["ID", "FLOAT", "LITERAL", "CHAR", "{", ...]}
+```
+It's simple enough to implement as C already has it's first and follow mapped out for us because it's existed for decades. I imagine it's a lot harder to implement if you had to make a language from scratch and design its ruleset. This concept is fairly straightforward I hope. If you'd like to know a little more about the theory of First and Follow, the best video I came across on YouTube was <a href="https://youtu.be/SBnjVW8dUqo" blank_="">this</a> one by Mifta Sintaha (incidentally, check out her Github here <a href="https://github.com/msintaha">@msintaha</a>. Her teachings were invaluable).<br>
 
 
 
