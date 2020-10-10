@@ -26,11 +26,10 @@ char    *read_file(char *filename)
 void    print_token(t_token *token)
 {
     t_token *trav;
-    printf("here\n");
     trav = token;
     while (trav)
     {
-        printf("line: %zu %s : %s\n", trav->line, trav->name, trav->type);
+        printf("line: %u %s : %s\n", trav->line, trav->name, trav->type);
         trav = trav->next;
     }
 }
@@ -85,10 +84,13 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	files = get_files(argc, argv);
-//	print_files(files);
 
 	tokens = lexer(files);
-//	semantic_analysis(tokens);
-	print_token(tokens);	
+
+	semantic_analysis(tokens);
+//	print_token(tokens);	
+
+	//  three_address_code(tokens);
+
 	return (0);	
 }

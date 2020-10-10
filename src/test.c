@@ -22,8 +22,8 @@ struct _int b;
 struct _char *aosdi;
 int n42 = 4;*/
 int c = 1 + 2 + 3;
-//char *str = {'c', 'd', 
-/*int va
+char *str = {'c', 'd', 
+int va
 char 
 char *first;
 char *function(char *name, char **second, int third)
@@ -40,4 +40,4 @@ void for_loop_test(void)
 		int value = 42;
 	
 	}
-}*/
+}

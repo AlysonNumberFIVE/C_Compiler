@@ -313,9 +313,8 @@ bool	semantic_analysis(t_token *tokens)
 			trav = struct_loop(trav);
 			if (strcmp(trav->name, ";") != 0)
 			{
-				printf("FIXING\n");
 				trav = error_recover(trav, "Missing semicolon",
-					push_token(error, ";", "SEMICOLON", 0, "NULL"));	
+					push_token(error, ";", "SEMICOLON", trav->line, "NULL"));	
 			}	
 		}
 		else if (flag_token == true)
@@ -359,7 +358,7 @@ bool	semantic_analysis(t_token *tokens)
 			{
 				error = NULL;
 				trav = forward_recovery(trav, "Error : can only have literals in arrays",
-					push_token(error, "'CHAR'", "CHAR", 0, "NULL")); 
+					push_token(error, "'CHAR'", "CHAR", trav->line, "NULL")); 
 				back = trav;
 				prev = trav->name;
 			}
@@ -384,14 +383,14 @@ bool	semantic_analysis(t_token *tokens)
 				{
 					error = NULL;
 					trav = error_recover(trav, "Error: missing semilcolon", 
-						push_token(error, ";", "SEMICOLON", 0, "NULL"));
+						push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
 				}	
 				else if (brackets != 0)
 				{
 					
 					error = NULL;
 					trav = forward_recovery(trav, "Error : missing a closing '}'",
-						push_token(error, "}", "CLOSINGBRACKET", 0, "NULL"));
+						push_token(error, "}", "CLOSINGBRACKET", trav->line, "NULL"));
 					back = trav;
 					prev = strdup(trav->name);
 				}
@@ -399,7 +398,7 @@ bool	semantic_analysis(t_token *tokens)
 				{
 					error = NULL;
 					trav = forward_recovery(trav, "Error : missing semicolon",
-						push_token(error, ";", "SEMICOLON", 0, "NULL"));
+						push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
 					back = trav;
 					prev = strdup(trav->name);
 				} 
@@ -408,8 +407,7 @@ bool	semantic_analysis(t_token *tokens)
 			{
 				error = NULL;
 				trav = forward_recovery(trav, "Error: missing semicolon",
-					push_token(error, ";", "SEMICOLON", 0, "NULL"));
-				printf("next is %s\n", trav->name);
+					push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
 				back = trav;
 				prev = strdup(trav->name);
 			}
@@ -419,7 +417,7 @@ bool	semantic_analysis(t_token *tokens)
 				{
 					error = NULL;
 					trav = forward_recovery(trav, "Error: Incomplete list",
-						push_token(error, "'C'", back->type, 0, "NULL"));
+						push_token(error, "'C'", back->type, trav->line, "NULL"));
 					back = trav;
 					prev = strdup(trav->name);
 				}
@@ -428,7 +426,7 @@ bool	semantic_analysis(t_token *tokens)
 			{
 				error = NULL;
 				trav = forward_recovery(trav, "Error: variable missing",
-					push_token(error, "X", "ID", 0, "NULL"));
+					push_token(error, "X", "ID", trav->line, "NULL"));
 				back = trav;
 				prev = strdup(trav->name);
 			}
