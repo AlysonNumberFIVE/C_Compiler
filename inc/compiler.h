@@ -203,6 +203,7 @@ t_file	    *push_file(t_file *head, char *filename, char *file_content);
 bool        value_found(char *s, char **str);
 t_token	    *error_recover(t_token *token, char *message, t_token *current);
 t_token	    *forward_recovery(t_token *token, char *message, t_token *current);
+t_token	    *panic_mode(t_token *trav, t_token *back, int brackets);
 
 #endif
 
