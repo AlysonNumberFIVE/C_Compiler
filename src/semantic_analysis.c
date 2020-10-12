@@ -57,18 +57,6 @@ bool	validate_num(char *str)
 	return (true);
 }
 
-
-
-/*
-typedef struct s_variable_block
-{
-        char *name;
-        char *type;
-        t_token *curr;
-        int depth;
-}       t_temp_var;
-*/
-
 t_temp_var      *create_temp_var(t_token *token)
 {
         int             depth;
@@ -91,9 +79,7 @@ t_temp_var      *create_temp_var(t_token *token)
 		if (value_found(struct_manager, start) == true)
 		{
 			temp->type = strdup(struct_manager);
-			printf("struct_manager :%s\n", struct_manager);
 			trav = trav->next->next;
-			printf("trav after skipping is %s\n", trav->name);
 		}
 	}
         else if (value_found(trav->name, start) == true)
@@ -251,13 +237,14 @@ char	**command_blocks(void)
 	return (blocks);
 }
 
+ 
 bool	semantic_analysis(t_token *tokens)
 {
 	t_token		*trav;
 	char		**next;
 	char		**commands;
 	char		*prev;
-	bool		flag_token;
+	bool		entering_command_block;
 	bool		in_function;
 	t_hashtable	*ff_list;
 	t_token		*head;
@@ -271,7 +258,6 @@ bool	semantic_analysis(t_token *tokens)
 	error = NULL;
 	brackets = 0;
 	max_number= 0;
-	
 	in_function = false;
 	start = split("char const void struct int short double float size_t long longlong signed void", ' ');
         ff_list = first_and_follow();
@@ -281,19 +267,15 @@ bool	semantic_analysis(t_token *tokens)
 		printf("Your code is shit and you deserve to die\n");
 		return (false);
 	}
-	flag_token = false;
+	entering_command_block = false;
 	trav = tokens;
 	head = trav;
 	while (trav)
 	{
-		printf("trav : %s\n", trav->name);
 		if (strcmp(trav->name, "{") == 0 )
 		{
 			if (prev && strcmp(prev, "=") == 0)
-			{
-				printf("IS_ARRAY IS HIKARI NO WILLPOWER\n");
 				IS_ARR = true;
-			}
 			brackets++;
 		}
 		else if (strcmp(trav->name, "}") == 0)
@@ -305,19 +287,17 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			drop_last_table();
 			stack = pop_stack(stack);
-			if (trav->next == NULL)
-				break ;
+		//	if (trav->next == NULL)
+		//		break ;
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
 			trav = struct_loop(trav);
 			if (strcmp(trav->name, ";") != 0)
-			{
-				trav = error_recover(trav, "Missing semicolon",
+				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, "NULL"));	
-			}	
 		}
-		else if (flag_token == true)
+		else if (entering_command_block == true)
 		{
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav);
@@ -328,20 +308,15 @@ bool	semantic_analysis(t_token *tokens)
 			*/
 			stack = push_stack(stack, FOR);
 			add_new_table();
-			prev = trav->name;
+		//	prev = trav->name;
 			head = trav;
-			flag_token = false;
+			entering_command_block = false;
 		}
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
-			printf("================================\n");
-			printf("prev %s\n", prev);
-			printf("HEAD IS %s\n", head->name);
-			printf("Where we are %s\n", trav->name);
 			validate_function(head);
 			head = trav;
-			printf("VARIABLE FIXING %s\n", head->name);
 			if (strcmp(trav->name, "{") == 0)
 				add_new_table();
 			if (head && strcmp(head->name, ";") == 0)
@@ -359,13 +334,13 @@ bool	semantic_analysis(t_token *tokens)
 				error = NULL;
 				trav = forward_recovery(trav, "Error : can only have literals in arrays",
 					push_token(error, "'CHAR'", "CHAR", trav->line, "NULL")); 
-				back = trav;
-				prev = trav->name;
+			//	back = trav;
+			//	prev = trav->name;
 			}
 			if (scan_commands(commands, trav->name) && in_function == true)	
 			{
-				flag_token = true;
-				continue ;
+				entering_command_block = true;
+		//		continue ;
 			}
 			else if (scan_commands(commands, trav->name) && in_function == false)
 				printf("error : can't have %s outside function scope\n",
@@ -374,71 +349,14 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else
 		{
-			printf("FAILURE MUCH %s\n", trav->name);
-			if (strcmp(trav->type, "ID") == 0 || strcmp(trav->type, "NUM") == 0 || 
-				strcmp(trav->type, "LITERAL") == 0 || strcmp(trav->type, "CHAR") == 0)
-			{
-				printf("here\n");
-				if (stack && stack->scope_name == FOR)
-				{
-					error = NULL;
-					trav = error_recover(trav, "Error: missing semilcolon", 
-						push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
-				}	
-				else if (brackets != 0)
-				{
-					
-					error = NULL;
-					trav = forward_recovery(trav, "Error : missing a closing '}'",
-						push_token(error, "}", "CLOSINGBRACKET", trav->line, "NULL"));
-					back = trav;
-					prev = strdup(trav->name);
-				}
-				else 
-				{
-					error = NULL;
-					trav = forward_recovery(trav, "Error : missing semicolon",
-						push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
-					back = trav;
-					prev = strdup(trav->name);
-				} 
-			}
-			else if (strcmp(trav->name, "}") == 0)
-			{
-				error = NULL;
-				trav = forward_recovery(trav, "Error: missing semicolon",
-					push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
-				back = trav;
-				prev = strdup(trav->name);
-			}
-			else if (strcmp(trav->name, ",") == 0)
-			{
-				if (strcmp(back->type, "CHAR") == 0)
-				{
-					error = NULL;
-					trav = forward_recovery(trav, "Error: Incomplete list",
-						push_token(error, "'C'", back->type, trav->line, "NULL"));
-					back = trav;
-					prev = strdup(trav->name);
-				}
-			}
-			else if (value_found(trav->name, start) == true)
-			{
-				error = NULL;
-				trav = forward_recovery(trav, "Error: variable missing",
-					push_token(error, "X", "ID", trav->line, "NULL"));
-				back = trav;
-				prev = strdup(trav->name);
-			}
-			printf("value %s\n", trav->name);
-			printf("here we go >>> \n");
-		//	trav = error_message(trav, "NV", trav);
-		//	printf("This was a failed expedition : %s\n", trav->name);
-		//	return (false);
+			trav = panic_mode(trav, back, brackets);
+		//	back = trav;
+		//	prev = strdup(trav->name);
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;
 		back = trav;
+		prev = strdup(trav->name);
 		trav = trav->next;
 	}
 	printf("SUMMARY =====\n");

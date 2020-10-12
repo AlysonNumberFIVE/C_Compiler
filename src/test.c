@@ -1,4 +1,3 @@
-/*
 
 struct _char {
 	char c;
@@ -9,7 +8,7 @@ struct _char {
 		char *y;	
 		struct _99 {
 			int _42;
-		} m
+		} m;
 	} z;
 }
 struct _char eeeeeeee;
@@ -20,10 +19,11 @@ struct _int {
 struct _int a;
 struct _int b;
 struct _char *aosdi;
-int n42 = 4;*/
-int c = 1 + 2 + 3;
+int n42 = 4;
+int c = 1 + 2 + 3,;
 char *str = {'c', 'd', 
 int va
+
 char 
 char *first;
 char *function(char *name, char **second, int third)
