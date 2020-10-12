@@ -65,13 +65,10 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				strcmp(equation->type, "LITERA") == 0)
 			{
 				symbol = true;
-				if (strcmp(equation->type, "NUM") != 0)
-					printf("Warning : mismatch in datatypes\n");
 			}
 			else
 			{
-				printf("equ : %s\n", equation->name);
-				printf("error : A token or something is out of place\n");
+				//printf("error : A token or something is out of place\n");
 				return (false);
 			}
                 }
@@ -83,7 +80,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                                 symbol = false;
                         else
 			{
-                                printf("erron : invalid equation\n");\
+                                //printf("erron : invalid equation\n");
 				return (false);
 			}
 		}
@@ -94,7 +91,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 		printf("error in brackets\n");
 		return (false);
 	}
-        printf("symbol is %d\n", symbol);
+ //       printf("symbol is %d\n", symbol);
         return (true);
 }
 

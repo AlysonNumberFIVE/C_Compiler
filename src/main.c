@@ -8,6 +8,8 @@
 #include "../inc/semantic.h"
 #include "../inc/token.h"
 
+t_file	*files = NULL;
+
 char    *read_file(char *filename)
 {
     int fd;
@@ -76,7 +78,6 @@ void	print_files(t_file *files)
 
 int	main(int argc, char **argv)
 {
-	t_file *files;
 	t_token *tokens;
 	if (argc < 2)
 	{

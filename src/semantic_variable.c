@@ -121,7 +121,6 @@ char	*value_checker(t_token *components)
 	t_token *error;	
 
 	comma_count = 0;
-	printf(" >>>> components %s\n", components->name);
 	counter = 0;
 	if (strcmp(components->type, "LITERAL") == 0 &&
 		strcmp(components->next->name, ";") == 0)
@@ -166,31 +165,25 @@ char	*value_checker(t_token *components)
 		if (strcmp(components->name, "{") == 0)
 		{
 			comma_count++;
-			//array_value = join_with_space(array_value, components-name);
 			comma_flag = false;
 		}
 		else if (strcmp(components->name, "}") == 0)
 		{
 			comma_count--;
-			//array_value = join_with_space(array_value, components->name);
 			comma_flag = true;
 		}
 		else if (comma_flag == false) // ||
 			// verify existence of variable if exists
 		{
-			printf("here we are\n");
 			if (!is_valid_equation(components, ","))
 			{
 				printf("error: invalid assignment of arrays\n");
 				return (NULL);	
 			}
-			// array_value = join_with_space(array_value, components[counter]);
 			comma_flag = true;
-			printf("afterwards\n");
 		}
 		else if (comma_flag == true && components && (strcmp(components->name, ",") == 0))
 		{
-			//array_value = join_with_space(array_value, components[counter]);
 			comma_flag = false;
 		}
 		else
@@ -207,15 +200,12 @@ char	*value_checker(t_token *components)
 			push_token(error, ";", "SEMICOLON", 0, "NULL"));
 		
 	}
-	printf("components->anme %s\n", components->name);
-	printf("COMA COUNT %d\n", comma_count);
 	if (is_valid_equation(components, ";"))
 	{
 		return strdup("AVLID ");
 	}
 	if (strcmp(components->name, ";") != 0)
 		printf("error in length of line\n");
-	printf("EXITING...\n");
 	array_value = strdup("VALID ARRAY\n");
 	stack = pop_stack(stack);
 	return (array_value);		

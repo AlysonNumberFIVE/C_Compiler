@@ -287,15 +287,13 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			drop_last_table();
 			stack = pop_stack(stack);
-		//	if (trav->next == NULL)
-		//		break ;
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
 			trav = struct_loop(trav);
 			if (strcmp(trav->name, ";") != 0)
 				trav = error_recover(trav, "Missing semicolon", 
-					push_token(error, ";", "SEMICOLON", trav->line, "NULL"));	
+					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
 		}
 		else if (entering_command_block == true)
 		{
@@ -332,27 +330,18 @@ bool	semantic_analysis(t_token *tokens)
 			if (strcmp(trav->name, ",") == 0 && IS_ARR == true && value_found(trav->next->name, start))
 			{
 				error = NULL;
-				trav = forward_recovery(trav, "Error : can only have literals in arrays",
-					push_token(error, "'CHAR'", "CHAR", trav->line, "NULL")); 
-			//	back = trav;
-			//	prev = trav->name;
+				trav = forward_recovery(trav, "can only have literals in arrays",
+					push_token(error, "'CHAR'", "CHAR", trav->line, trav->filename)); 
 			}
 			if (scan_commands(commands, trav->name) && in_function == true)	
-			{
 				entering_command_block = true;
-		//		continue ;
-			}
 			else if (scan_commands(commands, trav->name) && in_function == false)
 				printf("error : can't have %s outside function scope\n",
 					trav->name);
 			prev = trav->name;
 		}
 		else
-		{
 			trav = panic_mode(trav, back, brackets);
-		//	back = trav;
-		//	prev = strdup(trav->name);
-		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;
 		back = trav;

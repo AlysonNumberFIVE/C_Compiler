@@ -3,6 +3,24 @@
 #include "../inc/token.h"
 #include "../inc/compiler.h"
 
+
+void	print_error_message(t_token *position)
+{
+	t_file	*trav;
+	extern t_file *files;
+
+	trav = files;
+	while (trav)
+	{
+		if (strcmp(position->filename, files->filename) == 0)
+		{
+			printf("%s\n\n", trav->content[position->line - 1]);
+			break;
+		}
+		trav = trav->next;
+	}
+}
+
 t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
 {
 	t_token	*error;
@@ -14,43 +32,49 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
        	{
 		if (stack && stack->scope_name == 4)
                 {
-               		error = NULL;
-                       	trav = error_recover(trav, "Error: missing semilcolon",
-                        	push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
+               		error = NULL; printf("%s %d ", trav->filename, trav->line);
+			print_error_message(trav);
+                       	trav = error_recover(trav, "missing semilcolon",
+                        	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));       			
                 }
                 else if (brackets != 0)
                 {
-                       	error = NULL;
-                        trav = forward_recovery(trav, "Error : missing a closing '}'",
-                        	push_token(error, "}", "CLOSINGBRACKET", trav->line, "NULL"));
+                       	error = NULL; printf("%s %d ", trav->filename, trav->line);
+			print_error_message(trav);
+                        trav = forward_recovery(trav, "missing a closing '}'",
+                        	push_token(error, "}", "CLOSINGBRACKET", trav->line, trav->filename));
                  }
                  else
                  {
-                 	error = NULL;
-                        trav = forward_recovery(trav, "Error : missing semicolon",
-                        	push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
+                 	error = NULL; printf("%s %d ", trav->filename, trav->line);
+			print_error_message(trav);
+                        trav = forward_recovery(trav, "missing semicolon",
+                        	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));
                 }
          }
          else if (strcmp(trav->name, "}") == 0)
          {
-          	error = NULL;
-          	trav = forward_recovery(trav, "Error: missing semicolon",
-                	push_token(error, ";", "SEMICOLON", trav->line, "NULL"));
+          	error = NULL; printf("%s %d ", trav->filename, trav->line);
+		print_error_message(trav);
+          	trav = forward_recovery(trav, "missing semicolon",
+                	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));
          }
          else if (strcmp(trav->name, ",") == 0)
          {
           	if (strcmp(back->type, "CHAR") == 0)
                 {
-                	error = NULL;
-                        trav = forward_recovery(trav, "Error: Incomplete list",
-                                push_token(error, "'C'", back->type, trav->line, "NULL"));
+                	error = NULL; printf("%s %d ", trav->filename, trav->line);
+			print_error_message(trav);
+                        trav = forward_recovery(trav, "incomplete list",
+                                push_token(error, "'C'", back->type, trav->line, trav->filename));
                 }
          }
          else if (value_found(trav->name, start) == true)
          {
-          	error = NULL;
-                trav = forward_recovery(trav, "Error: variable missing",
-                        push_token(error, "X", "ID", trav->line, "NULL"));
+          	error = NULL; printf("%s %d ", trav->filename, trav->line);
+		print_error_message(trav);
+                trav = forward_recovery(trav, "variable missing",
+                        push_token(error, "X", "ID", trav->line, trav->filename));
          }
 	 return	(trav);
 }
