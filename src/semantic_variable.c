@@ -158,52 +158,55 @@ char	*value_checker(t_token *components)
 		stack = push_stack(stack, ARR);
 		comma_count++;
 		components = components->next;
-	array_value = strdup("{");
-	comma_flag = false;
-	while (components && strcmp(components->name, ";") != 0)
-	{
-		if (strcmp(components->name, "{") == 0)
+		array_value = strdup("{");
+		comma_flag = false;
+		while (components && strcmp(components->name, ";") != 0)
 		{
-			comma_count++;
-			comma_flag = false;
-		}
-		else if (strcmp(components->name, "}") == 0)
-		{
-			comma_count--;
-			comma_flag = true;
-		}
-		else if (comma_flag == false) // ||
-			// verify existence of variable if exists
-		{
-			if (!is_valid_equation(components, ","))
+			if (strcmp(components->name, "{") == 0)
 			{
-				printf("error: invalid assignment of arrays\n");
-				return (NULL);	
+				comma_count++;
+				comma_flag = false;
 			}
-			comma_flag = true;
-		}
-		else if (comma_flag == true && components && (strcmp(components->name, ",") == 0))
-		{
-			comma_flag = false;
-		}
-		else
-			printf("Error : incorrect variable blah blah\n");
-	
+			else if (strcmp(components->name, "}") == 0)
+			{
+				comma_count--;
+				comma_flag = true;
+			}
+			else if (comma_flag == false) // ||
+				// verify existence of variable if exists
+			{
+				if (!is_valid_equation(components, ","))
+				{
+					printf("error: invalid assignment of arrays\n");
+					return (NULL);	
+				}
+				comma_flag = true;
+			}
+			else if (comma_flag == true && components && (strcmp(components->name, ",") == 0))
+			{
+				comma_flag = false;
+			}
+			else
+				printf("Error : incorrect variable blah blah\n");	
 		components = components->next;
+		}
 	}
+	else if (is_valid_equation(components, ";"))
+	{
+		return strdup("AVLID");
 	}
 	if (strcmp(components->name, ";") != 0)
 	{
-		printf("testinG\n");
 		error = NULL;
+		printf("components is %s\n", components->name);
 		components = error_recover(components, "Error : missing semicolon\n",
 			push_token(error, ";", "SEMICOLON", 0, "NULL"));
 		
-	}
+	}/*
 	if (is_valid_equation(components, ";"))
 	{
 		return strdup("AVLID ");
-	}
+	} */
 	if (strcmp(components->name, ";") != 0)
 		printf("error in length of line\n");
 	array_value = strdup("VALID ARRAY\n");

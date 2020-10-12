@@ -162,6 +162,11 @@ bool	validate_function(t_token *token)
 	char		*value;
 
 	temp_var = create_temp_var(token);
+	if (strcmp(token->type, "ID") == 0)
+	{
+		printf(" >> >> >> %s\n\n", token->name);
+	
+	}
 	if (temp_var == NULL)
 		return (false);
 	possible_function_name = strdup(temp_var->name);
@@ -285,7 +290,7 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		if (handle_native_csg(prev, trav->name) == 3)
 		{
-			drop_last_table();
+		//	drop_last_table();
 			stack = pop_stack(stack);
 		}
 		else if (strcmp(trav->name, "struct") == 0)
@@ -295,8 +300,9 @@ bool	semantic_analysis(t_token *tokens)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
 		}
-		else if (entering_command_block == true)
+		else if (strcmp(trav->name, "for") == 0)
 		{
+			printf("trav name is %s\n", trav->name);
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav);
 			/*
@@ -307,7 +313,10 @@ bool	semantic_analysis(t_token *tokens)
 			stack = push_stack(stack, FOR);
 			add_new_table();
 		//	prev = trav->name;
+		//	trav = trav->next;
 			head = trav;
+			if (head && strcmp(head->name, "{") == 0)
+				head = head->next;
 			entering_command_block = false;
 		}
 		else if (handle_native_csg(prev, trav->name) == SCOPE
@@ -322,6 +331,7 @@ bool	semantic_analysis(t_token *tokens)
 			else if (head && strcmp(head->name, "{") == 0 && in_function == false)
 			{
 				stack = push_stack(stack, FUNCTION);
+				head = head->next;
 				in_function = true;
 			}
 		}

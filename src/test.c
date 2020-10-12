@@ -10,7 +10,7 @@ struct _char {
 			int _42;
 		} m;
 	} z;
-}
+};
 struct _char eeeeeeee;
 struct _int {
 	char *number;
@@ -20,14 +20,12 @@ struct _int a;
 struct _int b;
 struct _char *aosdi;
 int n42 = 4;
-int c = 1 + 2 + 3,;
-char *str = {'c', 'd', 
-int va
+int c = 12 + 2 + 3;
+char *str = {'c', 'd', 'e'};
+int va;
 
-char 
 char *first;
-char *function(char *name, char **second, int third)
-
+char *function(char *name, char **second, int third);
 char *var(char *name);
 int constant(void);
 int main(int argc, char **argv);
@@ -35,9 +33,9 @@ void once_more(char *str);
 
 void for_loop_test(void) 
 {
+	fif = "42";
 	for (int i = 0; i < 15; i++) 
 	{
-		int value = 42;
-	
+		int value = 42;	
 	}
 }

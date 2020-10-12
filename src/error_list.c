@@ -14,7 +14,7 @@ void	print_error_message(t_token *position)
 	{
 		if (strcmp(position->filename, files->filename) == 0)
 		{
-			printf("%s\n\n", trav->content[position->line - 1]);
+			printf(": %s\n\n", trav->content[position->line - 1]);
 			break;
 		}
 		trav = trav->next;
