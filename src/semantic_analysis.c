@@ -160,14 +160,20 @@ bool	validate_function(t_token *token)
 	extern t_db	*list;
 	t_temp_var 	*temp_var;
 	char		*value;
+	char		*to_check;
 
+	to_check = NULL;
 	temp_var = create_temp_var(token);
 	if (strcmp(token->type, "ID") == 0)
 	{
 		printf(" >> >> >> %s\n\n", token->name);
-	
+		to_check = get_from_db(token->name);
+		if (!to_check)
+		{
+			printf("Error : variable doesn't exist\n");
+		}
 	}
-	if (temp_var == NULL)
+	else if (temp_var == NULL)
 		return (false);
 	possible_function_name = strdup(temp_var->name);
 	trav = temp_var->curr;	
@@ -300,7 +306,7 @@ bool	semantic_analysis(t_token *tokens)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
 		}
-		else if (strcmp(trav->name, "for") == 0)
+		else if (value_found(trav->name, commands))
 		{
 			printf("trav name is %s\n", trav->name);
 			if (strcmp(trav->name, "for") == 0)

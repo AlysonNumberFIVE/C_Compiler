@@ -19,16 +19,14 @@ struct x va;
 struct test {
 	struct test *next;
 };
-void	myName(void)
 
 int a;
-int b = aosig;
 int c;
 int d;
 
 
 int main(void)
 {
-	
+	d;	
 	return (0);
 }

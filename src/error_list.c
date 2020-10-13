@@ -33,48 +33,47 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
 		if (stack && stack->scope_name == 4)
                 {
                		error = NULL; printf("%s %d ", trav->filename, trav->line);
-			print_error_message(trav);
                        	trav = error_recover(trav, "missing semilcolon",
-                        	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));       			
+                        	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));       				    print_error_message(trav);	
                 }
                 else if (brackets != 0)
                 {
                        	error = NULL; printf("%s %d ", trav->filename, trav->line);
-			print_error_message(trav);
                         trav = forward_recovery(trav, "missing a closing '}'",
                         	push_token(error, "}", "CLOSINGBRACKET", trav->line, trav->filename));
-                 }
+                	print_error_message(trav); 
+		}
                  else
                  {
                  	error = NULL; printf("%s %d ", trav->filename, trav->line);
-			print_error_message(trav);
                         trav = forward_recovery(trav, "missing semicolon",
                         	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));
-                }
+                	print_error_message(trav);
+		}
          }
          else if (strcmp(trav->name, "}") == 0)
          {
           	error = NULL; printf("%s %d ", trav->filename, trav->line);
-		print_error_message(trav);
           	trav = forward_recovery(trav, "missing semicolon",
                 	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));
-         }
+        	print_error_message(trav); 
+	}
          else if (strcmp(trav->name, ",") == 0)
          {
           	if (strcmp(back->type, "CHAR") == 0)
                 {
                 	error = NULL; printf("%s %d ", trav->filename, trav->line);
-			print_error_message(trav);
                         trav = forward_recovery(trav, "incomplete list",
                                 push_token(error, "'C'", back->type, trav->line, trav->filename));
-                }
+                	print_error_message(trav);
+		}
          }
          else if (value_found(trav->name, start) == true)
          {
           	error = NULL; printf("%s %d ", trav->filename, trav->line);
-		print_error_message(trav);
                 trav = forward_recovery(trav, "variable missing",
                         push_token(error, "X", "ID", trav->line, trav->filename));
-         }
+        	print_error_message(trav); 
+	}
 	 return	(trav);
 }
