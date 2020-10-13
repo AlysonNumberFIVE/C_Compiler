@@ -25,6 +25,7 @@ t_function *new_function(char *function_name, char *type, int depth)
 	new->type = strdup(type);
 	new->depth = depth;
 	new->parameters = NULL;
+	new->next = NULL;
 	new->param_number = 0;
 	return (new);	
 }
@@ -190,6 +191,21 @@ void	print_functions(t_function *functions)
 		printf(")\n");
 		funct = funct->next;
 	}
+}
+
+bool	does_function_exist(char *name)
+{
+	extern t_function *functions;
+	t_function	*trav;
+
+	trav = functions;
+	while (trav)
+	{
+		if (strcmp(trav->function_name, name) == 0)
+			return (true);
+		trav = trav->next;
+	}
+	return (false);
 }
 
 // char	**split(char *str, char c);

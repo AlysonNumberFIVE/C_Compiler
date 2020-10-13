@@ -4,29 +4,32 @@
 //string str = NULL;
 
 
-struct b {
-	int x;
-};
-struct a {
-	int c; 
-	struct x {
-		char val;
-	} *next;
-} i42;
-
-struct x va;
 
 struct test {
 	struct test *next;
 };
 
-int a;
-int c;
-int d;
+struct a {
+	int i;
+	int j;
+	int k;
+};
 
+struct b {
+	int a;
+	int b;
+	int c;
+};
+
+void	v(char **str)
+{
+	return ;
+}
 
 int main(void)
 {
-	d;	
+	struct a x;
+	struct b y;
+	v; 
 	return (0);
 }

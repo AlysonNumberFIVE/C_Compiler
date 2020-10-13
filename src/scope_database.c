@@ -121,6 +121,26 @@ char	*get_from_db(char *variable)
 	return (NULL);
 }
 
+t_db	*get_object_from_db(char *name)
+{
+	t_db 	*scan;
+	int	traverse_table;
+	
+	traverse_table = max_number;
+	while (traverse_table > -1)
+	{
+		scan = list[traverse_table];
+		while (scan)
+		{
+			if (strcmp(name, scan->name) == 0)
+				return (new_object(scan->type, scan->name, scan->value, scan->depth));
+			scan = scan->next;
+		}
+		traverse_table--;
+	}
+	return (NULL);
+}
+
 void	drop_last_table(void)
 {
 	printf("max_number %d\n", max_number);
@@ -232,6 +252,8 @@ void	print_variables(void)
 		current++;
 	}
 }
+
+
 /*
 int	main(void)
 {

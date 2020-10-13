@@ -18,6 +18,8 @@ t_hashtable *first_and_follow(void);
 t_db    *new_object(char *type, char *name, char *val, int depth);
 t_db    *add_object(t_db *db, char *type, char *name, char *val, int depth);
 t_db    *push_object(t_db *db, char *type, char *name, char *val, int depth);
+t_db	*get_object_from_db(char *name);
+bool	does_variable_exist(char *str);
 void    free_db(t_db *db);
 bool    insert_into_db(char *type, char *name, char *val, int depth);
 char    *get_from_db(char *variable);

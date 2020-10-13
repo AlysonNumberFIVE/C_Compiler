@@ -77,7 +77,10 @@ t_token		*struct_loop(t_token *val);
 
 t_fvars         **add_to_param_list(t_fvars **array, t_fvars *to_add, size_t list_size);
 void 		print_structs(t_struct *all_structs);
+bool		does_function_exist(char *name);
+
 #endif
+
 
 
 

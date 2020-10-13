@@ -153,6 +153,92 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 }
 
 
+t_temp_var	*validate_variable_call(t_token *token)
+{
+	t_db	*object;
+	t_token	*trav;
+	int 	deref_depth;
+	bool	ampersand;
+	char	*name;
+	t_temp_var *temp_var;
+
+	ampersand = false;
+	name = NULL;
+	deref_depth = 0;
+	trav = token;
+	temp_var = (t_temp_var *)malloc(sizeof(t_temp_var));
+	temp_var->name = NULL;
+	temp_var->depth = 0;
+	temp_var->type = NULL;
+	if (strcmp(trav->name, "&") == 0)
+	{
+		ampersand = true;
+		trav = trav->next;
+	}
+	while (strcmp(trav->name, "*") == 0 && ampersand == false)
+		trav = trav->next;
+	if (strcmp(trav->type, "ID") == 0)
+	{
+		name = strdup(trav->name);
+		trav = trav->next;
+	}
+	else
+	{
+		printf("Error : Syntax error\n");
+		trav = trav->next;
+	}
+	if (name)
+	{
+		object = get_object_from_db(name);
+		if (object)
+		{
+			printf("Error : Variable doesn't exist\n");
+			temp_var->depth = object->depth;
+			temp_var->type = strdup(object->type);
+		}
+		temp_var->name = name;
+		temp_var->depth += deref_depth;
+		temp_var->curr = trav;
+	}
+	return (temp_var);
+}
+
+bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
+{
+	char 		*name;
+	t_db		*variables;
+	t_db		*object;	
+
+	variables = NULL;
+	trav = trav->next;
+	while (trav && strcmp(trav->name, ";") != 0)
+	{
+		if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
+		{
+			object = get_object_from_db(name);
+			if (!object)
+			{
+				printf("Error : variable doesn't exist\n");
+				break ;
+			}
+			variables = push_object(
+				variables,
+				object->type,
+				object->name,
+				"none",
+				object->depth
+			);
+			free(object->type); free(object->name); free(object);
+			free(name);
+		}
+		else if (strcmp(trav->type, "ID") == 0)
+		{
+			name = strdup(trav->name);
+		}
+		trav = trav->next;
+	}
+}
+
 bool	validate_function(t_token *token)
 {
 	t_token 	*trav;
@@ -160,32 +246,47 @@ bool	validate_function(t_token *token)
 	extern t_db	*list;
 	t_temp_var 	*temp_var;
 	char		*value;
-	char		*to_check;
+	bool		to_check;
+	bool		called;
 
+	called = false;
 	to_check = NULL;
-	temp_var = create_temp_var(token);
 	if (strcmp(token->type, "ID") == 0)
 	{
 		printf(" >> >> >> %s\n\n", token->name);
-		to_check = get_from_db(token->name);
-		if (!to_check)
+		called = true;
+		to_check = does_variable_exist(token->name);
+		if (!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
 			printf("Error : variable doesn't exist\n");
 		}
+		temp_var = validate_variable_call(token);
 	}
-	else if (temp_var == NULL)
-		return (false);
+	else 
+	{
+		temp_var = create_temp_var(token);
+		if (temp_var == NULL)
+			return (false);
+	}
 	possible_function_name = strdup(temp_var->name);
 	trav = temp_var->curr;	
 	if (strcmp(trav->name, ";") == 0)
 		insert_into_db(temp_var->type, temp_var->name, NULL, temp_var->depth);
 	else if (strcmp(trav->name, "(") == 0)
-		save_function(temp_var, trav, possible_function_name);
+	{
+		if (called == true)
+			validate_call(temp_var, trav, possible_function_name);
+		else
+			save_function(temp_var, trav, possible_function_name);
+	}
 	else if (strcmp(trav->name, "=") == 0)
 	{
 		trav = trav->next;
 		value = value_checker(trav);
-		insert_into_db(temp_var->type, temp_var->name, value, temp_var->depth);
+		if (called == true)
+			update_variable_value(temp_var->name, value);	
+		else
+			insert_into_db(temp_var->type, temp_var->name, value, temp_var->depth);
 	}
 	return (true);
 }
