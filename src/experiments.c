@@ -39,6 +39,6 @@ int main(void)
 	struct a x;
 	struct b y;
 
-	v; 
+	_42(214, 1242314); 
 	return (0);
 }

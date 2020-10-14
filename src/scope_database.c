@@ -198,8 +198,6 @@ bool	does_variable_exist(char *variable)
 		object = list[current_number];
 		while (object)
 		{
-			printf("object is\n");
-			printf("%s\n", object->name);
 			if (strcmp(object->name, variable) == 0)
 				return (true);
 			object = object->next;

@@ -1,4 +1,4 @@
-/*
+
 struct _char {
 	char c;
 	int size;
@@ -18,16 +18,16 @@ struct _int {
 };
 struct _int a;
 struct _int b;
-struct _char *aosdi;
+struct _char *aosdi; 
 int n42 = 4;
 int c = 12 + 2 + 3;
 char *str = {'c', 'd', 'e'};
 int va;
-char *first; */
-char *function(char *name, char a,asdg sadgasmg;asdpgoas *second, int third);
+char *first; 
+char *function(char *name, char  *second, int third);
 char *var(char *name);
-/*int constant(void);
-int main(int argc, char **argv(;
+int constant(void);
+int main(int argc, char **argv);
 void once_more(char *str);
 
 void for_loop_test(void) 
@@ -37,4 +37,4 @@ void for_loop_test(void)
 	{
 		int value = 42;	
 	}
-} */
+}
