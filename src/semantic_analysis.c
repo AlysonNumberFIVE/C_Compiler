@@ -89,7 +89,9 @@ t_temp_var      *create_temp_var(t_token *token)
                 trav = trav->next;
         }
         else
-                return (NULL);
+	{
+		temp->type = NULL;
+	}
         while (strcmp(trav->name, "*") == 0)
         {
                 temp->depth++;
@@ -102,8 +104,7 @@ t_temp_var      *create_temp_var(t_token *token)
         }
         else
 	{
-		temp->name = strdup(OMMITTED_VARIABLE);
-                trav = trav->next;
+		temp->name = NULL;
 	}
         temp->curr = trav;
         return (temp);
@@ -116,20 +117,57 @@ void	free_temp_var(t_temp_var *block)
 	free(block);
 }
 
-bool	definition_or_declaration(char *function_name)
+/*
+bool	definition_or_declaration(char *function_name, t_token *token)
 {
 	extern t_function	*functions;
+	t_function		*trav;
+	t_fvars			*variables;
+	bool			flag;
 
-	
-}
+	flag = false;
+	if (strcmp(token->name, "{") == 0)
+	{
+		trav = functions;
+		while (trav)
+		{
+			if (strcmp(trav->name, function_name) == 0)
+			{
+				variables = trav->parameters;
+				while (variables)
+				{
+					insert_into_db(variables->type, variables->name,
+						variables->value, variable->dept);\
+					variables = variables->next;
+				}
+				flag = true;
+				break ;
+			}
+			trav = trav->next;
+		}
+	}
+	else if (strcmp(token->name, ";") == 0)
+	{
+		trav = functions;
+		while (trav)
+		{
+			
+		}
+	}
+	return (flag);
+}*/
 
 bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name) 
 {
 	bool	ommitted_variable;
 	t_fvars	*variables;
+	extern char **start;
 
 	ommitted_variable = false;
 	variables = NULL;
+
+
+
 	functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
        	if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
          	(strcmp(trav->next->next->next->name, ";") == 0 ||
@@ -138,7 +176,7 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 
         trav = trav->next;
         while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
-        {
+        {	
         	if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
                 {
                 	if (!temp_var->name || !temp_var->type)
@@ -157,16 +195,22 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
                         }
                         trav = trav->next;
                  }
-                 else
+                 else if (value_found(trav->name, start))
                  {
                  	temp_var = create_temp_var(trav);
-                        trav = temp_var->curr;
+        		if (!temp_var->name || !temp_var->type)
+			{
+				trav = error_mode(trav, "Invalid syntax");
+				return (false);
+			}
+		        trav = temp_var->curr;
                  }
+		 else
+		 {
+			trav = error_mode(trav, "Invalid syntax");
+			return (false);
+		 }
         }
-	if (strcmp(trav->name,";") == 0)
-		printf("DEFINITION\n");
-	else if (strcmp(trav->name, "{") == 0)
-		printf("DECLARATION\n");
 	return (true);
 }
 
@@ -274,12 +318,12 @@ bool	validate_function(t_token *token)
 	to_check = NULL;
 	if (strcmp(token->type, "ID") == 0)
 	{
-		printf(" >> >> >> %s\n\n", token->name);
 		called = true;
 		to_check = does_variable_exist(token->name);
 		if (!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
-			printf("Error : variable doesn't exist\n");
+			token = error_mode(token, "Error : variable doesn't exist");
+			return (false);
 		}
 		temp_var = validate_variable_call(token);
 	}

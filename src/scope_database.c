@@ -190,12 +190,16 @@ bool	does_variable_exist(char *variable)
 	int current_number;
 	t_db *object;
 
+	if (!list)
+		return (false);
 	current_number = max_number;
 	while (current_number > -1)
 	{
 		object = list[current_number];
 		while (object)
 		{
+			printf("object is\n");
+			printf("%s\n", object->name);
 			if (strcmp(object->name, variable) == 0)
 				return (true);
 			object = object->next;

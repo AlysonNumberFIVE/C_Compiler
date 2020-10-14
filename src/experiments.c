@@ -3,7 +3,6 @@
 
 //string str = NULL;
 
-char *_42(int, char c);
 struct test {
 	struct test *next;
 };
@@ -24,7 +23,17 @@ void	v(char **str)
 {
 	return ;
 }
-char *_42(int x, char *x);
+char *_42(int y, char *x){
+	int a;
+	return ("2");
+}
+
+char *_42(int y, char *x) {
+	int z;
+	ouhasd;
+	return ("2");
+}
+
 int main(void)
 {
 	struct a x;

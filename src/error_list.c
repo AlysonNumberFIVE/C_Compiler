@@ -21,6 +21,24 @@ void	print_error_message(t_token *position)
 	}
 }
 
+t_token	*error_mode(t_token *token, char *message)
+{
+	t_token *trav;
+	extern char **start;
+
+	trav = token;
+	printf("%s : %d ", token->filename, token->line);
+	printf("Error : %s : '%s'\n", message, token->name);
+	print_error_message(token);
+	while (trav)
+	{
+		if (value_found(trav->name, start) || strcmp(trav->name, ";") == 0)
+			break;
+		trav = trav->next;
+	}
+	return (trav);
+}
+
 t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
 {
 	t_token	*error;
