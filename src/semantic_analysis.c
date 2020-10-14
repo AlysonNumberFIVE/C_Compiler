@@ -273,7 +273,9 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 	t_db		*variables;
 	t_db		*object;	
 	t_token		*back;
+	char		**typelist;
 
+	typelist = NULL;
 	variables = NULL;
 	trav = trav->next;
 	printf("VALIDATE CALL %s\n", function_name);
@@ -310,12 +312,8 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 					0
 				);
 			}
-			back = trav;
 		}
-		else
-		{
-			back = trav;
-		}
+		back = trav;
 		trav = trav->next;
 	}
 }
