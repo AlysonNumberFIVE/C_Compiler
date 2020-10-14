@@ -11,6 +11,7 @@
 //#define IF 3
 #define FOR 4
 //#define DO 5 
+#define OMMITTED_VARIABLE "0XAE42D3FFF"
 t_struct *all_structs = NULL;
 t_function *functions = NULL;
 t_token	*to_evaluate = NULL;
@@ -89,7 +90,6 @@ t_temp_var      *create_temp_var(t_token *token)
         }
         else
                 return (NULL);
-
         while (strcmp(trav->name, "*") == 0)
         {
                 temp->depth++;
@@ -101,7 +101,10 @@ t_temp_var      *create_temp_var(t_token *token)
                 trav = trav->next;
         }
         else
-                return (NULL);
+	{
+		temp->name = strdup(OMMITTED_VARIABLE);
+                trav = trav->next;
+	}
         temp->curr = trav;
         return (temp);
 }
@@ -113,42 +116,57 @@ void	free_temp_var(t_temp_var *block)
 	free(block);
 }
 
+bool	definition_or_declaration(char *function_name)
+{
+	extern t_function	*functions;
+
+	
+}
+
 bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name) 
 {
-                functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
-                if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
-                        (strcmp(trav->next->next->next->name, ";") == 0 ||
-                        strcmp(trav->next->next->next->name, "{") == 0))
-                        return (true);
+	bool	ommitted_variable;
+	t_fvars	*variables;
 
-                trav = trav->next;
-                t_fvars *variables;
-                while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
+	ommitted_variable = false;
+	variables = NULL;
+	functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
+       	if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
+         	(strcmp(trav->next->next->next->name, ";") == 0 ||
+        	strcmp(trav->next->next->next->name, "{") == 0))
+         	return (true);
+
+        trav = trav->next;
+        while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
+        {
+        	if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
                 {
-                        if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
+                	if (!temp_var->name || !temp_var->type)
                         {
-                                if (!temp_var->name || !temp_var->type)
-                                {
-                                        printf("error : incorrect variable naming convention\n");
-                                        return (false);
-                                }
-                                variables = create_new_parameter(temp_var->name, temp_var->type, temp_var->depth);
-                                functions = new_parameter(functions, function_name, variables);
-                                param_free(variables);
-                                free_temp_var(temp_var);
-                                if (strcmp(trav->name, ")") == 0)
-                                {
-                                        trav = trav->next;
-                                        break;
-                                }
-                                trav = trav->next;
+                        	printf("error : incorrect variable naming convention\n");
+                                return (false);
                         }
-                        else
+                        variables = create_new_parameter(temp_var->name, temp_var->type, temp_var->depth);
+                        functions = new_parameter(functions, function_name, variables);
+                        param_free(variables);
+                        free_temp_var(temp_var);
+                        if (strcmp(trav->name, ")") == 0)
                         {
-                                temp_var = create_temp_var(trav);
-                                trav = temp_var->curr;
+                        	trav = trav->next;
+                                break;
                         }
-                }
+                        trav = trav->next;
+                 }
+                 else
+                 {
+                 	temp_var = create_temp_var(trav);
+                        trav = temp_var->curr;
+                 }
+        }
+	if (strcmp(trav->name,";") == 0)
+		printf("DEFINITION\n");
+	else if (strcmp(trav->name, "{") == 0)
+		printf("DECLARATION\n");
 	return (true);
 }
 
@@ -203,11 +221,14 @@ t_temp_var	*validate_variable_call(t_token *token)
 	return (temp_var);
 }
 
+
+
 bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 {
 	char 		*name;
 	t_db		*variables;
 	t_db		*object;	
+
 
 	variables = NULL;
 	trav = trav->next;
