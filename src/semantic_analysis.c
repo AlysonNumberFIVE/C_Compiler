@@ -12,6 +12,7 @@
 #define FOR 4
 //#define DO 5 
 #define OMMITTED_VARIABLE "0XAE42D3FFF"
+#define FUNCTION_CALL "0x241F1S9AE"
 t_struct *all_structs = NULL;
 t_function *functions = NULL;
 t_token	*to_evaluate = NULL;
@@ -266,6 +267,39 @@ t_temp_var	*validate_variable_call(t_token *token)
 }
 
 
+t_token	*insepct_token(t_token *token, t_token *back)
+{
+	t_token 	*type;
+	t_funciton	*function;
+	int		brackets;
+
+	type = NULL;
+	if (strcmp(token->next, "(") == 0)
+	{
+		brackets = 1;
+		token = token->next;
+ 		if (strcmp(token->next,
+		validate_function(token);
+		function = get_function();
+		type = push_token(type,
+			function->tyep,
+			function->function_name,
+			FUNCTION_CALL,
+			function->depth
+		);
+	}
+	else
+	{
+		type = push_token(type,
+			back->type,
+			back->name,
+			OMMITTED_VARIABLE,
+			back->depth
+		);
+					
+	}	
+}
+
 
 bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 {
@@ -273,7 +307,7 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 	t_db		*variables;
 	t_db		*object;	
 	t_token		*back;
-	char		**typelist;
+	t_token		*typelist;
 
 	typelist = NULL;
 	variables = NULL;
@@ -292,6 +326,8 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 					printf("Error : variable doesn't exist\n");
 					break ;
 				}
+				typelist = push_token(typelist, object->name, object->type,
+					back->line, back->filename);
 				variables = push_object(
 					variables,
 					object->type,
@@ -303,6 +339,8 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 			}
 			else 
 			{
+				typelist = push_token(typelist, back->name, back->type,
+					back->line, back->filename);
 				printf("type is %s\n", back->type);
 				variables = push_object(
 					variables,
@@ -316,7 +354,12 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 		back = trav;
 		trav = trav->next;
 	}
+	if (assert_parameter_correctness(typelist, function_name) == true)
+		printf("CORRECT\n");
+	else 
+		printf("INCORRECT\n");
 }
+
 
 bool	validate_function(t_token *token)
 {

@@ -171,6 +171,110 @@ t_function 	*new_parameter(t_function *all_functions, char *function_name, t_fva
 	return (all_functions);
 }
 
+int	type_length(t_token *type)
+{
+	t_token *trav;
+	int 	i;
+
+	i = 0;
+	trav = type;
+	while (trav)
+	{
+		i++;
+		trav = trav->next;	
+	}
+	return (i);
+}
+
+bool	assert_type(char *type, t_fvars *var)
+{
+	if (strcmp(type, "LITERAL") == 0)
+	{
+		printf("depth %d\n", var->depth);
+		printf("var naem %s\n", var->name);
+	
+		if (strcmp(var->type, "char") == 0 && var->depth == 1)
+			return (true);
+	}
+	else if (strcmp(type, "NUM") == 0 || strcmp(type, "CHAR") == 0)
+	{
+		if ((strcmp(var->type, "int") == 0 ||
+			strcmp(var->type, "double") == 0 ||
+			strcmp(var->type, "long") == 0) &&
+			var->depth == 0)
+			return (true);
+	}
+	return (false);
+}
+
+bool	assert_parameter_correctness(t_token *type, char *function_name)
+{
+	int	counter;
+	t_token	*tok;
+	t_fvars	**parameters;
+	extern t_function	*functions;
+	t_function	*trav;
+		
+	trav = functions;
+	while (trav)
+	{
+		if (strcmp(trav->function_name, function_name) == 0)
+			break;
+		trav = trav->next;
+	}
+	if (!trav)
+		return (false);
+	counter = 0;
+	if (type_length(type) != trav->param_number)
+		return (false);
+
+	tok = type;
+	parameters = trav->parameters;
+	while (counter < trav->param_number)
+	{
+		printf("tok : %s param %s\n", tok->type, parameters[counter]->type);
+		if (assert_type(tok->type, parameters[counter]) == false)
+			return (false);
+		tok = tok->next;
+		counter++;
+	}
+	return (true);
+}
+
+bool	validate_correct_function_def(t_token *type, char *function_name)
+{
+	extern t_function	*functions;
+	t_function		*trav;
+	bool			found;
+	t_fvars			*parameters;
+
+	found = false;
+	trav = functions;
+	while (trav)
+	{
+		if (strcmp(trav->function_name, function_name) == 0)
+		{
+			found = true;
+			break;
+		}
+		trav = trav->next;
+	}	
+}
+
+t_function *get_function(char *name)
+{
+	t_function 		*trav;
+	extern t_function	*functions;
+
+	trav = functions;
+	while (trav)
+	{
+		if (strcmp(trav->function_name, name) == 0)
+			break ;
+		trav = trav->next;
+	}
+	return (trav);
+}
 
 void	print_functions(t_function *functions)
 {
@@ -192,6 +296,8 @@ void	print_functions(t_function *functions)
 		funct = funct->next;
 	}
 }
+
+
 
 bool	does_function_exist(char *name)
 {
