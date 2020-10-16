@@ -1,4 +1,4 @@
-
+/*
 struct _char {
 	char c;
 	int size;
@@ -23,19 +23,19 @@ int n42 = 4;
 int c = 12 + 2 + 3;
 char *str = {'c', 'd', 'e'};
 int va;
-char *first; 
+char *first;*/ 
 char *function(char *name, char  *second, int third);
-char *var(char *name);
+
+/*char *var(char *name);
 int constant(void);
 int main(int argc, char **argv);
 void once_more(char *str);
-
+*/
 void for_loop_test(void) 
 {
 	function("name", "second", val);
-	character(val);
-	for (int i = 0; i < 15; i++) 
+	/*for *(int i = 0; i < 15; i++) 
 	{
 		int value = 42;	
-	}
+	} */
 }

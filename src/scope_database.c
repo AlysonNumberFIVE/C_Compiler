@@ -106,6 +106,9 @@ char	*get_from_db(char *variable)
 {
 	t_db	*scan;
 	int	traverse_table;
+	
+	if (!list)
+		return (NULL);
 	traverse_table = max_number;
 	while (traverse_table > -1)
 	{
@@ -125,7 +128,9 @@ t_db	*get_object_from_db(char *name)
 {
 	t_db 	*scan;
 	int	traverse_table;
-	
+
+	if (!list)
+		return (NULL);	
 	traverse_table = max_number;
 	while (traverse_table > -1)
 	{

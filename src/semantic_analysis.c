@@ -118,45 +118,6 @@ void	free_temp_var(t_temp_var *block)
 	free(block);
 }
 
-/*
-bool	definition_or_declaration(char *function_name, t_token *token)
-{
-	extern t_function	*functions;
-	t_function		*trav;
-	t_fvars			*variables;
-	bool			flag;
-
-	flag = false;
-	if (strcmp(token->name, "{") == 0)
-	{
-		trav = functions;
-		while (trav)
-		{
-			if (strcmp(trav->name, function_name) == 0)
-			{
-				variables = trav->parameters;
-				while (variables)
-				{
-					insert_into_db(variables->type, variables->name,
-						variables->value, variable->dept);\
-					variables = variables->next;
-				}
-				flag = true;
-				break ;
-			}
-			trav = trav->next;
-		}
-	}
-	else if (strcmp(token->name, ";") == 0)
-	{
-		trav = functions;
-		while (trav)
-		{
-			
-		}
-	}
-	return (flag);
-}*/
 
 bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name) 
 {
@@ -252,6 +213,7 @@ t_temp_var	*validate_variable_call(t_token *token)
 	}
 	if (name)
 	{
+		printf("name is %s\n", name);
 		object = get_object_from_db(name);
 		if (object)
 		{
@@ -265,7 +227,7 @@ t_temp_var	*validate_variable_call(t_token *token)
 	}
 	return (temp_var);
 }
-
+/*
 
 t_token	*insepct_token(t_token *token, t_token *back)
 {
@@ -298,7 +260,7 @@ t_token	*insepct_token(t_token *token, t_token *back)
 		);
 					
 	}	
-}
+}*/
 
 
 bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
@@ -316,6 +278,7 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 	while (trav && strcmp(trav->name, ";") != 0)
 	{
 		printf("%s \n", trav->name);
+		
 		if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
 		{
 			if (strcmp(back->type, "ID") == 0)
@@ -377,10 +340,8 @@ bool	validate_function(t_token *token)
 	{
 		called = true;
 		to_check = does_variable_exist(token->name);
-		
 		if (!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
-
 			token = error_mode(token, " : variable doesn't exist");
 			return (false);
 		}
@@ -438,17 +399,21 @@ bool	check_next_token(t_hashtable *ff_list, char *next_token, char *current_toke
 	char 	*value;	
 	char 	*second;
 	char 	**pieces;	
-	
+
 	name = determine_token_type(current_token);
 	value = ht_search(ff_list, name);
 	if (value)
 	{
 		if (strcmp(value, "DONE") == 0)
+		{
+			printf("TRUE DONE\n");
 			return (true);
+		}
 		pieces = split(value, ' ');
 		second = determine_token_type(next_token);
 		if (value_found(second, pieces) == true)
 			return (true);
+		
 	}
 	return (false);
 }
@@ -523,13 +488,14 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		if (handle_native_csg(prev, trav->name) == 3)
 		{
+			printf("handle_native_CSV == TRUE\n");
 		//	drop_last_table();
 			stack = pop_stack(stack);
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
-			trav = struct_loop(trav);
-	
+			printf("strcmp(trav->name, \"struct\") == 0)\n");
+			trav = struct_loop(trav);	
 			if (strcmp(trav->name, ";") != 0)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
@@ -537,6 +503,7 @@ bool	semantic_analysis(t_token *tokens)
 	}
 		else if (value_found(trav->name, commands))
 		{
+			printf("value_found(trav->name, commands)");
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav);
 			/*
@@ -556,12 +523,14 @@ bool	semantic_analysis(t_token *tokens)
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
+			printf("handle_native_csg() == SCOPE\n");
 			validate_function(head);
 			head = trav;
 			if (strcmp(trav->name, "{") == 0)
 				add_new_table();
 			if (head && strcmp(head->name, ";") == 0)
 				head = head->next;
+
 			else if (head && strcmp(head->name, "{") == 0 && in_function == false)
 			{
 				stack = push_stack(stack, FUNCTION);
@@ -585,7 +554,9 @@ bool	semantic_analysis(t_token *tokens)
 			prev = trav->name;
 		}
 		else
+		{
 			trav = panic_mode(trav, back, brackets);
+		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;
 		back = trav;
@@ -595,7 +566,7 @@ bool	semantic_analysis(t_token *tokens)
 	printf("SUMMARY =====\n");
 	print_variables();
 	print_structs(all_structs);
-	print_functions(functions);
+	print_functions(functions); 
 	return (true);
 }
 
