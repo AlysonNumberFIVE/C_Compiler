@@ -338,6 +338,9 @@ bool	validate_function(t_token *token)
 	to_check = NULL;
 	if (strcmp(token->type, "ID") == 0)
 	{
+		is_valid_equation(token, ";");
+		exit(1);
+		/*
 		called = true;
 		to_check = does_variable_exist(token->name);
 		if (!does_variable_exist(token->name) && !does_function_exist(token->name))
@@ -345,7 +348,7 @@ bool	validate_function(t_token *token)
 			token = error_mode(token, " : variable doesn't exist");
 			return (false);
 		}
-		temp_var = validate_variable_call(token);
+		temp_var = validate_variable_call(token);*/
 	}
 	else 
 	{
@@ -481,7 +484,7 @@ bool	semantic_analysis(t_token *tokens)
 				IS_ARR = true;
 			brackets++;
 		}
-		else if (strcmp(trav->name, "}") == 0)
+	else if (strcmp(trav->name, "}") == 0)
 		{
 			IS_ARR = false;
 			brackets--;

@@ -1,6 +1,7 @@
 
 #include "../inc/semantic.h"
 #include "../inc/database.h"
+#include "../inc/token.h"
 #include "../inc/compiler.h"
 
 bool valid_operator(char *token)
@@ -28,6 +29,202 @@ bool valid_operator(char *token)
 	return (true);
 }
 
+t_token *extract_function(t_token *token)
+{
+	t_token *trav;
+	t_token	*function;
+	int	brackets;
+
+	function = NULL;
+	function = push_token(function, token->name, token->type, token->line, token->filename);
+	trav = token;
+	trav = trav->next;
+	brackets = 0;
+	while (trav)
+	{
+		if (strcmp(trav->name, "(") == 0)
+			brackets++;
+		else if (strcmp(trav->name, ")") == 0)
+			brackets--;
+		function = push_token(function, trav->name, trav->type, trav->line, trav->filename);
+		if (brackets == 0)
+			break ;
+		trav = trav->next;
+	}
+	function = push_token(function, ";", "SEMICOLON", trav->line, trav->filename);
+	return (function);	
+}
+
+t_token *convert_function_to_token(char *function_name)
+{
+	t_function	*target;
+	extern t_function	*functions;	
+
+	target = get_function(function_name);
+	// experimenta.
+	t_token	*test = NULL;
+	test = push_token(test, "test", "NUM", 42, "apache.php.c");
+	return (test);
+}
+
+t_token *skip_function(t_token *token)
+{
+	t_token *trav;
+	int brackets;
+
+	trav = token;
+	trav = trav->next;
+	brackets = 0;
+	while (trav)
+	{
+		printf(" %s ", trav->name);
+		if (strcmp(trav->name, "(") == 0)
+			brackets++;
+		else if (strcmp(trav->name, ")") == 0)
+			brackets--;
+		trav = trav->next;
+		if (brackets == 0)
+			break;
+	}
+	return (trav);
+}
+
+t_token	*extract_function_type(char *function_name, t_token *token)
+{
+	t_function 	*funct;
+	t_token		*custom_block;
+	char		*custom_datatype;
+
+	custom_block = NULL;
+	funct = get_function(function_name);
+	printf("function name : %s\n", funct->function_name);
+	printf("function type : %s\n", funct->type);
+	printf("function depth : %d\n", funct->depth);
+	custom_datatype = join(itoa(funct->depth), funct->type);
+	custom_block = push_token(custom_block, "function_name", custom_datatype, 
+		token->line, token->filename);
+	return (custom_block);
+}
+
+void	print_segment(t_token *function)
+{
+	t_token	*trav;
+
+	trav = function;
+	while (trav)
+	{
+		printf("%s ", trav->name);
+		trav = trav->next;
+	}
+	printf("\n");
+}
+
+
+t_token *skip_section(t_token *token)
+{
+	t_token *trav;
+	int brackets;
+	bool bracket_flag;
+	
+	bracket_flag = false;
+	brackets = 0;
+	trav = token;
+	while (trav && strcmp(trav->name, ",") != 0)
+	{
+		if (strcmp(trav->name, "(") == 0)
+		{
+			bracket_flag = true;
+			brackets++;
+		}
+		else if (strcmp(trav->name, ")") == 0)
+			brackets--;
+		if (brackets <= 0 && bracket_flag == true)
+			break;
+		trav = trav->next;
+	}
+	return (trav);
+}
+t_token	*extract_section(t_token *token)
+{
+	t_token	*trav;
+	t_token	*new;
+	int	brackets;
+	bool	bracket_flag;
+		
+	bracket_flag = false;
+	trav = token;
+	new = NULL;
+	brackets = 0;
+	printf("EXTRACTION  := ");
+	while (trav && strcmp(trav->name, ",") != 0)
+	{
+		printf(" %s ", trav->name);
+		if (strcmp(trav->name, "(") == 0)
+		{
+			bracket_flag = true;
+			brackets++;
+		}
+		else if (strcmp(trav->name, ")") == 0)
+			brackets--;
+		if (brackets == 0 && bracket_flag == true)
+			break ;	
+		if (brackets < 0)
+			break ;
+		new = push_token(new, trav->name, trav->type, trav->line, trav->filename);
+		trav = trav->next;
+	}
+	printf("end extractin\n");
+	new = push_token(new, ";", "SEMICOLON", trav->line, trav->filename);
+	return (new);		
+}
+
+bool test_function_evaluation(t_token *function)
+{
+	t_token	*carry;
+	t_token	*halt;
+	t_token	*temp;
+	t_function *to_eval;
+	t_token	*function_test;
+	t_token *new;
+
+	to_eval = get_function(function->name);
+	carry = function->next->next;
+	while (carry)
+	{
+		printf("carry is %s\n", carry->name);
+	
+		if (strcmp(carry->type, "ID") == 0 && strcmp(carry->next->name, "(") == 0)
+		{
+			function_test = extract_function(carry);
+			halt = carry;	
+			temp = extract_function_type(halt->name, halt);
+
+			print_segment(function_test);
+	
+			test_function_evaluation(function_test);
+			
+			carry = skip_function(carry);
+						
+			halt->next = temp;
+			temp->next = carry;	
+		}
+		else 
+		{
+			printf("else\n");	
+			new = extract_section(carry);
+			printf("SUM segment : ");
+			print_segment(new);
+			carry = skip_section(carry);
+			printf("\nENDSUM\n");
+			if (!carry)
+				break;
+		//	carry = carry->next;
+			is_valid_equation(new, ",");
+		}
+		carry = carry->next;
+	}
+	return (true);
+}
 
 bool is_valid_equation(t_token *tokens, char *end_token)
 {
@@ -37,12 +234,17 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	t_token *equation;
         bool symbol;
         int brackets;
+	t_token	*halt;
+	t_token	*temp;
+	t_token *function_test;
 
+	function_test = NULL;
 	brackets = 0;
         symbol = false;
 	equation = tokens;
+	printf("ENTERING IS_VALID_SUM\n");
         while (equation && (strcmp(equation->name, end_token)))
-        {
+        {	
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
@@ -51,7 +253,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                         brackets--;
                 else if (symbol == false)
                 {
-                        if (strcmp(equation->type, "ID") == 0)
+                        if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {
                                 db_value = get_from_db(equation->name);
                                 if (db_value == NULL)
@@ -60,14 +262,29 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                                 	return (false);
 				}
                         } 
+			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
+			{
+				function_test = extract_function(equation);
+				halt = equation;
+				temp = extract_function_type(halt->name, halt);
+				print_segment(function_test);
+				
+				test_function_evaluation(function_test);
+	
+				halt->next = temp;
+				equation = skip_function(equation);
+				temp->next = equation;
+				if (!equation)
+					return (true);	
+			}
                         else if (strcmp(equation->type, "NUM") == 0 ||
 				strcmp(equation->type, "CHAR") == 0 ||
-				strcmp(equation->type, "LITERA") == 0)
-			{
+				strcmp(equation->type, "LITERA") == 0i)	{
 				symbol = true;
 			}
 			else
 			{
+				printf("Warning : type mismatch\n");
 				//printf("error : A token or something is out of place\n");
 				return (false);
 			}

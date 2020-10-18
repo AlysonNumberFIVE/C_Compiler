@@ -33,7 +33,7 @@ void once_more(char *str);
 */
 void for_loop_test(void) 
 {
-	function("name", "second", val);
+	function("name", function("second", "again", "hero" + 4 + 11), 42);
 	/*for *(int i = 0; i < 15; i++) 
 	{
 		int value = 42;	

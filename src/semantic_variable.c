@@ -195,14 +195,14 @@ char	*value_checker(t_token *components)
 	{
 		return strdup("AVLID");
 	}
-	if (strcmp(components->name, ";") != 0)
+	/*(if (strcmp(components->name, ";") != 0)
 	{
 		error = NULL;
 		printf("components is %s\n", components->name);
 		components = error_recover(components, "Error : missing semicolon\n",
 			push_token(error, ";", "SEMICOLON", 0, "NULL"));
 		
-	}/*
+	}
 	if (is_valid_equation(components, ";"))
 	{
 		return strdup("AVLID ");

@@ -23,22 +23,11 @@ void	v(char **str)
 {
 	return ;
 }
-char *_42(int y, char *x){
-	int a;
-	return ("2");
-}
-
-char *_42(int y, char *x) {
-	int z;
-	ouhasd;
-	return ("2");
-}
 
 int main(void)
 {
 	struct a x;
 	struct b y;
-
-	_42(214, 1242314); 
+	int x = "first" + 2;
 	return (0);
 }
