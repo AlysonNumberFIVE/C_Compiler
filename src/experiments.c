@@ -19,15 +19,13 @@ struct b {
 	int c;
 };
 
-void	v(char **str)
-{
-	return ;
-}
+void	v(char *str);
+
 
 int main(void)
 {
 	struct a x;
 	struct b y;
-	int x = "first" + 2;
+	v("string\n");
 	return (0);
 }

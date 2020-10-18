@@ -186,6 +186,7 @@ bool test_function_evaluation(t_token *function)
 	t_function *to_eval;
 	t_token	*function_test;
 	t_token *new;
+	
 
 	to_eval = get_function(function->name);
 	carry = function->next->next;
@@ -210,12 +211,9 @@ bool test_function_evaluation(t_token *function)
 		}
 		else 
 		{
-			printf("else\n");	
 			new = extract_section(carry);
-			printf("SUM segment : ");
 			print_segment(new);
 			carry = skip_section(carry);
-			printf("\nENDSUM\n");
 			if (!carry)
 				break;
 		//	carry = carry->next;
@@ -224,6 +222,14 @@ bool test_function_evaluation(t_token *function)
 		carry = carry->next;
 	}
 	return (true);
+}
+
+bool	eval_function_type(char *function_name)
+{
+	t_functino *the_function;
+ 
+	the_function = get_function(function_name);
+		
 }
 
 bool is_valid_equation(t_token *tokens, char *end_token)
@@ -279,12 +285,14 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			}
                         else if (strcmp(equation->type, "NUM") == 0 ||
 				strcmp(equation->type, "CHAR") == 0 ||
-				strcmp(equation->type, "LITERA") == 0i)	{
+				strcmp(equation->type, "LITERAL") == 0)	
+			{
 				symbol = true;
 			}
 			else
 			{
-				printf("Warning : type mismatch\n");
+				symbol = true;
+				error_mode(equation, "Error : incompatible datatype"); 
 				//printf("error : A token or something is out of place\n");
 				return (false);
 			}
