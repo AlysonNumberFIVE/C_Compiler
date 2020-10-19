@@ -45,14 +45,23 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
 	extern t_stack *stack;
 	extern char **start;
 
-	if (strcmp(trav->type, "ID") == 0 || strcmp(trav->type, "NUM") == 0 || 
+	if (strcmp(back->type, "PTR_OP") == 0)
+	{
+		error = NULL; printf("%s %d ", trav->filename, trav->line);
+		trav = error_recover(trav, "incorrect pointer dereferencing",
+			push_token(error, "ERROR", "ID", trav->line, trav->filename));
+		print_error_message(back);
+		trav = trav->next;
+	}	
+	else if (strcmp(trav->type, "ID") == 0 || strcmp(trav->type, "NUM") == 0 || 
 		strcmp(trav->type, "LITERAL") == 0 || strcmp(trav->type, "CHAR") == 0)
        	{
 		if (stack && stack->scope_name == 4)
                 {
                		error = NULL; printf("%s %d ", trav->filename, trav->line);
                        	trav = error_recover(trav, "missing semilcolon",
-                        	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));       				    print_error_message(trav);	
+                        	push_token(error, ";", "SEMICOLON", trav->line, trav->filename)); 
+			print_error_message(trav);	
                 }
                 else if (brackets != 0)
                 {
@@ -93,5 +102,6 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
                         push_token(error, "X", "ID", trav->line, trav->filename));
         	print_error_message(trav); 
 	}
+	printf("Exiting..\n");
 	 return	(trav);
 }

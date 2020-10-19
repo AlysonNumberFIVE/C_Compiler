@@ -80,6 +80,7 @@ void 		print_structs(t_struct *all_structs);
 bool		does_function_exist(char *name);
 bool    	assert_parameter_correctness(t_token *type, char *function_name);
 t_function	*get_function(char *name);
+bool		handle_struct_dereferencing(t_token *token);
 
 #endif
 

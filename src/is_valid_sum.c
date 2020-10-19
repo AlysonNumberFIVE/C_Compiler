@@ -312,7 +312,7 @@ bool test_function_evaluation(t_token *function)
 			function_test = extract_function(carry);
 			halt = carry;	
 			temp = extract_function_type(halt->name, halt);
-
+		
 			print_segment(function_test);
 	
 			test_function_evaluation(function_test);
@@ -328,6 +328,7 @@ bool test_function_evaluation(t_token *function)
 				carry->type, carry->line, carry->filename);
 			printf("TYPING : %s\n", carry->type);
 			new = extract_section(carry);
+			printf("PRINTING SEGMENT BEFORE RECALL\n");
 			print_segment(new);
 			carry = skip_section(carry);
 			if (!carry)
@@ -495,6 +496,16 @@ bool	type_comparison(t_token *prev, t_token *current)
 }
 
 
+
+t_token	*skip_struct_info(t_token *token)
+{
+	while (token && strcmp(token->next->name, "->") == 0)
+	{
+		token = token->next->next;
+	}
+	return (token);
+}
+
 bool is_valid_equation(t_token *tokens, char *end_token)
 {
 	extern t_this_type *current_type;
@@ -517,8 +528,10 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	brackets = 0;
         symbol = false;
 	equation = tokens;
+	printf("EQUATION %s\n", equation->name);
         while (equation && (strcmp(equation->name, end_token)))
-        {	
+        {
+			
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
@@ -527,10 +540,29 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                         brackets--;
                 else if (symbol == false)
                 {
-                        if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
+			if (strcmp(equation->name, "*") == 0)
+			{
+				printf("TIMES ME BITCH\n");
+				equation = equation->next;
+			}
+			else if (strcmp(equation->name, "@") == 0)
+			{
+				printf("MEMORIZE ME BITCH\n");
+				equation = equation->next;
+			}
+			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "->") == 0)
+			{
+				printf("HANDLE STRUCT DEREFERENCING\n");
+				handle_struct_dereferencing(equation);
+				// skip struct stuff.
+				equation = skip_struct_info(equation);
+				equation = equation->next;
+			}
+                        else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {
-                    		if (prev)
+				if (prev)
 					type_comparison(prev, equation);
+				
 			        prev = equation;
 				db_value = get_from_db(equation->name);
                                 if (db_value == NULL)

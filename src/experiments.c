@@ -26,7 +26,7 @@ int main(void)
 {
 	char *str = "hello";	
 	int x;
-	x = 4 * **str;
+	x = 4 && (&str);
 
 	return (0);
 }

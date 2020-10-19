@@ -226,7 +226,10 @@ t_token		*struct_loop(t_token *token)
 		if (strcmp(trav->name, "=") == 0)
 			assert_struct_token(trav, type, trav->next->name);
 		else if (strcmp(trav->name, ";") == 0)
-			insert_struct_into_db(datatype_name, name, depth);		
+		{
+			insert_struct_into_db(datatype_name, name, depth);
+			insert_into_db(datatype_name, name, "STRUCT", depth);
+		}
 		return (trav);
 	}
 	start = arraypush(start, datatype_name);	
@@ -288,8 +291,44 @@ t_token		*struct_loop(t_token *token)
 	return (trav);
 }
 
+bool		handle_struct_dereferencing(t_token *token)
+{
+	t_token	*trav;
+	extern t_struct *all_structs;
+	t_struct *trav_struct;
+	t_db *object;
+	int counter;
+	char **segments;
 
+	counter = 0;
+	object = get_object_from_db(token->name);
+	printf("datatype is %s\n", object->type);
+	trav = token;
+	trav_struct = all_structs;
+	segments = split(object->type, ' ');
 
+	while (trav_struct)
+	{
+		if (strcmp(trav_struct->struct_name, segments[1]) == 0)
+		{
+			trav = trav->next->next;
+			counter = 0;
+			while (counter < trav_struct->struct_param_number)
+			{
+				if (strcmp(trav_struct->variables[counter]->name, trav->name) == 0)
+				{
+					printf("found %s\n", trav->name);
+					printf("variable datatype %s", trav_struct->variables[counter]->type);
+					printf("variable depth %d\n", trav_struct->variables[counter]->depth);
+				}
+				counter++;
+			}
+			break;
+		}
+		printf("trav struct name %s\n", trav_struct->struct_name);
+		trav_struct = trav_struct->next;
+	}
+}
 
 
 /*

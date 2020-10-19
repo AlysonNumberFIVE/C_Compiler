@@ -338,12 +338,12 @@ bool	validate_function(t_token *token)
 	bool		called;
 
 	called = false;
-	to_check = NULL;
+	to_check = NULL;	
+	printf("validate_function is %s\n", token->name);
 	if (strcmp(token->type, "ID") == 0)
 	{
 		//is_valid_equation(token, ";");
 	//	exit(1);
-		
 		called = true;
 		to_check = does_variable_exist(token->name);
 		if (!does_variable_exist(token->name) && !does_function_exist(token->name))
@@ -489,7 +489,7 @@ bool	semantic_analysis(t_token *tokens)
 				IS_ARR = true;
 			brackets++;
 		}
-	else if (strcmp(trav->name, "}") == 0)
+		else if (strcmp(trav->name, "}") == 0)
 		{
 			IS_ARR = false;
 			brackets--;
@@ -503,12 +503,16 @@ bool	semantic_analysis(t_token *tokens)
 		else if (strcmp(trav->name, "struct") == 0)
 		{
 			printf("strcmp(trav->name, \"struct\") == 0)\n");
+			printf("1 %s 2 %s 3 %s\n", trav->name, trav->next->name, trav->next->next->name);
 			trav = struct_loop(trav);	
 			if (strcmp(trav->name, ";") != 0)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
-			printf("line %d\n", trav->line);	
-	}
+			printf("line %d\n", trav->line);
+			head = trav->next;
+			printf("AFTERWARDS 1 %s 2 %s 3 %s\n", trav->name, trav->next->name, trav->next->next->name);
+		}
+
 		else if (value_found(trav->name, commands))
 		{
 			printf("value_found(trav->name, commands)");
@@ -563,7 +567,11 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else
 		{
+			printf("panic_mode()\n");
 			trav = panic_mode(trav, back, brackets);
+			if (!trav)
+				break ;
+			printf("end of panic\n");
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;

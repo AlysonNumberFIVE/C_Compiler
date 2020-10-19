@@ -82,6 +82,7 @@ t_token     *scan(char *buffer, t_hashtable *table)
     if (buffer[read_count] == '~') return (single_token(buffer, read_count, "TILDE"));
     if (buffer[read_count] == '^') return (single_token(buffer, read_count, "XOR"));
     if (buffer[read_count] == '?') return (single_token(buffer, read_count, "QUESTIONMARK"));
+    if (buffer[read_count] == '@') return (single_token(buffer, read_count, "AT_LOCATION"));
     return (NULL);
 }
 
