@@ -1,4 +1,5 @@
 
+#include "../inc/typing.h"
 #include "../inc/semantic.h"
 #include "../inc/database.h"
 #include "../inc/token.h"
@@ -58,7 +59,7 @@ t_token *extract_function(t_token *token)
 t_token *convert_function_to_token(char *function_name)
 {
 	t_function	*target;
-	extern t_function	*functions;	
+	extern t_function	*functions;
 
 	target = get_function(function_name);
 	// experimenta.
@@ -178,6 +179,93 @@ t_token	*extract_section(t_token *token)
 	return (new);		
 }
 
+bool	evaluate_function_parameters(char *function_name, t_token *type_list)
+{
+	t_token	*trav;
+	t_fvars **parameters;
+	t_function *to_get;
+	int counter;	
+	t_function *test_function;
+	t_db	*object;
+
+	counter = 0;
+	to_get = get_function(function_name);
+	parameters = to_get->parameters;
+	printf("here \n");
+	trav = type_list;
+	while (trav)
+	{
+		if (strcmp(trav->type, "LITERAL") == 0)
+		{
+			printf("LITERAL check\n");
+			if (strcmp(parameters[counter]->type, "char") == 0 &&
+				parameters[counter]->depth == 1)
+				printf("pass\n");
+			else
+			{
+				printf("incorrect parameter type value : %s\n", trav->name);
+				break;
+			}
+		}
+		else if (strcmp(trav->type, "ID") == 0)
+		{
+			printf("ID Check\n");
+			object = get_object_from_db(trav->name);
+			if (object)
+			{
+				if (object->depth == parameters[counter]->depth &&
+					strcmp(object->type, parameters[counter]->type) == 0)
+					printf("pass\n");
+				else
+				{
+					printf("Incorrect parameter value : %s\n", trav->name);
+					break;
+				}
+			}
+			if (!object)
+			{
+				test_function = get_function(trav->name);
+				if (test_function)
+				{
+					if (test_function->depth == parameters[counter]->depth &&
+						strcmp(test_function->type, parameters[counter]->type) == 0)
+						printf("pass\n");
+					else
+					{
+						printf("Incorrect parameter value : %s\n", trav->name);
+						break ;
+					}
+				}
+			}
+		}
+		else if (strcmp(trav->type, "NUM") == 0)
+		{
+			printf("NUM check\n");
+			printf("trav->name is %s\n", parameters[counter]->type);
+			if (!strcmp(parameters[counter]->type, "int") == 0)
+			{
+				printf("Incorrect parameter value : number expected\n");
+				break ;
+			}
+		}
+		counter++;	
+		trav = trav->next;
+	}
+}
+
+void DELETE(t_token *assert)
+{
+	t_token *trav;
+
+	trav = assert;
+	while (trav)
+	{
+		printf(" %s ", trav->type);
+		trav = trav->next;
+	}
+	printf("\n\n\n");
+}
+
 bool test_function_evaluation(t_token *function)
 {
 	t_token	*carry;
@@ -186,16 +274,22 @@ bool test_function_evaluation(t_token *function)
 	t_function *to_eval;
 	t_token	*function_test;
 	t_token *new;
-	
+	t_token *param_assert;
+	char *param_name;	
 
+	param_name = strdup(function->name);
+	param_assert = NULL;
 	to_eval = get_function(function->name);
 	carry = function->next->next;
 	while (carry)
 	{
-		printf("carry is %s\n", carry->name);
-	
+		printf("carry is %s type is %s\n", carry->name, carry->type);	
 		if (strcmp(carry->type, "ID") == 0 && strcmp(carry->next->name, "(") == 0)
 		{
+		
+			param_assert = push_token(param_assert, carry->name,
+				carry->type,  carry->line, carry->filename);
+			printf("TYPING : %s\n", carry->type);
 			function_test = extract_function(carry);
 			halt = carry;	
 			temp = extract_function_type(halt->name, halt);
@@ -211,6 +305,9 @@ bool test_function_evaluation(t_token *function)
 		}
 		else 
 		{
+			param_assert = push_token(param_assert, carry->name,
+				carry->type, carry->line, carry->filename);
+			printf("TYPING : %s\n", carry->type);
 			new = extract_section(carry);
 			print_segment(new);
 			carry = skip_section(carry);
@@ -221,19 +318,96 @@ bool test_function_evaluation(t_token *function)
 		}
 		carry = carry->next;
 	}
+	printf("PARAM ASSER TLIST\n");
+	DELETE(param_assert);
+	if (!to_eval)
+		printf("NONE\n");
+	printf("param name is %s\n", param_name);
+	evaluate_function_parameters(param_name, param_assert);
 	return (true);
 }
 
-bool	eval_function_type(char *function_name)
+t_this_type	*get_current_function_type(t_token *token)
 {
-	t_functino *the_function;
- 
-	the_function = get_function(function_name);
-		
+	t_function	*function;
+	t_this_type	*current_type;
+	printf("GETTING CURRENT FUNCTION TYPE\n");
+	function = get_function(token->name);
+	if (!function)
+	{
+		printf("Error : function not found\n");
+		return (NULL);
+	}
+	current_type->datatype = function->type;
+	current_type->depth = function->depth;
+	return (current_type);
+}
+
+t_this_type	*get_current_variable_type(t_token *token)
+{
+	t_db	*object;
+	t_this_type *current_type;
+
+	current_type = (t_this_type *)malloc(sizeof(t_this_type));
+	if (strcmp(token->type, "ID") == 0)
+	{
+		object = get_object_from_db(token->name);
+		current_type->datatype = strdup(object->name);
+		current_type->depth = object->depth;
+	}
+	else if (strcmp(token->type, "LITERAL") == 0)
+	{
+		current_type->datatype = strdup("char");
+		current_type->depth = 1;
+	}
+	else if (strcmp(token->type, "NUM") == 0 || strcmp(token->type, "CHAR") == 0)
+	{
+		current_type->datatype = strdup("int");
+		current_type->depth = 0;
+	}
+	else
+	{
+		free(current_type);
+		current_type = NULL;
+	}
+	return (current_type);
+}
+
+bool	eval_function_type(char *function_name, t_token *token)
+{
+	t_function *this_function;
+	extern t_this_type *current_type; 
+
+	this_function = get_function(function_name);
+	if (this_function->depth != current_type->depth)
+	{
+		error_mode(token, "Incompatible datatypes without casting");
+		return (false);
+	}
+	return (true);
+}
+
+bool	eval_variable_type_match(char *variable, t_token *token)
+{
+	t_db *object;
+	extern t_this_type *current_type;	
+
+	object = get_object_from_db(variable);
+	if (object->depth != current_type->depth)
+	{
+		error_mode(token ,"incompatible datatypes without casting");
+		return (false);
+	}
+	return (true);
+	/*if (
+	if (object->depth != current->depth)
+	*/	
+
 }
 
 bool is_valid_equation(t_token *tokens, char *end_token)
 {
+	extern t_this_type *current_type;
         extern int max_number;
         extern t_db **list;
     	char *db_value;
@@ -248,7 +422,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	brackets = 0;
         symbol = false;
 	equation = tokens;
-	printf("ENTERING IS_VALID_SUM\n");
         while (equation && (strcmp(equation->name, end_token)))
         {	
 		if (strcmp(equation->name, ";") == 0)
@@ -267,10 +440,18 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                                         printf("Error found at this fucking pooint\n");
                                 	return (false);
 				}
+			/*	if (current_type)
+					eval_variable_type_match(equation->name, equation);
+				else
+					current_type = get_current_variable_type(equation); */
                         } 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
 			{
 				function_test = extract_function(equation);
+			/*	if (current_type)
+					eval_function_type(equation->name, equation);
+				else
+					current_type = get_current_function_type(equation); */
 				halt = equation;
 				temp = extract_function_type(halt->name, halt);
 				print_segment(function_test);

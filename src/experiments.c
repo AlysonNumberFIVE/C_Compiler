@@ -26,6 +26,8 @@ int main(void)
 {
 	struct a x;
 	struct b y;
-	v("string\n");
+	int first = 4;
+	int *second = 42;
+	char *new = first + second;
 	return (0);
 }

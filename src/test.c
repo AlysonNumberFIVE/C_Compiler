@@ -1,4 +1,4 @@
-/*
+
 struct _char {
 	char c;
 	int size;
@@ -23,7 +23,7 @@ int n42 = 4;
 int c = 12 + 2 + 3;
 char *str = {'c', 'd', 'e'};
 int va;
-char *first;*/ 
+char *first;
 char *function(char *name, char  *second, int third);
 
 /*char *var(char *name);

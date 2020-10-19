@@ -1,5 +1,5 @@
 
-
+#include "../inc/typing.h"
 #include "../inc/token.h"
 #include <ctype.h>
 #include "../inc/database.h"
@@ -13,6 +13,9 @@
 //#define DO 5 
 #define OMMITTED_VARIABLE "0XAE42D3FFF"
 #define FUNCTION_CALL "0x241F1S9AE"
+
+t_hashtable	*datatype_reference = NULL;
+t_this_type	*current_type = NULL;
 t_struct *all_structs = NULL;
 t_function *functions = NULL;
 t_token	*to_evaluate = NULL;
@@ -338,9 +341,9 @@ bool	validate_function(t_token *token)
 	to_check = NULL;
 	if (strcmp(token->type, "ID") == 0)
 	{
-		is_valid_equation(token, ";");
-		exit(1);
-		/*
+		//is_valid_equation(token, ";");
+	//	exit(1);
+		
 		called = true;
 		to_check = does_variable_exist(token->name);
 		if (!does_variable_exist(token->name) && !does_function_exist(token->name))
@@ -348,7 +351,9 @@ bool	validate_function(t_token *token)
 			token = error_mode(token, " : variable doesn't exist");
 			return (false);
 		}
-		temp_var = validate_variable_call(token);*/
+		is_valid_equation(token, ";");
+		return (true);
+		//temp_var = validate_variable_call(token);
 	}
 	else 
 	{
