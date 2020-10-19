@@ -418,8 +418,82 @@ bool	eval_variable_type_match(char *variable, t_token *token)
 	/*if (
 	if (object->depth != current->depth)
 	*/	
-
 }
+
+
+bool	type_comparison(t_token *prev, t_token *current)
+{
+	t_this_type	*tprev;
+	t_this_type	*tcurrent;
+
+	t_function	*function_prev;
+	t_db		*object_prev;
+	t_function	*function_current;
+	t_db		*object_current;
+
+	printf(" ======================== PREVIOUS IS %s : and CURRENT IS %s\n", prev->name, current->name);
+	tprev = (t_this_type *)malloc(sizeof(t_this_type));
+	tcurrent = (t_this_type *)malloc(sizeof(t_this_type));
+	if (strcmp(prev->type, "ID") == 0)
+	{
+		object_prev = get_object_from_db(prev->name);
+		if (!object_prev)
+		{
+			function_prev = get_function(prev->name);
+			tprev->datatype = strdup(function_prev->type);
+			tprev->depth = function_prev->depth;
+		}
+		else
+		{
+			tprev->datatype = strdup(object_prev->type);
+			tprev->depth = object_prev->depth;
+		}
+	}
+	else if (strcmp(prev->type, "LITERAL") == 0)
+	{
+		tprev->datatype = strdup("char");
+		tprev->depth = 1;
+	}
+	else if (strcmp(prev->type, "NUM") == 0 || strcmp(prev->type, "CHAR") == 0)
+	{
+		tprev->datatype = strdup("int");
+		tprev->depth = 0;
+	}
+	
+
+	if (strcmp(current->type, "ID") == 0)
+	{
+		object_current = get_object_from_db(current->name);
+		if (!object_current)
+		{
+			function_current = get_function(current->name);
+			tcurrent->datatype = strdup(function_current->type);
+			tcurrent->depth = function_current->depth;
+		}
+		else
+		{
+			tcurrent->datatype = strdup(object_current->type);
+			tcurrent->depth = object_current->depth;
+		}
+	}
+	else if (strcmp(current->type, "LITERAL") == 0)
+	{
+		tcurrent->datatype = strdup("char");
+		tcurrent->depth = 1;
+	}
+	else if (strcmp(current->type, "NUM") == 0 || strcmp(current->type, "CHAR") == 0)
+	{
+		tcurrent->datatype = strdup("int");
+		tcurrent->depth = 0;
+	}
+
+	if (strcmp(tcurrent->datatype, tprev->datatype) == 0 &&
+		tcurrent->depth == tprev->depth)
+		return (true);
+	printf("Error : variable datatype size mismatch\n");
+	return (false);
+}
+
 
 bool is_valid_equation(t_token *tokens, char *end_token)
 {
@@ -433,6 +507,11 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	t_token	*halt;
 	t_token	*temp;
 	t_token *function_test;
+
+
+	// handling type comparison
+	t_token *prev;
+	prev = NULL;
 
 	function_test = NULL;
 	brackets = 0;
@@ -450,7 +529,10 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                 {
                         if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {
-                                db_value = get_from_db(equation->name);
+                    		if (prev)
+					type_comparison(prev, equation);
+			        prev = equation;
+				db_value = get_from_db(equation->name);
                                 if (db_value == NULL)
 				{
                                         printf("Error found at this fucking pooint\n");
@@ -459,7 +541,10 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				
 			} 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
-			{
+			{	
+				if (prev)
+					type_comparison(prev, equation);
+				prev = equation;
 				function_test = extract_function(equation);
 				halt = equation;
 				temp = extract_function_type(halt->name, halt);
@@ -472,11 +557,14 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				temp->next = equation;
 				if (!equation)
 					return (true);
-			}
+			} 
                         else if (strcmp(equation->type, "NUM") == 0 ||
 				strcmp(equation->type, "CHAR") == 0 ||
 				strcmp(equation->type, "LITERAL") == 0)	
 			{
+				if (prev)
+					type_comparison(prev, equation);
+				prev = equation;
 				symbol = true;
 			}
 			else

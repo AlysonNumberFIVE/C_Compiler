@@ -20,7 +20,7 @@ struct _int a;
 struct _int b;
 struct _char *aosdi; 
 int n42 = 4;
-int c = 12 + 2 + 3;
+int c = 12 + 2 + "h";
 char *str = {'c', 'd', 'e'};
 int va;
 char *first;

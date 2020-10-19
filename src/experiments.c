@@ -24,10 +24,9 @@ void	v(char *str);
 
 int main(void)
 {
-	struct a x;
-	struct b y;
-	int first = 4;
-	int *second = 42;
-	char *new = first + second;
+	char *str = "hello";	
+	int x;
+	x = 4 * **str;
+
 	return (0);
 }
