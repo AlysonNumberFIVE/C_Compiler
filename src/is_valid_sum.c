@@ -179,6 +179,21 @@ t_token	*extract_section(t_token *token)
 	return (new);		
 }
 
+int	type_len(t_token *list)
+{
+	int count;
+	t_token *trav;	
+
+	trav = list;
+	count = 0;
+	while (trav)
+	{
+		trav = trav->next;
+		count++;
+	}
+	return (count);
+}
+
 bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 {
 	t_token	*trav;
@@ -190,8 +205,12 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 
 	counter = 0;
 	to_get = get_function(function_name);
+	if (type_len(type_list) != to_get->param_number)
+	{
+		printf("Error : Incorrect parameters for function \"%s\"\n", to_get->function_name);
+		return (false);
+	}
 	parameters = to_get->parameters;
-	printf("here \n");
 	trav = type_list;
 	while (trav)
 	{
@@ -281,7 +300,7 @@ bool test_function_evaluation(t_token *function)
 	param_assert = NULL;
 	to_eval = get_function(function->name);
 	carry = function->next->next;
-	while (carry)
+	while (carry && strcmp(carry->name, ";") != 0)
 	{
 		printf("carry is %s type is %s\n", carry->name, carry->type);	
 		if (strcmp(carry->type, "ID") == 0 && strcmp(carry->next->name, "(") == 0)
@@ -320,9 +339,6 @@ bool test_function_evaluation(t_token *function)
 	}
 	printf("PARAM ASSER TLIST\n");
 	DELETE(param_assert);
-	if (!to_eval)
-		printf("NONE\n");
-	printf("param name is %s\n", param_name);
 	evaluate_function_parameters(param_name, param_assert);
 	return (true);
 }
@@ -440,18 +456,11 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                                         printf("Error found at this fucking pooint\n");
                                 	return (false);
 				}
-			/*	if (current_type)
-					eval_variable_type_match(equation->name, equation);
-				else
-					current_type = get_current_variable_type(equation); */
-                        } 
+				
+			} 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
 			{
 				function_test = extract_function(equation);
-			/*	if (current_type)
-					eval_function_type(equation->name, equation);
-				else
-					current_type = get_current_function_type(equation); */
 				halt = equation;
 				temp = extract_function_type(halt->name, halt);
 				print_segment(function_test);
@@ -462,7 +471,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				equation = skip_function(equation);
 				temp->next = equation;
 				if (!equation)
-					return (true);	
+					return (true);
 			}
                         else if (strcmp(equation->type, "NUM") == 0 ||
 				strcmp(equation->type, "CHAR") == 0 ||

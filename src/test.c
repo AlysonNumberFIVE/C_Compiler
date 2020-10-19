@@ -26,14 +26,15 @@ int va;
 char *first;
 char *function(char *name, char  *second, int third);
 
-/*char *var(char *name);
+char *var(char *name);
 int constant(void);
 int main(int argc, char **argv);
 void once_more(char *str);
-*/
+
 void for_loop_test(void) 
 {
-	function("name", function("second", "again", "hero" + 4 + 11), 42);
+	function("name", function("second", "again", "hero" + 4 + 11), 42) + 2;
+	var("hello");
 	/*for *(int i = 0; i < 15; i++) 
 	{
 		int value = 42;	
