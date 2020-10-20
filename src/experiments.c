@@ -19,14 +19,14 @@ struct b {
 	int c;
 };
 
-void	v(char *str);
+char	*v(char *str);
 
 
 int main(void)
 {
 	char *str = "hello";	
-	int x;
-	x = 4 && (&str);
+	struct b testing;
 
+	*str = 42;	
 	return (0);
 }

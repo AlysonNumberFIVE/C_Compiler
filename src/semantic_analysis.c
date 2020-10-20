@@ -340,13 +340,22 @@ bool	validate_function(t_token *token)
 	called = false;
 	to_check = NULL;	
 	printf("validate_function is %s\n", token->name);
-	if (strcmp(token->type, "ID") == 0)
+	if (strcmp(token->type, "ID") == 0 || strcmp(token->name, "*") == 0 ||
+		strcmp(token->name, "@") == 0)
 	{
 		//is_valid_equation(token, ";");
-	//	exit(1);
+		if (strcmp(token->next->name, "=") == 0)
+		{
+			printf("death\n");
+			token = token->next->next;
+			value = value_checker(token);
+			return (true);
+		}
 		called = true;
 		to_check = does_variable_exist(token->name);
-		if (!does_variable_exist(token->name) && !does_function_exist(token->name))
+		
+		if (strcmp(token->name, "*") != 0 && strcmp(token->name, "@") != 0 && 
+			!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
 			token = error_mode(token, " : variable doesn't exist");
 			return (false);

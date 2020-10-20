@@ -260,7 +260,7 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 		else if (strcmp(trav->type, "NUM") == 0)
 		{
 			printf("NUM check\n");
-			printf("trav->name is %s\n", parameters[counter]->type);
+			printf("trav->name is %s\n", parameters[counter]->name);
 			if (!strcmp(parameters[counter]->type, "int") == 0)
 			{
 				printf("Incorrect parameter value : number expected\n");
@@ -506,12 +506,58 @@ t_token	*skip_struct_info(t_token *token)
 	return (token);
 }
 
+bool handle_pointer_dereferencing(t_token *pointer)
+{
+	int depth_to_minus;
+	t_function *this_function;
+	t_db *object;
+	t_this_type *deref;
+
+	depth_to_minus = 0;
+	deref = (t_this_type *)malloc(sizeof(t_this_type));
+	while (pointer && strcmp(pointer->name, "*") == 0)
+	{
+		depth_to_minus++;
+		pointer = pointer->next;
+	}
+	if (strcmp(pointer->type, "ID") != 0)
+	{
+		printf("Error : Incorrect use of pointer dereferncing\n");
+	}
+	if (strcmp(pointer->next->name, "(") == 0)
+	{
+		this_function = get_function(pointer->name);
+		deref->depth = this_function->depth - depth_to_minus;
+		deref->datatype = this_function->type;
+		printf("run function check\n");
+	}
+	else if (strcmp(pointer->next->name, "->") == 0 || 
+		strcmp(pointer->next->name, ".") == 0)
+	{
+		printf("Fail the shit\n");	
+		return (false);
+	}
+	else
+	{
+		printf("object is %s\n", pointer->name);
+		object = get_object_from_db(pointer->name);
+		if (!object)
+		{
+			printf("Error : variable \"%s\" doesn't exist\n", pointer->name);
+			return (false);
+		}
+		deref->depth = object->depth - depth_to_minus;
+		deref->datatype = strdup(object->type);
+	}
+	
+}
+
 bool is_valid_equation(t_token *tokens, char *end_token)
 {
 	extern t_this_type *current_type;
         extern int max_number;
         extern t_db **list;
-    	char *db_value;
+    	t_db *db_value;
 	t_token *equation;
         bool symbol;
         int brackets;
@@ -520,7 +566,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	t_token *function_test;
 
 
-	// handling type comparison
+	// handling type comparisontra
 	t_token *prev;
 	prev = NULL;
 
@@ -530,8 +576,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	equation = tokens;
 	printf("EQUATION %s\n", equation->name);
         while (equation && (strcmp(equation->name, end_token)))
-        {
-			
+        {	
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
@@ -543,11 +588,24 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			if (strcmp(equation->name, "*") == 0)
 			{
 				printf("TIMES ME BITCH\n");
-				equation = equation->next;
+				handle_pointer_dereferencing(equation);
+				while (equation && strcmp(equation->name, "*") == 0)
+					equation = equation->next;
+				if (strcmp(equation->next->name, ";") == 0)
+					break;
 			}
-			else if (strcmp(equation->name, "@") == 0)
+			if (strcmp(equation->name, "@") == 0)
 			{
 				printf("MEMORIZE ME BITCH\n");
+				equation = equation->next;
+				if (strcmp(equation->type, "ID") != 0)
+				{
+					printf("%s ", equation->name);
+					printf("Error : incorrect use of memory referencing\n");
+					return (false);
+				}
+				if (strcmp(equation->next->name, ";") == 0)
+					break;	
 				equation = equation->next;
 			}
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "->") == 0)
@@ -562,15 +620,16 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                         {
 				if (prev)
 					type_comparison(prev, equation);
-				
 			        prev = equation;
-				db_value = get_from_db(equation->name);
+				printf("fetching... %s\n", equation->name);
+				db_value = get_object_from_db(equation->name);
+				
                                 if (db_value == NULL)
 				{
                                         printf("Error found at this fucking pooint\n");
                                 	return (false);
 				}
-				
+				symbol = true;				
 			} 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
 			{	
@@ -580,7 +639,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				function_test = extract_function(equation);
 				halt = equation;
 				temp = extract_function_type(halt->name, halt);
-				print_segment(function_test);
+	 				print_segment(function_test);
 				
 				test_function_evaluation(function_test);
 	
@@ -589,6 +648,8 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				temp->next = equation;
 				if (!equation)
 					return (true);
+
+				printf("//////////////////////////////////////////////////////////\n");
 			} 
                         else if (strcmp(equation->type, "NUM") == 0 ||
 				strcmp(equation->type, "CHAR") == 0 ||
@@ -619,6 +680,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				return (false);
 			}
 		}
+	
         	equation = equation->next;
 	}
 	if (brackets != 0)

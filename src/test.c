@@ -35,10 +35,11 @@ void once_more(char *str);
 void for_loop_test(void) 
 {
 	struct _char testing;
-	testing->z && &42; 
-//	function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + testing->x;
-
-//	var("hello");
+	testing->z && 42; 
+	function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
+	char *aw;
+	aw + 42 = "str";
+	var("hello");
 	/*for *(int i = 0; i < 15; i++) 
 	{
 		int value = 42;	
