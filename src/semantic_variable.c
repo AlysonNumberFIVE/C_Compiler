@@ -115,7 +115,10 @@ char	*value_checker(t_token *components)
 	int 	counter;
 	char 	*array_value;	
 	bool	comma_flag;
-	char 	*db_checker;
+	t_db	*object;
+	t_function *function;
+	char	*db_checker;
+	t_function *this_function;
 	int	comma_count;
 	extern t_stack *stack;
 	t_token *error;	
@@ -134,13 +137,25 @@ char	*value_checker(t_token *components)
 		(strcmp(components->name, "&") == 0 && 
 		strcmp(components->next->type, "ID") == 0))
 	{
+		printf("TRYING A FEW THINGS AND STUFF %s\n", components->name);
+		if (is_valid_equation(components, ";"))
+		{
+			return (strdup("VALID"));
+		}
+		else
+		{
+			error_mode(components, "Variable does not exist");
+			return (NULL);
+		}
+		/*
 		db_checker = get_from_db(components->next->name);
 		if (!db_checker)
 		{
-			printf("error : variable does not exist\n");
+			error_mode(components, "Error : varaible does not exist");
+			// printf("Error : variable does not exist\n");
 			return (NULL);
 		}
-		return (strdup(db_checker));
+		return (strdup(db_checker));*/
 	}
 	if (validate_id(components->name))
 	{

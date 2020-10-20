@@ -36,8 +36,9 @@ void for_loop_test(void)
 {
 	struct _char testing;
 	testing->z && 42; 
-	function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
+	char *q = ww +  function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
+	char aw;
 	int x = 42;
 	int daedalus = 1 + 2 + 4 + 8 ** aoisdj;
 	aw = "str";
