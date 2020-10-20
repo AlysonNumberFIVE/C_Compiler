@@ -102,6 +102,5 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
                         push_token(error, "X", "ID", trav->line, trav->filename));
         	print_error_message(trav); 
 	}
-	printf("Exiting..\n");
 	 return	(trav);
 }

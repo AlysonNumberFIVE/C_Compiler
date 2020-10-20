@@ -277,7 +277,6 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 	typelist = NULL;
 	variables = NULL;
 	trav = trav->next;
-	printf("VALIDATE CALL %s\n", function_name);
 	while (trav && strcmp(trav->name, ";") != 0)
 	{
 		printf("%s \n", trav->name);
@@ -339,7 +338,6 @@ bool	validate_function(t_token *token)
 
 	called = false;
 	to_check = NULL;	
-	printf("validate_function is %s\n", token->name);
 	if (strcmp(token->type, "ID") == 0 || strcmp(token->name, "*") == 0 ||
 		strcmp(token->name, "@") == 0)
 	{
@@ -354,7 +352,6 @@ bool	validate_function(t_token *token)
 		}
 		called = true;
 		to_check = does_variable_exist(token->name);
-		printf("NEXT NEXT token name is %s\n", token->name);
 		if (strcmp(token->name, "*") != 0 && strcmp(token->name, "@") != 0 && 
 			!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
@@ -506,27 +503,20 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		if (handle_native_csg(prev, trav->name) == 3)
 		{
-			printf("handle_native_CSV == TRUE\n");
 		//	drop_last_table();
 		//	stack = pop_stack(stack);
-			printf("what the fuck..\n");
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
-			printf("strcmp(trav->name, \"struct\") == 0)\n");
-			printf("1 %s 2 %s 3 %s\n", trav->name, trav->next->name, trav->next->next->name);
 			trav = struct_loop(trav);	
 			if (strcmp(trav->name, ";") != 0)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
-			printf("line %d\n", trav->line);
 			head = trav->next;
-			printf("AFTERWARDS 1 %s 2 %s 3 %s\n", trav->name, trav->next->name, trav->next->next->name);
 		}
 
 		else if (value_found(trav->name, commands))
 		{
-			printf("value_found(trav->name, commands)");
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav);
 			/*
@@ -546,7 +536,6 @@ bool	semantic_analysis(t_token *tokens)
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
-			printf("handle_native_csg() == SCOPE\n");
 			validate_function(head);
 			head = trav;
 			if (strcmp(trav->name, "{") == 0)
@@ -581,7 +570,6 @@ bool	semantic_analysis(t_token *tokens)
 			trav = panic_mode(trav, back, brackets);
 			if (!trav)
 				break ;
-			printf("end of panic\n");
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;

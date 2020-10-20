@@ -76,10 +76,8 @@ t_token *skip_function(t_token *token)
 	trav = token;
 	trav = trav->next;
 	brackets = 0;
-	printf("SKIPPING FUNCTION ===========\n");
 	while (trav)
 	{
-		printf(" -------> %s ", trav->name);
 		if (strcmp(trav->name, "(") == 0)
 			brackets++;
 		else if (strcmp(trav->name, ")") == 0)
@@ -329,7 +327,7 @@ bool test_function_evaluation(t_token *function)
 		}
 		carry = carry->next;
 	}
-	DELETE(param_assert);
+//	DELETE(param_assert);
 	evaluate_function_parameters(param_name, param_assert);
 	return (true);
 }
@@ -530,7 +528,8 @@ bool handle_pointer_dereferencing(t_token *pointer)
 		object = get_object_from_db(pointer->name);
 		if (!object)
 		{
-			printf("Error : variable \"%s\" doesn't exist\n", pointer->name);
+			error_mode(pointer, "variable doesn't exist");
+			//printf("Error : variable \"%s\" doesn't exist\n", pointer->name);
 			return (false);
 		}
 		deref->depth = object->depth - depth_to_minus;
@@ -608,7 +607,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				
                                 if (db_value == NULL)
 				{
-                                        printf("Error found at this fucking pooint\n");
+                                       // printf("Error found at this fucking pooint\n");
                                 	return (false);
 				}
 				symbol = true;				
@@ -626,7 +625,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				test_function_evaluation(function_test);
 	
 				halt->next = temp;
-				printf("BEFORE SKIPPING  %s\n", equation->name);
 				equation = skip_function(equation);
 				temp->next = equation;
 				if (!equation)

@@ -92,7 +92,8 @@ bool	insert_into_db(char *type, char *name, char *val, int depth)
 		{
 			if (strcmp(name, object->name) == 0)
 			{
-				printf("error : variable %s already defined\n", name);
+				printf("Error : variable %s already defined\n\n", name);
+				//rintf("error : variable %s already defined\n", name);
 				return (false);	
 			}
 			object = object->next;

@@ -249,9 +249,7 @@ t_token		*struct_loop(t_token *token)
 		
 			if (strcmp(trav->name, "struct") == 0) 
 			{
-				printf("HANDLING NESTED STRUCT\n");
 				trav = handle_nested_struct(trav, struct_name);
-				printf("RETRNING TO HERE %s\n", trav->next->next->name);
 			}
 			else 
 			{
@@ -286,8 +284,6 @@ t_token		*struct_loop(t_token *token)
 		printf("falied\n");
 //	start = arraypush(start, datatype_name);
 	free(datatype_name);
-	printf("Prev is %s\n", prev->name);	
-	printf("HERE WE ARE %s\n", trav->name);
 	return (trav);
 }
 
@@ -302,7 +298,6 @@ bool		handle_struct_dereferencing(t_token *token)
 
 	counter = 0;
 	object = get_object_from_db(token->name);
-	printf("datatype is %s\n", object->type);
 	trav = token;
 	trav_struct = all_structs;
 	segments = split(object->type, ' ');
@@ -317,15 +312,16 @@ bool		handle_struct_dereferencing(t_token *token)
 			{
 				if (strcmp(trav_struct->variables[counter]->name, trav->name) == 0)
 				{
-					printf("found %s\n", trav->name);
+					/*printf("found %s\n", trav->name);
 					printf("variable datatype %s", trav_struct->variables[counter]->type);
 					printf("variable depth %d\n", trav_struct->variables[counter]->depth);
+					*/
 				}
 				counter++;
 			}
 			break;
 		}
-		printf("trav struct name %s\n", trav_struct->struct_name);
+//		printf("trav struct name %s\n", trav_struct->struct_name);
 		trav_struct = trav_struct->next;
 	}
 }

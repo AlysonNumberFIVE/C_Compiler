@@ -137,7 +137,6 @@ char	*value_checker(t_token *components)
 		(strcmp(components->name, "&") == 0 && 
 		strcmp(components->next->type, "ID") == 0))
 	{
-		printf("TRYING A FEW THINGS AND STUFF %s\n", components->name);
 		if (is_valid_equation(components, ";"))
 		{
 			return (strdup("VALID"));

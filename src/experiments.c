@@ -27,6 +27,6 @@ int main(void)
 	char *str = "hello";	
 	struct b testing;
 
-	*str = 42;	
+	(int)str = 42;	
 	return (0);
 }
