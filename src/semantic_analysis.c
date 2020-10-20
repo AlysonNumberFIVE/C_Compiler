@@ -344,6 +344,7 @@ bool	validate_function(t_token *token)
 		strcmp(token->name, "@") == 0)
 	{
 		//is_valid_equation(token, ";");
+		
 		if (strcmp(token->next->name, "=") == 0)
 		{
 			printf("death\n");
@@ -353,7 +354,7 @@ bool	validate_function(t_token *token)
 		}
 		called = true;
 		to_check = does_variable_exist(token->name);
-		
+		printf("NEXT NEXT token name is %s\n", token->name);
 		if (strcmp(token->name, "*") != 0 && strcmp(token->name, "@") != 0 && 
 			!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
@@ -507,7 +508,8 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			printf("handle_native_CSV == TRUE\n");
 		//	drop_last_table();
-			stack = pop_stack(stack);
+		//	stack = pop_stack(stack);
+			printf("what the fuck..\n");
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
@@ -576,7 +578,6 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else
 		{
-			printf("panic_mode()\n");
 			trav = panic_mode(trav, back, brackets);
 			if (!trav)
 				break ;

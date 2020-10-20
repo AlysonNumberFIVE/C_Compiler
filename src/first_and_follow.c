@@ -33,7 +33,7 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, "=", "ID NUM LITERAL ( { &");
 	ht_insert(ht, ",", "ID NUM char const void struct int short double float size_t long longlong signed void CHAR");
 	ht_insert(ht, ")", "; { ID NUM LITERAL");
-	ht_insert(ht, "NUM", "+ - / * ) ; , }");
+	ht_insert(ht, "NUM", "+ - / * ) ; , ");
 	ht_insert(ht, "{", "ID char const void struct int short double float size_t long longlong signed void return NUM CHAR");
 	ht_insert(ht, "}", "DONE ; }");
 	ht_insert(ht, "return", "( ; ID NUM");

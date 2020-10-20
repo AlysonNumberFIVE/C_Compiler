@@ -38,7 +38,9 @@ void for_loop_test(void)
 	testing->z && 42; 
 	function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
-	aw + 42 = "str";
+	int x = 42;
+	int daedalus = 1 + 2 + 4 + 8 ** aoisdj;
+	aw = "str";
 	var("hello");
 	/*for *(int i = 0; i < 15; i++) 
 	{

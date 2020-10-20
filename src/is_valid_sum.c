@@ -76,9 +76,10 @@ t_token *skip_function(t_token *token)
 	trav = token;
 	trav = trav->next;
 	brackets = 0;
+	printf("SKIPPING FUNCTION ===========\n");
 	while (trav)
 	{
-		printf(" %s ", trav->name);
+		printf(" -------> %s ", trav->name);
 		if (strcmp(trav->name, "(") == 0)
 			brackets++;
 		else if (strcmp(trav->name, ")") == 0)
@@ -98,9 +99,6 @@ t_token	*extract_function_type(char *function_name, t_token *token)
 
 	custom_block = NULL;
 	funct = get_function(function_name);
-	printf("function name : %s\n", funct->function_name);
-	printf("function type : %s\n", funct->type);
-	printf("function depth : %d\n", funct->depth);
 	custom_datatype = join(itoa(funct->depth), funct->type);
 	custom_block = push_token(custom_block, "function_name", custom_datatype, 
 		token->line, token->filename);
@@ -156,7 +154,6 @@ t_token	*extract_section(t_token *token)
 	trav = token;
 	new = NULL;
 	brackets = 0;
-	printf("EXTRACTION  := ");
 	while (trav && strcmp(trav->name, ",") != 0)
 	{
 		printf(" %s ", trav->name);
@@ -174,7 +171,6 @@ t_token	*extract_section(t_token *token)
 		new = push_token(new, trav->name, trav->type, trav->line, trav->filename);
 		trav = trav->next;
 	}
-	printf("end extractin\n");
 	new = push_token(new, ";", "SEMICOLON", trav->line, trav->filename);
 	return (new);		
 }
@@ -260,7 +256,6 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 		else if (strcmp(trav->type, "NUM") == 0)
 		{
 			printf("NUM check\n");
-			printf("trav->name is %s\n", parameters[counter]->name);
 			if (!strcmp(parameters[counter]->type, "int") == 0)
 			{
 				printf("Incorrect parameter value : number expected\n");
@@ -302,13 +297,11 @@ bool test_function_evaluation(t_token *function)
 	carry = function->next->next;
 	while (carry && strcmp(carry->name, ";") != 0)
 	{
-		printf("carry is %s type is %s\n", carry->name, carry->type);	
 		if (strcmp(carry->type, "ID") == 0 && strcmp(carry->next->name, "(") == 0)
 		{
 		
 			param_assert = push_token(param_assert, carry->name,
 				carry->type,  carry->line, carry->filename);
-			printf("TYPING : %s\n", carry->type);
 			function_test = extract_function(carry);
 			halt = carry;	
 			temp = extract_function_type(halt->name, halt);
@@ -326,9 +319,7 @@ bool test_function_evaluation(t_token *function)
 		{
 			param_assert = push_token(param_assert, carry->name,
 				carry->type, carry->line, carry->filename);
-			printf("TYPING : %s\n", carry->type);
 			new = extract_section(carry);
-			printf("PRINTING SEGMENT BEFORE RECALL\n");
 			print_segment(new);
 			carry = skip_section(carry);
 			if (!carry)
@@ -338,7 +329,6 @@ bool test_function_evaluation(t_token *function)
 		}
 		carry = carry->next;
 	}
-	printf("PARAM ASSER TLIST\n");
 	DELETE(param_assert);
 	evaluate_function_parameters(param_name, param_assert);
 	return (true);
@@ -348,7 +338,6 @@ t_this_type	*get_current_function_type(t_token *token)
 {
 	t_function	*function;
 	t_this_type	*current_type;
-	printf("GETTING CURRENT FUNCTION TYPE\n");
 	function = get_function(token->name);
 	if (!function)
 	{
@@ -432,7 +421,6 @@ bool	type_comparison(t_token *prev, t_token *current)
 	t_function	*function_current;
 	t_db		*object_current;
 
-	printf(" ======================== PREVIOUS IS %s : and CURRENT IS %s\n", prev->name, current->name);
 	tprev = (t_this_type *)malloc(sizeof(t_this_type));
 	tcurrent = (t_this_type *)malloc(sizeof(t_this_type));
 	if (strcmp(prev->type, "ID") == 0)
@@ -539,7 +527,6 @@ bool handle_pointer_dereferencing(t_token *pointer)
 	}
 	else
 	{
-		printf("object is %s\n", pointer->name);
 		object = get_object_from_db(pointer->name);
 		if (!object)
 		{
@@ -574,7 +561,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	brackets = 0;
         symbol = false;
 	equation = tokens;
-	printf("EQUATION %s\n", equation->name);
         while (equation && (strcmp(equation->name, end_token)))
         {	
 		if (strcmp(equation->name, ";") == 0)
@@ -587,7 +573,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                 {
 			if (strcmp(equation->name, "*") == 0)
 			{
-				printf("TIMES ME BITCH\n");
 				handle_pointer_dereferencing(equation);
 				while (equation && strcmp(equation->name, "*") == 0)
 					equation = equation->next;
@@ -596,7 +581,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			}
 			if (strcmp(equation->name, "@") == 0)
 			{
-				printf("MEMORIZE ME BITCH\n");
 				equation = equation->next;
 				if (strcmp(equation->type, "ID") != 0)
 				{
@@ -610,7 +594,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			}
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "->") == 0)
 			{
-				printf("HANDLE STRUCT DEREFERENCING\n");
 				handle_struct_dereferencing(equation);
 				// skip struct stuff.
 				equation = skip_struct_info(equation);
@@ -621,7 +604,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				if (prev)
 					type_comparison(prev, equation);
 			        prev = equation;
-				printf("fetching... %s\n", equation->name);
 				db_value = get_object_from_db(equation->name);
 				
                                 if (db_value == NULL)
@@ -644,12 +626,12 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				test_function_evaluation(function_test);
 	
 				halt->next = temp;
+				printf("BEFORE SKIPPING  %s\n", equation->name);
 				equation = skip_function(equation);
 				temp->next = equation;
 				if (!equation)
 					return (true);
 
-				printf("//////////////////////////////////////////////////////////\n");
 			} 
                         else if (strcmp(equation->type, "NUM") == 0 ||
 				strcmp(equation->type, "CHAR") == 0 ||
