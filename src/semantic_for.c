@@ -7,10 +7,12 @@
 
 
 
-t_token	*semantic_for(char *prev, t_token *components)
+t_token	*semantic_for(char *prev, t_token *components, t_hashtable *ff_list)
 {
 	int commas;
 	t_token	*sub_sequence;
+	t_token *sub_prev;
+	extern char **start;
 
 	sub_sequence = NULL;
 	commas = 0;
@@ -18,7 +20,6 @@ t_token	*semantic_for(char *prev, t_token *components)
 	if (strcmp(components->name, "(") == 0)
 		components = components->next;
 
-	printf("SEMANTIC FOR %s\n", components->name); 
 	while (components && handle_native_csg(prev, components->name) != SCOPE)
 	{
 		if (strcmp(components->name, ";") == 0)
@@ -26,7 +27,6 @@ t_token	*semantic_for(char *prev, t_token *components)
 			sub_sequence = push_token(sub_sequence,
 				";", "SEMICOLON", components->line,
 				components->filename);	
-			printf("validate function and stuff\n");	
 			validate_function(sub_sequence);
 			t_token *h = sub_sequence;
 			while (h)
@@ -40,17 +40,29 @@ t_token	*semantic_for(char *prev, t_token *components)
 		} 
 		else
 		{
+			if (commas > 0 && value_found(components->name, start))
+			{
+				error_mode(components, "cannot declare datatype at this point");
+			}
+			if (check_next_token(ff_list, components->next->name, components->name) == false)
+			{
+				error_mode(components, "lvalue must be a variable");	
+			//	printf("Error detected with %s and %s\n", components->name,
+			//		components->next->name);
+			}
 			//sub_sequence = arraypush(sub_sequence, components[counter]);
 			sub_sequence = push_token(sub_sequence, 
 				components->name, components->type, -1, 
 				"thing");
 		}
+		sub_prev = components;
 		prev = components->name;
 		components = components->next;	
 	}
-	printf("EXITING for loop %s\n", components->name);
 	if (commas > 2)
 		printf("too many commas\n");
+	if (strcmp(components->name, "{") != 0)
+		printf("incorrect way of formatting a for loop\n");
 	return (components);
 }
 /*

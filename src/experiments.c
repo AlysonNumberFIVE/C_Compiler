@@ -2,6 +2,7 @@
 
 
 //string str = NULL;
+char *null;
 
 struct test {
 	struct test *next;
@@ -26,7 +27,7 @@ int main(void)
 {
 	char *str = "hello";	
 	struct b testing;
-
-	(int)str = 42;	
+	int i;	
+	for (int j=0;i++;int k=0){}
 	return (0);
 }

@@ -533,6 +533,10 @@ bool	semantic_analysis(t_token *tokens)
 		//	drop_last_table();
 		//	stack = pop_stack(stack);
 		}
+		else if (strcmp(trav->name, "continue") == 0 || strcmp(trav->name, "break") == 0)
+		{
+
+		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
 			trav = struct_loop(trav);	
@@ -545,7 +549,7 @@ bool	semantic_analysis(t_token *tokens)
 		else if (value_found(trav->name, commands))
 		{
 			if (strcmp(trav->name, "for") == 0)
-				trav = semantic_for(prev, trav);
+				trav = semantic_for(prev, trav, ff_list);
 			/*
 			else if (strcmp(trav->name, "while") == 0)
 				trav = semantic_while(prev, trav);

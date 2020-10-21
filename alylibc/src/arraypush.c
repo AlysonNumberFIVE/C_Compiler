@@ -23,7 +23,7 @@ char		**arraypush(char **array, char *str)
 	if (array == NULL)
 	{
 		newarr = (char**)malloc(sizeof(char*) * 2);
-		newarr[0] = ft_strdup(str);
+		newarr[0] = strdup(str);
 		newarr[1] = NULL;
 	}
 	else
@@ -31,11 +31,12 @@ char		**arraypush(char **array, char *str)
 		newarr = (char **)malloc(sizeof(char*) * (arraylen(array) + 2));
 		while (array[i])
 		{
-			newarr[i] = ft_strdup(array[i]);
+			newarr[i] = strdup(array[i]);
 			i++;
 		}
-		newarr[i] = ft_strdup(str);
-		newarr[++i] = NULL;
+		newarr[i] = strdup(str);
+		i++;
+		newarr[i] = NULL;
 		free2d(array);
 	}
 	return (newarr);
