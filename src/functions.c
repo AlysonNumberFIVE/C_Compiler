@@ -16,6 +16,10 @@ typedef struct	s_function_list
 
 */
 
+// This global variable is a result of afterthought I never planned for
+
+char *g_function_name = NULL;
+
 t_function *new_function(char *function_name, char *type, int depth)
 {
 	t_function *new;
@@ -24,6 +28,7 @@ t_function *new_function(char *function_name, char *type, int depth)
 	new->function_name = strdup(function_name);
 	new->type = strdup(type);
 	new->depth = depth;
+	new->defined_flag = 0;
 	new->parameters = NULL;
 	new->next = NULL;
 	new->param_number = 0;
@@ -157,7 +162,7 @@ t_function 	*new_parameter(t_function *all_functions, char *function_name, t_fva
 			printf("%s\n", this_function->parameters[duplicate]->name); 
 			if (strcmp(new_param->name, this_function->parameters[duplicate]->name) == 0)
 			{
-				printf("error : a fuckup with the variables\n");
+				printf("Error, repeated variable : %s\n", this_function->parameters[duplicate]->name);
 				return (all_functions);
 			}
 			duplicate++;
@@ -169,6 +174,25 @@ t_function 	*new_parameter(t_function *all_functions, char *function_name, t_fva
 	);
 	this_function->param_number++;
 	return (all_functions);
+}
+
+bool	set_defined(char *function_name, int def_type)
+{
+	t_function *function;
+	if (!g_function_name)
+		return (true);
+	function = get_function(g_function_name);
+	if (function->defined_flag == 2)
+	{
+		printf("Error : Function \"%s\" previously defined", g_function_name);
+		free(g_function_name);
+		g_function_name = NULL;
+		return (false);
+	}
+	function->defined_flag = def_type;
+	free(g_function_name);
+	g_function_name = NULL;
+	return (true);
 }
 
 int	type_length(t_token *type)
@@ -240,6 +264,8 @@ bool	assert_parameter_correctness(t_token *type, char *function_name)
 	}
 	return (true);
 }
+
+
 
 bool	validate_correct_function_def(t_token *type, char *function_name)
 {

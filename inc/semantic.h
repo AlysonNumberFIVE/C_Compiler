@@ -33,6 +33,7 @@ typedef struct  s_function_list
         char	*function_name;
         t_fvars **parameters;
 	int 	param_number;
+	int 	defined_flag;
         struct s_function_list *next;
 }       t_function;
 
@@ -81,6 +82,7 @@ bool		does_function_exist(char *name);
 bool    	assert_parameter_correctness(t_token *type, char *function_name);
 t_function	*get_function(char *name);
 bool		handle_struct_dereferencing(t_token *token);
+bool		set_defined(char *function_name, int def_type);
 
 #endif
 

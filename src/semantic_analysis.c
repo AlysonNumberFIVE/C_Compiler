@@ -335,6 +335,7 @@ bool	validate_function(t_token *token)
 	char		*value;
 	bool		to_check;
 	bool		called;
+	extern char 	*g_function_name;
 
 	called = false;
 	to_check = NULL;	
@@ -375,10 +376,14 @@ bool	validate_function(t_token *token)
 		insert_into_db(temp_var->type, temp_var->name, NULL, temp_var->depth);
 	else if (strcmp(trav->name, "(") == 0)
 	{
+		g_function_name = strdup(possible_function_name);
 		if (called == true)
 			validate_call(temp_var, trav, possible_function_name);
 		else
+		{
+			printf("possible_function save %s\n", possible_function_name);
 			save_function(temp_var, trav, possible_function_name);
+		}
 	}
 	else if (strcmp(trav->name, "=") == 0)
 	{
@@ -536,13 +541,19 @@ bool	semantic_analysis(t_token *tokens)
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
+			printf("head is %s\n", head->name);
 			validate_function(head);
 			head = trav;
 			if (strcmp(trav->name, "{") == 0)
+			{
+				set_defined(NULL, 2);
 				add_new_table();
+			}
 			if (head && strcmp(head->name, ";") == 0)
+			{
+				set_defined(NULL, 1);
 				head = head->next;
-
+			}
 			else if (head && strcmp(head->name, "{") == 0 && in_function == false)
 			{
 				stack = push_stack(stack, FUNCTION);

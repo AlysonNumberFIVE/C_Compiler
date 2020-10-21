@@ -19,9 +19,10 @@ struct b {
 	int c;
 };
 
+char	*v(char *str, int x) {
+	return ("null");
+}
 char	*v(char *str);
-
-
 int main(void)
 {
 	char *str = "hello";	
