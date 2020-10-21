@@ -4,6 +4,9 @@
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
 
+
+
+
 t_token	*semantic_for(char *prev, t_token *components)
 {
 	int commas;
@@ -12,10 +15,19 @@ t_token	*semantic_for(char *prev, t_token *components)
 	sub_sequence = NULL;
 	commas = 0;
 	components = components->next;
+	if (strcmp(components->name, "(") == 0)
+		components = components->next;
+
+	printf("SEMANTIC FOR %s\n", components->name); 
 	while (components && handle_native_csg(prev, components->name) != SCOPE)
 	{
 		if (strcmp(components->name, ";") == 0)
-		{
+		{			
+			sub_sequence = push_token(sub_sequence,
+				";", "SEMICOLON", components->line,
+				components->filename);	
+			printf("validate function and stuff\n");	
+			validate_function(sub_sequence);
 			t_token *h = sub_sequence;
 			while (h)
 			{

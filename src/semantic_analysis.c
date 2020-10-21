@@ -196,8 +196,6 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 	
 	if (sanity_ftest)
 	{
-		printf("REDEFINITION DETECTED\n\n");
-		printf("final token is %s\n", trav->name);
 		handle_redefinition(sanity_ftest, sanity_vtest, v_param_count,
 			trav->name);
 	}
@@ -406,7 +404,6 @@ bool	validate_function(t_token *token)
 			validate_call(temp_var, trav, possible_function_name);
 		else
 		{
-			printf("possible_function save %s\n", possible_function_name);
 			save_function(temp_var, trav, possible_function_name);
 		}
 	}
@@ -566,7 +563,6 @@ bool	semantic_analysis(t_token *tokens)
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
-			printf("head is %s\n", head->name);
 			validate_function(head);
 			head = trav;
 			if (strcmp(trav->name, "{") == 0)

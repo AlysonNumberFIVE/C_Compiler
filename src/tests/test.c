@@ -8,7 +8,7 @@ char *string(int x, int _22) {
 }
 char ***new_function(int x, char *str);
 char **_42(void *v);
-char *string(int y, int z, char *str);
+char *string(int y, int z);
 int *n_(int *env);
 
 

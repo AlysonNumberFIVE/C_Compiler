@@ -1,4 +1,4 @@
-
+/*
 struct _char {
 	char c;
 	int size;
@@ -31,10 +31,11 @@ char *var(char *name);
 int constant(void);
 int main(int argc, char **argv);
 void once_more(char *str);
+*/
 
 void for_loop_test(void) 
 {
-	struct _char testing;
+/*	struct _char testing;
 	testing->z && 42; 
 	char *q = ww +  function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
@@ -42,9 +43,9 @@ void for_loop_test(void)
 	int x = 42;
 	int daedalus = 1 + 2 + 4 + 8 ** aoisdj;
 	aw = "str";
-	var("hello");
-	/*for *(int i = 0; i < 15; i++) 
+	var("hello"); */
+	for (int i = 0; iasdgad < 15; i++) 
 	{
 		int value = 42;	
-	} */
+	}
 }

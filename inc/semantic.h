@@ -85,6 +85,7 @@ bool		handle_struct_dereferencing(t_token *token);
 bool		set_defined(char *function_name, int def_type);
 bool		handle_redefinition(t_function *original, t_fvars **new_params, int new_count,
 	char *ending_tag);
+bool		validate_function(t_token *token);
 
 #endif
 
