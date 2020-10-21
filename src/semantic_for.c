@@ -44,7 +44,7 @@ t_token	*semantic_for(char *prev, t_token *components, t_hashtable *ff_list)
 			{
 				error_mode(components, "cannot declare datatype at this point");
 			}
-			if (check_next_token(ff_list, components->next->name, components->name) == false)
+			if (components->next && check_next_token(ff_list, components->next->name, components->name) == false)
 			{
 				error_mode(components, "lvalue must be a variable");	
 			//	printf("Error detected with %s and %s\n", components->name,

@@ -1,13 +1,9 @@
 
-
-
-SYMBOL TABLE
-
-Data Structure
-The symbol table needs data structure representations for the following types of symbols:
-    - Function declarations and their prototypes
-    - Variables and their scoping
-    - Defines, typedefs, custom named structs and unions
-
-Lexer - add support for elipse token "...."
-      - 
+STILL TO DO
+-----------
+Make error messages a little more elegant in printing
+handle WHILE 
+handle DO
+handle recursive STRUCT variable calling.
+handle TYPECASTING
+.

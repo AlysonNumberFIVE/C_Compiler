@@ -663,6 +663,13 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	
         	equation = equation->next;
 	}
+	if (symbol == false)
+		error_mode(equation, "Invalid syntax");
+	if (strcmp(equation->name, ";") != 0)
+	{
+		error_mode(equation, "Invalid syntax");
+		
+	}
 	if (brackets != 0)
 	{
 		printf("error in brackets\n");

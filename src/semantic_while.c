@@ -29,12 +29,13 @@ bool	assignment_tokens(char *to_check)
 	return (true);
 }
 
-t_token	*semantic_while(char *prev, t_token *curr)
+t_token	*semantic_while(char *prev, t_token *curr, t_hashtable *ff_list)
 {
 	t_token	*trav;
 	t_token	*sub_sequence;
 	t_token	*assignent;
 	int counter;
+	extern char **start;
 	char *prev_type;
 	bool found;
 	char *test;
@@ -44,8 +45,9 @@ t_token	*semantic_while(char *prev, t_token *curr)
 	counter = 0;
 	sub_sequence = NULL;
 	trav = token;
-	while (trav && handle_native_csg(prev, trav->name))
+	while (trav && handle_native_csg(prev, trav->name) != SCOPE)
 	{
+		/*
 		if (counter == 1)
 		{
 			if (assignment_token(trav->name) == true)
@@ -62,12 +64,27 @@ t_token	*semantic_while(char *prev, t_token *curr)
 			return (trav);
 		}
 		else if (found == true)
-			assignment = push_token(assignment, trav->name, trav->type);
+			assignment = push_token(assignment, trav->name, trav->type);*/
+		if (value_found(trav->name, start))
+		{
+			printf("Error : variable declaration forbidden in while loops\n");
+		}
+		if (trav->next && check_next_token(ff_list, trav->next->name, trav->name) == false)
+		{
+			pritnf("unspecified error\n");
+		}
 		sub_sequence = push_token(sub_sequence, trav->name, trav->type);
-		sprev_type = trav->type;
+		sprev_type = trav->type; 
 		trav = trav->next
 		counter++;	
 	} 
+	sub_sequence = push_token(sub_sequence, ";", "SEMICOLON", trav->name, trav->type);
+	if (is_valid_equation(sub_sequence, ";"))
+	{
+		printf("passed while\n");
+		return (trav);
+	}
+	/*
 	if (assignment)
 	{
 		test = get_from_db(sub_sequence->name);
@@ -89,8 +106,8 @@ t_token	*semantic_while(char *prev, t_token *curr)
 	}
 	if (is_valid_equation(sub_sequence))
 		return (true);
-	printf("error: invalid euqation\n");
-	return (false);
+	printf("error: invalid euqation\n"); */
+	return (trav);
 }
 
 
