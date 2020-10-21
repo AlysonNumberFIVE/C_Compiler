@@ -127,13 +127,23 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 	bool	ommitted_variable;
 	t_fvars	*variables;
 	extern char **start;
+	t_function *sanity_ftest;
+	t_fvars	**sanity_vtest;
+	int v_param_count;
 
+	// sanity testing
+	v_param_count = 0;
+
+	sanity_vtest = NULL;
 	ommitted_variable = false;
 	variables = NULL;
 
+	// sanity testing
+	sanity_ftest = get_function(function_name);
 
+	if (!sanity_ftest)
+		functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
 
-	functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
        	if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
          	(strcmp(trav->next->next->next->name, ";") == 0 ||
         	strcmp(trav->next->next->next->name, "{") == 0))
@@ -150,7 +160,14 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
                                 return (false);
                         }
                         variables = create_new_parameter(temp_var->name, temp_var->type, temp_var->depth);
-                        functions = new_parameter(functions, function_name, variables);
+		     
+			if (sanity_ftest)
+			{
+				sanity_vtest = add_to_param_list(sanity_vtest, variables, v_param_count);
+				v_param_count++;
+			}
+			else
+				functions = new_parameter(functions, function_name, variables);
                         param_free(variables);
                         free_temp_var(temp_var);
                         if (strcmp(trav->name, ")") == 0)
@@ -176,6 +193,14 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 			return (false);
 		 }
         }
+	
+	if (sanity_ftest)
+	{
+		printf("REDEFINITION DETECTED\n\n");
+		printf("final token is %s\n", trav->name);
+		handle_redefinition(sanity_ftest, sanity_vtest, v_param_count,
+			trav->name);
+	}
 	return (true);
 }
 

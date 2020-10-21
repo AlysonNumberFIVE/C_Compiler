@@ -184,7 +184,6 @@ bool	set_defined(char *function_name, int def_type)
 	function = get_function(g_function_name);
 	if (function->defined_flag == 2)
 	{
-		printf("Error : Function \"%s\" previously defined", g_function_name);
 		free(g_function_name);
 		g_function_name = NULL;
 		return (false);
@@ -265,7 +264,39 @@ bool	assert_parameter_correctness(t_token *type, char *function_name)
 	return (true);
 }
 
-
+bool	handle_redefinition(t_function *original, t_fvars **new_params, int new_param_count,
+	char *ending_tag)
+{
+	t_fvars **params;
+	int	count;
+	
+	if (new_param_count != original->param_number)
+	{
+		printf("Error : redefinition of function \"%s\"\n", original->function_name);
+		return (false);
+	}
+	count = 0;
+	params = original->parameters;
+	while (count < original->param_number)
+	{
+		if (strcmp(params[count]->type, new_params[count]->type) == 0 &&
+			params[count]->depth == new_params[count]->depth)
+		{
+			count++;
+		}
+		else
+		{
+			printf("Error : redefinition of function \"%s\"\n", original->function_name);
+			return (false);
+		}
+	}
+	if (strcmp(ending_tag, "{") == 0)
+	{
+		printf("Error : function already defined \"%s\"\n", original->function_name);
+		return (false);
+	}
+	return (true);
+}
 
 bool	validate_correct_function_def(t_token *type, char *function_name)
 {
@@ -301,6 +332,7 @@ t_function *get_function(char *name)
 	}
 	return (trav);
 }
+
 
 void	print_functions(t_function *functions)
 {
