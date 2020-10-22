@@ -302,7 +302,6 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 	trav = trav->next;
 	while (trav && strcmp(trav->name, ";") != 0)
 	{
-		printf("%s \n", trav->name);
 		
 		if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
 		{

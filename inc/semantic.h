@@ -72,8 +72,12 @@ t_stack		*pop_stack(t_stack *head);
 char		*join_with_space(char *first, char *second);
 bool		is_valid_equation(t_token *tokens, char *end_token);
 char		*value_checker(t_token *components);
+
+
 t_token		*semantic_for(char *prev, t_token *token, t_hashtable *ff_list);
 t_token		*semantic_while(char *prev, t_token *token, t_hashtable *ff_list);
+t_token		*semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list);
+
 t_stack		*push_stack(t_stack *head, int scope_name);
 t_token		*struct_loop(t_token *val);
 
@@ -88,6 +92,7 @@ bool		handle_redefinition(t_function *original, t_fvars **new_params, int new_co
 	char *ending_tag);
 bool		validate_function(t_token *token);
 bool		check_next_token(t_hashtable *ff_list, char *next_token, char *current_token);
+
 
 #endif
 

@@ -1,4 +1,3 @@
-
 #include "../inc/typing.h"
 #include "../inc/semantic.h"
 #include "../inc/database.h"
