@@ -44,8 +44,11 @@ void for_loop_test(void)
 	int daedalus = 1 + 2 + 4 + 8 ** aoisdj;
 	aw = "str";
 	var("hello"); 
-	for (int i = 0; 123213 = 124 < 15; i++) 
+	for (int i = 0; (123213  + 1) + 124 < 15; i++) 
 	{
+		while (i < 42) {
+			aw = "new";
+		}
 		int value = 42;	
 	}
 }

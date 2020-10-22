@@ -2,7 +2,7 @@
 
 
 
-
+#include "../inc/token.h"
 #include "../inc/compiler.h"
 #include "../inc/semantic.h"
 
@@ -29,11 +29,12 @@ bool	assignment_tokens(char *to_check)
 	return (true);
 }
 
-t_token	*semantic_while(char *prev, t_token *curr, t_hashtable *ff_list)
+t_token	*semantic_while(char *prev_name, t_token *token, t_hashtable *ff_list)
 {
 	t_token	*trav;
 	t_token	*sub_sequence;
 	t_token	*assignent;
+	t_token *prev;
 	int counter;
 	extern char **start;
 	char *prev_type;
@@ -45,7 +46,11 @@ t_token	*semantic_while(char *prev, t_token *curr, t_hashtable *ff_list)
 	counter = 0;
 	sub_sequence = NULL;
 	trav = token;
-	while (trav && handle_native_csg(prev, trav->name) != SCOPE)
+	trav = trav->next;
+	if (strcmp(trav->name, "(") == 0)
+		trav = trav->next;
+	
+	while (trav && handle_native_csg(trav->name, trav->next->name) != SCOPE)
 	{
 		/*
 		if (counter == 1)
@@ -65,20 +70,30 @@ t_token	*semantic_while(char *prev, t_token *curr, t_hashtable *ff_list)
 		}
 		else if (found == true)
 			assignment = push_token(assignment, trav->name, trav->type);*/
+		printf("trav is %s\n", trav->name);
 		if (value_found(trav->name, start))
 		{
 			printf("Error : variable declaration forbidden in while loops\n");
 		}
 		if (trav->next && check_next_token(ff_list, trav->next->name, trav->name) == false)
 		{
-			pritnf("unspecified error\n");
-		}
-		sub_sequence = push_token(sub_sequence, trav->name, trav->type);
-		sprev_type = trav->type; 
-		trav = trav->next
+			printf("unspecified error %s and %s\n", trav->name, trav->next->name);
+		}	
+		sub_sequence = push_token(sub_sequence, trav->name, trav->type,
+			trav->line, trav->filename);
+		//prev_type = trav->type; 
+		prev = trav;
+		trav = trav->next;
 		counter++;	
 	} 
-	sub_sequence = push_token(sub_sequence, ";", "SEMICOLON", trav->name, trav->type);
+	sub_sequence = push_token(sub_sequence, ";", "SEMICOLON", trav->line, trav->filename);
+	t_token *h = sub_sequence;
+	while (h)
+	{
+		printf(" %s ", h->name);
+		h = h->next;
+	}
+	printf("\n");
 	if (is_valid_equation(sub_sequence, ";"))
 	{
 		printf("passed while\n");
@@ -107,6 +122,7 @@ t_token	*semantic_while(char *prev, t_token *curr, t_hashtable *ff_list)
 	if (is_valid_equation(sub_sequence))
 		return (true);
 	printf("error: invalid euqation\n"); */
+	printf("failed while?\n");
 	return (trav);
 }
 
