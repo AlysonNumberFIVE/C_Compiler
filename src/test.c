@@ -19,7 +19,7 @@ struct _int {
 struct _int a;
 struct _int b;
 struct _char *aosdi; 
-int n42 = 4;
+unsigned int n42 = 4;
 int c = 12 + 2 + ;
 char *str = {'c', 'd', 'e'
 int va;

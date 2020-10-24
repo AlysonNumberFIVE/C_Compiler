@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "../inc/token.h"
-
+/*
 t_file  *files = NULL;
 
 char    *read_file(char *filename)
@@ -58,7 +58,7 @@ t_file  *get_files(int argc, char **argv)
 }
 
 
-
+*/
 char 	**legal_combinations(void)
 {
 	char **array;
@@ -81,7 +81,7 @@ char 	**legal_combinations(void)
 	array = arraypush(array, "short const");
 	array = arraypush(array, "short");
 	array = arraypush(array, "unsigned char");
-
+	
 	array = arraypush(array, "unsigned char const");
 	array = arraypush(array, "int short");
 	array = arraypush(array, "int short const");
@@ -94,9 +94,9 @@ char 	**legal_combinations(void)
 	array = arraypush(array, "long long int const");
 	array = arraypush(array, "unsigned long int");
 	
-	array = arraypush(array, "unsigned long int const");
+/*	array = arraypush(array, "unsigned long int const");
 
-/*	array = arraypush(array, "unsigned long long");
+	array = arraypush(array, "unsigned long long");
 	array = arraypush(array, "unsigned long long const");
 	array - arraypush(array, "unsigned long long int"); */
 	return (array);
@@ -124,18 +124,39 @@ char **arraydelete(char **array, int to_remove)
 	return (new);
 }
  
-t_token	*valid_datatypes(t_token *token)
+t_token	*skip_distance(t_token *token, char *datatype_len)
+{
+	char **segments;
+	int len;
+	int counter;
+
+	segments = split(datatype_len, ' ');
+	len = arraylen(segments);
+	counter = 0;
+	while (counter < len - 1 && token)
+	{
+		token = token->next;
+		counter++;
+	}
+	return (token);
+}
+
+char	*valid_datatypes(t_token *token)
 {
 	char **valid_datatypes;
 	char **found;
 	int i;
 	char **to_check;
 	t_token *trav;
-
+	char *to_return;
+	extern char **start;
+	
+	to_return = NULL;
 	i = 0;
 	found = NULL;
+	if (value_found(token->name, start) == false)
+		return (NULL);
 	valid_datatypes = legal_combinations();
-	printf("again\n");
 	while (valid_datatypes[i])
 	{
 		trav = token;
@@ -145,9 +166,7 @@ t_token	*valid_datatypes(t_token *token)
 			trav = trav->next;
 		}
 		to_check = split(valid_datatypes[i], ' ');
-		printf("line is %s\n", valid_datatypes[i]);
 		int j = 0;
-		printf("NEW LOOP\n");
 		int flag = -1;
 		while (to_check[j])
 		{
@@ -156,13 +175,11 @@ t_token	*valid_datatypes(t_token *token)
 			{
 				if (strcmp(found[k], to_check[j]) == 0)
 				{
-					printf("found %s to_check %s\n", found[k], to_check[j]);
-
 					found = arraydelete(found, k);
 					k = 0;
 					if (found == NULL)
 					{
-						printf("found is NULL\n");
+						flag = 1;
 						break;
 					}
 				}	
@@ -174,22 +191,21 @@ t_token	*valid_datatypes(t_token *token)
 		}
 		if (found == NULL)
 		{
-			printf("VALID\n");
+			to_return = strdup(valid_datatypes[i]);
 			break ;
 		}
 		else
-		{
-			printf("invalid\n");
 			found = NULL;
-		}
 		i++;
 	}
-	free2d(valid_datatypes);
 	token = trav;
-	return (token);
+	if (to_return)
+		token = skip_distance(token, to_return);
+	free2d(valid_datatypes);	
+	return (to_return);
 }
 
-
+/*
 int 	main(int argc, char **argv)
 {
 	t_token *token;
@@ -198,7 +214,7 @@ int 	main(int argc, char **argv)
 	token = lexer(files);
 	valid_datatypes(token);
 	return (0);
-}
+} */
 
 
 

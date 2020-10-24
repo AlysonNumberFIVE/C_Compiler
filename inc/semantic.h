@@ -92,7 +92,8 @@ bool		handle_redefinition(t_function *original, t_fvars **new_params, int new_co
 	char *ending_tag);
 bool		validate_function(t_token *token);
 bool		check_next_token(t_hashtable *ff_list, char *next_token, char *current_token);
-
+char		*valid_datatypes(t_token *token);
+t_token		*skip_distance(t_token *token, char *len);
 
 #endif
 

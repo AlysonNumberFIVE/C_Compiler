@@ -77,7 +77,6 @@ t_temp_var      *create_temp_var(t_token *token)
 	temp->name = NULL;
 	temp->type = NULL;
         trav = token;
-	
 	if (strcmp(trav->name, "struct") == 0)
 	{
 		struct_manager = join_with_space(trav->name, trav->next->name);
@@ -87,9 +86,10 @@ t_temp_var      *create_temp_var(t_token *token)
 			trav = trav->next->next;
 		}
 	}
-        else if (value_found(trav->name, start) == true)
+        else if (temp->type = valid_datatypes(trav)) //value_found(trav->name, start) == true)
         {
-                temp->type = strdup(trav->name);
+               // temp->type = strdup(trav->name);
+		trav = skip_distance(trav, temp->type);
                 trav = trav->next;
         }
         else
@@ -503,7 +503,7 @@ bool	semantic_analysis(t_token *tokens)
 	brackets = 0;
 	max_number= 0;
 	in_function = false;
-	start = split("char const void struct int short double float size_t long longlong signed void", ' ');
+	start = split("char const void struct int short double float size_t long longlong signed void unsigned", ' ');
         ff_list = first_and_follow();
 	commands = command_blocks();
 	if (value_found(tokens->name, start) == false)
@@ -514,6 +514,7 @@ bool	semantic_analysis(t_token *tokens)
 	entering_command_block = false;
 	trav = tokens;
 	head = trav;
+	printf("before loop\n");
 	while (trav)
 	{
 		if (strcmp(trav->name, "{") == 0 )
@@ -529,7 +530,7 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		if (handle_native_csg(prev, trav->name) == 3)
 		{
-		//	drop_last_table();
+			drop_last_table();
 		//	stack = pop_stack(stack);
 		}
 		else if (strcmp(trav->name, "continue") == 0 || strcmp(trav->name, "break") == 0)

@@ -19,6 +19,7 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, "long", "* ID )");
 	ht_insert(ht, "longlong", "* ID )");
 	ht_insert(ht, "signed", "* ID )");
+	ht_insert(ht, "unsigned", "int char long double");
 	ht_insert(ht, "void", "* ID )");
 	ht_insert(ht, "for", "(");
 	ht_insert(ht, "*", "* ID ) NUM");
