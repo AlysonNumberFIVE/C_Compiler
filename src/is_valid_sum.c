@@ -557,6 +557,54 @@ bool handle_pointer_dereferencing(t_token *pointer)
 	
 }
 
+t_token *array_indexing(t_token *token, t_db *object)
+{
+	int depth_count;
+	int braces;
+
+	braces = 0;
+	depth_count = 0;
+	printf("TOKEN IS %s\n", token->name);
+	token = token->next;
+	while (token)
+	{
+		if (braces == 0 && strcmp(token->name, "[") != 0)
+		{
+			error_mode(token, "syntax error witih indexing");
+			break;
+		}
+		else
+			braces++;
+		token = token->next;
+		if (strcmp(token->type, "NUM") != 0)
+		{
+			error_mode(token, "syntax error; array indexing must be an integer");
+			break;
+		}
+		token = token->next;
+		if (braces == 1 && strcmp(token->name, "]") != 0)
+		{
+			error_mode(token, "syntax error with indexing");
+			break;
+		}
+		else
+			braces--;
+		token = token->next;
+		depth_count++;
+		if (strcmp(token->name, "[") != 0)
+			break;
+	}
+	if (braces != 0)
+	{
+		error_mode(token, "syntax error; missing closing square bracket");
+	}
+	if (object->depth - depth_count < 0)
+	{
+		error_mode(token, "array dereferencing too deep");;
+	}
+	return (token);
+}
+
 bool is_valid_equation(t_token *tokens, char *end_token)
 {
 	extern t_this_type *current_type;
@@ -630,13 +678,14 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				if (prev)
 					type_comparison(prev, equation);
 			        prev = equation;
-				db_value = get_object_from_db(equation->name);
-				
+				db_value = get_object_from_db(equation->name);	
                                 if (db_value == NULL)
 				{
                                        // printf("Error found at this fucking pooint\n");
                                 	return (false);
 				}
+				if (strcmp(equation->next->name, "[") == 0)
+					equation = array_indexing(equation, db_value);
 				symbol = true;				
 			} 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
