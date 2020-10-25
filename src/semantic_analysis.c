@@ -576,6 +576,13 @@ bool	semantic_analysis(t_token *tokens)
 			if (assert_inner_loop() == false)
 				error_mode(trav, "cannot have 'continue' or 'break' outside of scope loop");
 		}
+		else if (strcmp(trav->name, "return") == 0)
+		{
+			if (stack == NULL)
+			{
+				error_mode(trav, "return statement outside of function block");
+			}
+		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
 			trav = struct_loop(trav);	

@@ -58,6 +58,7 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
        	{
 		if (stack && stack->scope_name == 4)
                 {
+			printf("here\n");
                		error = NULL; printf("%s %d ", trav->filename, trav->line);
                        	trav = error_recover(trav, "missing semilcolon",
                         	push_token(error, ";", "SEMICOLON", trav->line, trav->filename)); 
@@ -72,7 +73,7 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
 		}
                  else
                  {
-                 	error = NULL; printf("%s %d ", trav->filename, trav->line);
+                 	error = NULL; printf("%s %d ", trav->filename, trav->line - 1);
                         trav = forward_recovery(trav, "missing semicolon",
                         	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));
                 	print_error_message(trav);
