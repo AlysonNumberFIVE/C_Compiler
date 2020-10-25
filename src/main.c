@@ -81,7 +81,7 @@ int	main(int argc, char **argv)
 	t_token *tokens;
 	if (argc < 2)
 	{
-		printf("Usage: %s [c_file] - only 1 file is supported\n", argv[0]);
+		printf("Usage: %s [c_files]\n", argv[0]);
 		return (1);
 	}
 	files = get_files(argc, argv);

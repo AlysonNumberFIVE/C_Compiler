@@ -17,13 +17,10 @@ char **strsplit(char *str, char c)
 		{
 			if (s)
 			{
-				printf("ADDED : %s\n", s);
 				array = arraypush(array, s);
 				free(s);
 				s = NULL;
 			}
-			else
-				printf("NOT ADDED %s\n", s);
 		}
 		else
 			s = charpush(s, str[i]);
