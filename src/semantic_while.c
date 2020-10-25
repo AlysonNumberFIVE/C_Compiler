@@ -29,7 +29,7 @@ bool	assignment_tokens(char *to_check)
 	return (true);
 }
 
-t_token	*semantic_while(char *prev_name, t_token *token, t_hashtable *ff_list)
+t_token	*semantic_while(char *prev_name, t_token *token, t_hashtable *ff_list, bool do_trigger)
 {
 	t_token	*trav;
 	t_token	*sub_sequence;
@@ -52,6 +52,10 @@ t_token	*semantic_while(char *prev_name, t_token *token, t_hashtable *ff_list)
 	
 	while (trav && handle_native_csg(trav->name, trav->next->name) != SCOPE)
 	{
+		if (strcmp(trav->name, ")") == 0 && strcmp(trav->next->name, ";") == 0)
+		{
+			break ;
+		}
 		if (value_found(trav->name, start))
 			printf("Error : variable declaration forbidden in while loops\n");
 		if (trav->next && check_next_token(ff_list, trav->next->name, trav->name) == false)
@@ -64,18 +68,15 @@ t_token	*semantic_while(char *prev_name, t_token *token, t_hashtable *ff_list)
 	} 
 	sub_sequence = push_token(sub_sequence, ";", "SEMICOLON", trav->line, trav->filename);
 	t_token *h = sub_sequence;
-	while (h)
-	{
-		printf(" %s ", h->name);
-		h = h->next;
-	}
-	printf("\n");
 	if (is_valid_equation(sub_sequence, ";"))
 	{
-		printf("passed while\n");
+		if (do_trigger == true && strcmp(trav->name, ";") != 0)
+		{
+			error_mode(trav, "do/while loop detected. Statement must end with a");
+			
+		}
 		return (trav);
 	}
-	printf("failed while?\n");
 	return (trav);
 }
 

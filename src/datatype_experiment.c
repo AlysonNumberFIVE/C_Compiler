@@ -6,59 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "../inc/token.h"
-/*
-t_file  *files = NULL;
 
-char    *read_file(char *filename)
-{
-    int fd;
-    struct stat info;
-    char *content;
-
-    fd = open(filename, O_RDONLY);
-    fstat(fd, &info);
-    content = (char *)malloc(sizeof(char) * info.st_size + 1);
-    read(fd, content, info.st_size);
-    content[info.st_size] = '\0';
-    close(fd);
-    return (content);
-}
-
-void    print_token(t_token *token)
-{
-    t_token *trav;
-    trav = token;
-    while (trav)
-    {
-        printf("line: %u %s : %s\n", trav->line, trav->name, trav->type);
-        trav = trav->next;
-    }
-}
-
-t_file  *get_files(int argc, char **argv)
-{
-        int     i;
-        t_file  *files;
-        char    *content;
-
-        files = NULL;
-        i = 1;
-        while (i < argc)
-        {
-                content = read_file(argv[i]);
-                files = push_file(
-                        files,
-                        argv[i],
-                        content
-                );
-                free(content);
-                i++;
-        }
-        return (files);
-}
-
-
-*/
 char 	**legal_combinations(void)
 {
 	char **array;
@@ -94,9 +42,9 @@ char 	**legal_combinations(void)
 	array = arraypush(array, "long long int const");
 	array = arraypush(array, "unsigned long int");
 	
-/*	array = arraypush(array, "unsigned long int const");
+	array = arraypush(array, "unsigned long int const");
 
-	array = arraypush(array, "unsigned long long");
+/*	array = arraypush(array, "unsigned long long");
 	array = arraypush(array, "unsigned long long const");
 	array - arraypush(array, "unsigned long long int"); */
 	return (array);
@@ -204,18 +152,5 @@ char	*valid_datatypes(t_token *token)
 	free2d(valid_datatypes);	
 	return (to_return);
 }
-
-/*
-int 	main(int argc, char **argv)
-{
-	t_token *token;
-
-	files = get_files(argc, argv);
-	token = lexer(files);
-	valid_datatypes(token);
-	return (0);
-} */
-
-
 
 

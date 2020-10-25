@@ -32,6 +32,10 @@ int constant(void);
 int main(int argc, char **argv);
 void once_more(char *str);
 
+void	*printf(char *str)
+{
+	return (0);
+}
 
 void for_loop_test(void) 
 {
@@ -48,7 +52,18 @@ void for_loop_test(void)
 	{
 		while (i < 42) {
 			aw = "new";
+			continue ;
 		}
+		do {
+			if ("hello world") {
+				printf("again\n");
+				x = 42 + aw;
+			}
+			else if ("42") {
+				printf("for the third time\n");
+			}
+			i = 11;
+		} while (i < 11);
 		int value = 42;	
 	}
 }

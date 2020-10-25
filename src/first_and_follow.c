@@ -20,6 +20,7 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, "longlong", "* ID )");
 	ht_insert(ht, "signed", "* ID )");
 	ht_insert(ht, "unsigned", "int char long double");
+	ht_insert(ht, "do", "{");
 	ht_insert(ht, "void", "* ID )");
 	ht_insert(ht, "for", "(");
 	ht_insert(ht, "*", "* ID ) NUM");
@@ -36,7 +37,7 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, ")", "; { ID NUM LITERAL +");
 	ht_insert(ht, "NUM", "+ - / * ) ; , > < ==");
 	ht_insert(ht, "{", "ID char const void struct int short double float size_t long longlong signed void return NUM CHAR");
-	ht_insert(ht, "}", "DONE ; }");
+	ht_insert(ht, "}", "DONE ; } while");
 	ht_insert(ht, "return", "( ; ID NUM");
 	ht_insert(ht, "&", "ID ");
 	ht_insert(ht, "for", "(");

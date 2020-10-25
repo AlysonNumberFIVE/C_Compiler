@@ -347,6 +347,29 @@ bool	validate_call(t_temp_var *temp, t_token *trav, char *function_name)
 		printf("INCORRECT\n");
 }
 
+bool	equ_token(char *name)
+{
+	char list[10][10] = {
+		"+=\0",
+		"-=\0",
+		">>=\0",
+		"<<=\0",
+		"!=\0",
+		"&=\0",
+		"|=\0",
+		"=\0"
+	};
+	int	i;
+
+	i = 0;
+	while (i < 8)
+	{
+		if (strcmp(name, list[i]) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+}
 
 bool	validate_function(t_token *token)
 {
@@ -366,7 +389,8 @@ bool	validate_function(t_token *token)
 	{
 		//is_valid_equation(token, ";");
 		
-		if (strcmp(token->next->name, "=") == 0)
+	//	if (strcmp(token->next->name, "=") == 0)
+		if (equ_token(token->next->name) == true)
 		{
 			printf("death\n");
 			token = token->next->next;
@@ -482,6 +506,17 @@ char	**command_blocks(void)
 }
 
  
+bool	assert_inner_loop(void)
+{
+	if (stack)
+	{
+		if (stack->scope_name == FOR || stack->scope_name == WHILE ||
+			stack->scope_name  == DO)
+			return (true);
+	}
+	return (false);
+}
+
 bool	semantic_analysis(t_token *tokens)
 {
 	t_token		*trav;
@@ -497,7 +532,9 @@ bool	semantic_analysis(t_token *tokens)
 	t_token		*error;	
 	t_token		*back;
 	bool		IS_ARR;
+	bool		do_trigger;
 
+	do_trigger = false;
 	IS_ARR = false;
 	error = NULL;
 	brackets = 0;
@@ -531,11 +568,13 @@ bool	semantic_analysis(t_token *tokens)
 		if (handle_native_csg(prev, trav->name) == 3)
 		{
 			drop_last_table();
+		
 		//	stack = pop_stack(stack);
 		}
 		else if (strcmp(trav->name, "continue") == 0 || strcmp(trav->name, "break") == 0)
 		{
-
+			if (assert_inner_loop() == false)
+				error_mode(trav, "cannot have 'continue' or 'break' outside of scope loop");
 		}
 		else if (strcmp(trav->name, "struct") == 0)
 		{
@@ -545,22 +584,32 @@ bool	semantic_analysis(t_token *tokens)
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
 			head = trav->next;
 		}
-
+		else if (strcmp(trav->name, "do") == 0)
+		{
+			do_trigger = false;
+		}
 		else if (value_found(trav->name, commands))
 		{
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav, ff_list);
 			else if (strcmp(trav->name, "while") == 0)
-				trav = semantic_while(prev, trav, ff_list);
-			/*else if (strcmp(trav->name, "if") == 0) printf("handle if statement\n");
-			*/
+				trav = semantic_while(prev, trav, ff_list, do_trigger);
+			else if (strcmp(trav->name, "if") == 0) 
+				trav = semantic_if(prev, trav, ff_list);
+			else if (strcmp(trav->name, "else") == 0)
+				trav = semantic_else(prev, trav, ff_list);
+			
+			printf("handle if statement\n");
 			stack = push_stack(stack, FOR);
 			add_new_table();
 		//	prev = trav->name;
 		//	trav = trav->next;
 			head = trav;
 			if (head && strcmp(head->name, "{") == 0)
+			{
+				brackets++;
 				head = head->next;
+			}
 			entering_command_block = false;
 		}
 		else if (handle_native_csg(prev, trav->name) == SCOPE
@@ -605,6 +654,11 @@ bool	semantic_analysis(t_token *tokens)
 			trav = panic_mode(trav, back, brackets);
 			if (!trav)
 				break ;
+		}
+		if (brackets < 0)
+		{
+			printf("Error : curly brace mismatch\n\n");
+			printf("brackets are %d\n", brackets);	
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;

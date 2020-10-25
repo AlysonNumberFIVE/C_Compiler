@@ -7,9 +7,8 @@
 #include "../inc/token.h"
 
 
-
-
-bool    assignment_tokens(char *to_check)
+/*
+bool   fassignment_tokens(char *to_check)
 {
         char array[10][10] = {
                 "<<=\0",
@@ -30,7 +29,7 @@ bool    assignment_tokens(char *to_check)
         }
         return (true);
 }
-
+*/
 t_token *semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list)
 {
         t_token *trav;
