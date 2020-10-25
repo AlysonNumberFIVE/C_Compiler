@@ -46,9 +46,9 @@ void for_loop_test(void)
 	char aw;
 	int x = 42;
 	int daedalus = 1 + 2 + 4 + 8 ** aoisdj;
-	aw = "str";
+	(char *)aw = "str";
 	var("hello"); 
-	for (int i = 0; (123213  + 1) + 124 < 15; i++) 
+	for (int i = 0; ((int)123213  + 1) + 124 < 15; i++) 
 	{
 		while (i < 42) {
 			aw = "new";

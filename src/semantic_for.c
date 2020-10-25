@@ -40,12 +40,14 @@ t_token	*semantic_for(char *prev, t_token *components, t_hashtable *ff_list)
 		} 
 		else
 		{
-			if (commas > 0 && value_found(components->name, start))
+		/*	if (commas > 0 && value_found(components->name, start))
 			{
 				error_mode(components, "cannot declare datatype at this point");
-			}
+			}*/
 			if (components->next && check_next_token(ff_list, components->next->name, components->name) == false)
 			{
+				printf("here %s\n", components->name);
+				printf("after here %s\n", components->next->name);
 				error_mode(components, "lvalue must be a variable");	
 			//	printf("Error detected with %s and %s\n", components->name,
 			//		components->next->name);

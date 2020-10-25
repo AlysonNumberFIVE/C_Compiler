@@ -4,6 +4,26 @@
 #include "../inc/token.h"
 #include "../inc/compiler.h"
 
+t_token	*skip_typecast(t_token *token)
+{
+	char *datatype;
+
+	datatype = NULL;
+	token = token->next;
+	if ((datatype = valid_datatypes(token)))
+	{
+		token = skip_distance(token, datatype);
+		token = token->next;
+	}
+	while (token && strcmp(token->name, "*") == 0)
+		token = token->next;
+	if (strcmp(token->name, ")") != 0)
+	{
+		error_mode(token, "possible failed typecast detected");
+	}
+	return (token);
+}
+
 bool valid_operator(char *token)
 {
 	char operators[20][10] = {
@@ -564,7 +584,15 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
-                        brackets++;
+		{
+			if (equation && valid_datatypes(equation->next))
+			{
+				printf("HANDLING TYPECASTING DETECTION\n");
+				equation = skip_typecast(equation); 
+			}
+			else
+                        	brackets++;
+		}
                 else if (strcmp(equation->name, ")") == 0)
                         brackets--;
                 else if (symbol == false)

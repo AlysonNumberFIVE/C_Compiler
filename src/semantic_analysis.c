@@ -385,7 +385,7 @@ bool	validate_function(t_token *token)
 	called = false;
 	to_check = NULL;	
 	if (strcmp(token->type, "ID") == 0 || strcmp(token->name, "*") == 0 ||
-		strcmp(token->name, "@") == 0)
+		strcmp(token->name, "@") == 0 || strcmp(token->name, "(") == 0)
 	{
 		//is_valid_equation(token, ";");
 		
@@ -399,7 +399,7 @@ bool	validate_function(t_token *token)
 		}
 		called = true;
 		to_check = does_variable_exist(token->name);
-		if (strcmp(token->name, "*") != 0 && strcmp(token->name, "@") != 0 && 
+		if (strcmp(token->name, "*") != 0 && strcmp(token->name, "(") != 0 && strcmp(token->name, "@") != 0 && 
 			!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
 			token = error_mode(token, " : variable doesn't exist");
