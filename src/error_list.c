@@ -69,7 +69,7 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
                        	error = NULL; printf("%s %d ", trav->filename, trav->line);
                         trav = forward_recovery(trav, "missing a closing '}'",
                         	push_token(error, "}", "CLOSINGBRACKET", trav->line, trav->filename));
-                	print_error_message(trav); 
+                	print_error_message(trav);
 		}
                  else
                  {

@@ -29,6 +29,11 @@ lib = $(addprefix $(extern_dir), $(extern_lib))
 
 objects = $(addprefix $(object_dir), $(object_files))
 
+compiler:
+	gcc -c $(sources)
+	gcc -o $(executable) $(object_files) $(lib) -lm
+	mv $(object_files) $(object_dir)
+
 all:
 	make -C $(extern_dir)
 	gcc -c $(sources)

@@ -4,7 +4,6 @@
 #include "../inc/semantic.h"
 #include "../inc/compiler.h"
 
-int 	DEBUG = 1;
 t_struct	*new_struct(char *struct_name)
 {
 	t_struct	*new;
@@ -167,13 +166,9 @@ t_token		*handle_nested_struct(t_token *token, char *struct_name)
 	if (strcmp(trav->name, ";") == 0)
 	{
 		temp = create_temp_var(head);
-		printf(" >> struct name %s\n", temp->name);
-		printf(" >> struct type %s\n", temp->type);
-		printf(" >> struct depth %d\n", temp->depth);
 	}
 	else if (strcmp(trav->name, "{") == 0)
 	{
-		printf("NEXT %s\n", trav->next->name);
 		trav = struct_loop(print);
 		print->next->next = trav;
 		tvar = create_temp_var(print);
@@ -183,7 +178,6 @@ t_token		*handle_nested_struct(t_token *token, char *struct_name)
                 param_free(parameter);
 		//trav = trav->next;
 	}	
-	printf("\n");
 	return trav;
 }
 
@@ -278,11 +272,6 @@ t_token		*struct_loop(t_token *token)
 		prev = trav;
 		trav = trav->next;
 	}
-	if (brackets == 0)
-		printf("pass\n");
-	else
-		printf("falied\n");
-//	start = arraypush(start, datatype_name);
 	free(datatype_name);
 	return (trav);
 }
@@ -325,51 +314,5 @@ bool		handle_struct_dereferencing(t_token *token)
 		trav_struct = trav_struct->next;
 	}
 }
-
-
-/*
-t_struct	*create_struct(t_token *tokens)
-{
-	t_token		*trav;
-	char		*struct_name;
-	t_temp_vars	*temp;
-
-	trav = tokens->next;
-	if (strcmp(trav->type, "ID") == 0)
-	{
-		struct_name = strdup(trav->name);
-		trav = trav->next;
-	}
-	else
-		return (false);
-	if (strcmp(trav->name, "{") == 0)
-		trav = trav->next;
-	while (trav && strcmp(trav->name, ";") != 0)
-	{
-		temp_vars = create_temp_vars(trav);
-		trav = trav->next;
-		if (ttemp_vars->name == NULL) 
-		{
-			trav = temp_vars->cuurr;
-			break ;
-		}
-		trav = trav->next;
-	}
-	if (strcmp(trav->	
-}
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
 
 

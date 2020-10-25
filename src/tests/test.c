@@ -20,13 +20,11 @@ struct _int a;
 struct _int b;
 struct _char *aosdi; 
 unsigned int n42 = 4;
-int c = 12 + 2 + ;
-char *str = {'c', 'd', 'e'
+int c = 12 + 2 + 1;
+char *str = {'c', 'd', 'e'};
 int va;
 char *first;
-
 char *function(char *name, char  *second, int third);
-
 char *var(char *name);
 int constant(void);
 int main(int argc, char **argv);
@@ -41,11 +39,10 @@ void for_loop_test(void)
 {
 	struct _char testing;
 	testing->z && 42; 
-	char *q = ww +  function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
+	char *q = function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
-	char aw;
 	int x = 42;
-	int daedalus = 1 + 2 + 4 + 8 ** aoisdj;
+	int daedalus = 1 + 2 + 4 ;
 	(char *)aw = "str";
 	var("hello"); 
 	for (int i = 0; ((int)123213  + 1) + 124 < 15; i++) 

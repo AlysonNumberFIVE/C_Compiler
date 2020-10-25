@@ -169,11 +169,47 @@ char	*value_checker(t_token *components)
 	// handling those shit arrays.
 	if (strcmp(components->name, "{") == 0)
 	{
+		t_token *pusher;
+		pusher = NULL;
 		stack = push_stack(stack, ARR);
 		comma_count++;
 		components = components->next;
 		array_value = strdup("{");
 		comma_flag = false;
+		t_token *prev;
+		while (components && strcmp(components->name, ";") != 0)
+		{
+			if (strcmp(components->name, "{") == 0)
+			{
+				comma_count++;
+				comma_flag = false;
+			}
+			else if (strcmp(components->name, "}") == 0)
+			{
+				comma_count--;
+				comma_flag = true;
+			}
+			else if (strcmp(components->name, ",") == 0 || strcmp(components->name, "}") == 0)
+			{	
+				if (pusher == NULL && !(strcmp(components->name, ",") == 0
+					&& strcmp(prev->name, "}") == 0))
+					error_mode(components, "syntax error");
+				else
+				{
+					pusher = push_token(pusher, ";", "SEMICOLON",
+						components->line, components->filename);
+					is_valid_equation(pusher, ";");
+				}
+				pusher = NULL;
+				// work on equation.
+			}
+			else
+				pusher = push_token(pusher, components->name, components->type,
+					components->line, components->filename);
+			prev = components;
+			components = components->next;
+		}	
+		/*
 		while (components && strcmp(components->name, ";") != 0)
 		{
 			if (strcmp(components->name, "{") == 0)
@@ -201,9 +237,9 @@ char	*value_checker(t_token *components)
 				comma_flag = false;
 			}
 			else
-				printf("Error : incorrect variable blah blah\n");	
-		components = components->next;
-		}
+				printf("Error : incorrect variable blah blah\n");
+		cmponents = components->next;
+		}*/
 	}
 	else if (is_valid_equation(components, ";"))
 	{
@@ -221,10 +257,15 @@ char	*value_checker(t_token *components)
 	{
 		return strdup("AVLID ");
 	} */
-	if (strcmp(components->name, ";") != 0)
+
+	if (comma_count != 0)
+	{
+		error_mode(components, "bracket mismatch");
+	}
+	if (components && strcmp(components->name, ";") != 0)
 		printf("error in length of line\n");
 	array_value = strdup("VALID ARRAY\n");
-	stack = pop_stack(stack);
+//	stack = pop_stack(stack);
 	return (array_value);		
 }
 

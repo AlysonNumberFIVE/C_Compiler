@@ -28,31 +28,15 @@ t_token	*semantic_for(char *prev, t_token *components, t_hashtable *ff_list)
 				";", "SEMICOLON", components->line,
 				components->filename);	
 			validate_function(sub_sequence);
-			t_token *h = sub_sequence;
-			while (h)
-			{
-				printf("%s\n", h->name);
-				h = h->next;
-			}
-			printf("==============\n");
 			commas++;
 			sub_sequence = NULL;
 		} 
 		else
 		{
-		/*	if (commas > 0 && value_found(components->name, start))
-			{
-				error_mode(components, "cannot declare datatype at this point");
-			}*/
 			if (components->next && check_next_token(ff_list, components->next->name, components->name) == false)
 			{
-				printf("here %s\n", components->name);
-				printf("after here %s\n", components->next->name);
 				error_mode(components, "lvalue must be a variable");	
-			//	printf("Error detected with %s and %s\n", components->name,
-			//		components->next->name);
 			}
-			//sub_sequence = arraypush(sub_sequence, components[counter]);
 			sub_sequence = push_token(sub_sequence, 
 				components->name, components->type, -1, 
 				"thing");
@@ -62,9 +46,9 @@ t_token	*semantic_for(char *prev, t_token *components, t_hashtable *ff_list)
 		components = components->next;	
 	}
 	if (commas > 2)
-		printf("too many commas\n");
+		error_mode(components, "too many commas");
 	if (strcmp(components->name, "{") != 0)
-		printf("incorrect way of formatting a for loop\n");
+		error_mode(components, "incorrect way of formatting a for loop\n");
 	return (components);
 }
 /*

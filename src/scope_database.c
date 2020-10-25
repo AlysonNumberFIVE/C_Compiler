@@ -3,17 +3,6 @@
 #include "../inc/database.h"
 
 int max_number = 0;
-/*
-typedef struct 	s_scope_database
-{
-	char	*type;
-	char 	*name;
-	int 	depth;
-	int 	size;
-	char	*value;
-	struct s_scope_database *next;
-}	t_db;
-*/
 t_db 	**list = NULL;
 
 t_db	*new_object(char *type, char *name, char *val, int depth)
@@ -93,7 +82,6 @@ bool	insert_into_db(char *type, char *name, char *val, int depth)
 			if (strcmp(name, object->name) == 0)
 			{
 				printf("Error : variable %s already defined\n\n", name);
-				//rintf("error : variable %s already defined\n", name);
 				return (false);	
 			}
 			object = object->next;
@@ -149,7 +137,6 @@ t_db	*get_object_from_db(char *name)
 
 void	drop_last_table(void)
 {
-	printf("max_number %d\n", max_number);
 	free(list[max_number]);
 	list[max_number] = NULL;
 	max_number--;

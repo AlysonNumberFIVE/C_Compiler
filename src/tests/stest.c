@@ -2,9 +2,5 @@
 
 int	main(void)
 {
-	int i = 1;
-	(unsigned int) i = 100000;
-	char *str = "hello";
-	str[];
+	char *i = {'1', 1 + 2, 3 + 4};
 	return (0);
-}

@@ -383,16 +383,12 @@ bool	validate_function(t_token *token)
 	extern char 	*g_function_name;
 
 	called = false;
-	to_check = NULL;	
+	to_check = NULL;
 	if (strcmp(token->type, "ID") == 0 || strcmp(token->name, "*") == 0 ||
 		strcmp(token->name, "@") == 0 || strcmp(token->name, "(") == 0)
 	{
-		//is_valid_equation(token, ";");
-		
-	//	if (strcmp(token->next->name, "=") == 0)
 		if (equ_token(token->next->name) == true)
 		{
-			printf("death\n");
 			token = token->next->next;
 			value = value_checker(token);
 			return (true);
@@ -407,7 +403,6 @@ bool	validate_function(t_token *token)
 		}
 		is_valid_equation(token, ";");
 		return (true);
-		//temp_var = validate_variable_call(token);
 	}
 	else 
 	{
@@ -434,7 +429,6 @@ bool	validate_function(t_token *token)
 	{
 		trav = trav->next;
 		value = value_checker(trav);
-		
 		if (called == true)
 			update_variable_value(temp_var->name, value);	
 		else
@@ -551,11 +545,10 @@ bool	semantic_analysis(t_token *tokens)
 	entering_command_block = false;
 	trav = tokens;
 	head = trav;
-	printf("before loop\n");
 	while (trav)
-	{
+	{	
 		if (strcmp(trav->name, "{") == 0 )
-		{
+		{	
 			if (prev && strcmp(prev, "=") == 0)
 				IS_ARR = true;
 			brackets++;
@@ -563,12 +556,13 @@ bool	semantic_analysis(t_token *tokens)
 		else if (strcmp(trav->name, "}") == 0)
 		{
 			IS_ARR = false;
+			//if (!(trav->next && strcmp(trav->next->name, ";") == 0))
 			brackets--;
 		}
 		if (handle_native_csg(prev, trav->name) == 3)
-		{
-			drop_last_table();
-		
+		{	
+			if (!(trav->next && strcmp(trav->next->name, ";") == 0))
+				drop_last_table();
 		//	stack = pop_stack(stack);
 		}
 		else if (strcmp(trav->name, "continue") == 0 || strcmp(trav->name, "break") == 0)
@@ -606,11 +600,8 @@ bool	semantic_analysis(t_token *tokens)
 			else if (strcmp(trav->name, "else") == 0)
 				trav = semantic_else(prev, trav, ff_list);
 			
-			printf("handle if statement\n");
 			stack = push_stack(stack, FOR);
 			add_new_table();
-		//	prev = trav->name;
-		//	trav = trav->next;
 			head = trav;
 			if (head && strcmp(head->name, "{") == 0)
 			{
@@ -672,6 +663,10 @@ bool	semantic_analysis(t_token *tokens)
 		back = trav;
 		prev = strdup(trav->name);
 		trav = trav->next;
+	}
+	if (brackets != 0)
+	{
+		error_mode(back, "bracket mismatch in program");
 	}
 	printf("SUMMARY =====\n");
 	print_variables();

@@ -173,7 +173,6 @@ t_token	*extract_section(t_token *token)
 	brackets = 0;
 	while (trav && strcmp(trav->name, ",") != 0)
 	{
-		printf(" %s ", trav->name);
 		if (strcmp(trav->name, "(") == 0)
 		{
 			bracket_flag = true;
@@ -229,10 +228,9 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 	{
 		if (strcmp(trav->type, "LITERAL") == 0)
 		{
-			printf("LITERAL check\n");
 			if (strcmp(parameters[counter]->type, "char") == 0 &&
 				parameters[counter]->depth == 1)
-				printf("pass\n");
+				;
 			else
 			{
 				printf("incorrect parameter type value : %s\n", trav->name);
@@ -241,13 +239,12 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 		}
 		else if (strcmp(trav->type, "ID") == 0)
 		{
-			printf("ID Check\n");
 			object = get_object_from_db(trav->name);
 			if (object)
 			{
 				if (object->depth == parameters[counter]->depth &&
 					strcmp(object->type, parameters[counter]->type) == 0)
-					printf("pass\n");
+					;
 				else
 				{
 					printf("Incorrect parameter value : %s\n", trav->name);
@@ -261,7 +258,7 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 				{
 					if (test_function->depth == parameters[counter]->depth &&
 						strcmp(test_function->type, parameters[counter]->type) == 0)
-						printf("pass\n");
+						;
 					else
 					{
 						printf("Incorrect parameter value : %s\n", trav->name);
@@ -272,7 +269,6 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 		}
 		else if (strcmp(trav->type, "NUM") == 0)
 		{
-			printf("NUM check\n");
 			if (!strcmp(parameters[counter]->type, "int") == 0)
 			{
 				printf("Incorrect parameter value : number expected\n");
@@ -323,7 +319,7 @@ bool test_function_evaluation(t_token *function)
 			halt = carry;	
 			temp = extract_function_type(halt->name, halt);
 		
-			print_segment(function_test);
+			//print_segment(function_test);
 	
 			test_function_evaluation(function_test);
 			
@@ -337,7 +333,7 @@ bool test_function_evaluation(t_token *function)
 			param_assert = push_token(param_assert, carry->name,
 				carry->type, carry->line, carry->filename);
 			new = extract_section(carry);
-			print_segment(new);
+			//print_segment(new);
 			carry = skip_section(carry);
 			if (!carry)
 				break;
@@ -635,7 +631,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 		{
 			if (equation && valid_datatypes(equation->next))
 			{
-				printf("HANDLING TYPECASTING DETECTION\n");
 				equation = skip_typecast(equation); 
 			}
 			else
@@ -658,8 +653,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				equation = equation->next;
 				if (strcmp(equation->type, "ID") != 0)
 				{
-					printf("%s ", equation->name);
-					printf("Error : incorrect use of memory referencing\n");
+					error_mode(equation, "Error : incorrect use of memory referencing");
 					return (false);
 				}
 				if (strcmp(equation->next->name, ";") == 0)
@@ -669,7 +663,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "->") == 0)
 			{
 				handle_struct_dereferencing(equation);
-				// skip struct stuff.
 				equation = skip_struct_info(equation);
 				equation = equation->next;
 			}
@@ -681,7 +674,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				db_value = get_object_from_db(equation->name);	
                                 if (db_value == NULL)
 				{
-                                       // printf("Error found at this fucking pooint\n");
                                 	return (false);
 				}
 				if (strcmp(equation->next->name, "[") == 0)
@@ -696,7 +688,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				function_test = extract_function(equation);
 				halt = equation;
 				temp = extract_function_type(halt->name, halt);
-	 				print_segment(function_test);
+	 				//print_segment(function_test);
 				
 				test_function_evaluation(function_test);
 	
@@ -720,7 +712,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			{
 				symbol = true;
 				error_mode(equation, "Error : incompatible datatype"); 
-				//printf("error : A token or something is out of place\n");
 				return (false);
 			}
                 }
@@ -732,7 +723,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                                 symbol = false;
                         else
 			{
-                                //printf("erron : invalid equation\n");
 				return (false);
 			}
 		}
@@ -744,27 +734,13 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	if (strcmp(equation->name, ";") != 0)
 	{
 		error_mode(equation, "Invalid syntax");
-		
 	}
 	if (brackets != 0)
 	{
-		printf("error in brackets\n");
+		error_mode(equation, "Mismatched bracket count in equation");
 		return (false);
 	}
- //       printf("symbol is %d\n", symbol);
         return (true);
 }
 
-/*
-int     main(void)
-{
-        char *sum = "1 + 2 * ( 42 / 2 ) * 11";
-        sum = "1 + ( 162 + 1 * 2 * ( 11 * 2 ) + 4 + 5 ) / 2 + 3 < ( 42 )";
-
-//      sum = "1 + 1";
-        char **pieces = split(sum, ' ');
-        is_valid_equation(pieces);
-//      determine_sum(pieces);
-        return (0);
-}*/
 
