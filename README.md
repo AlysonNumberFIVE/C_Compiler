@@ -9,10 +9,10 @@ The following books were a great help in programming this project:</br>
 - <a href="https://www.amazon.com/Engineering-Compiler-Keith-Cooper/dp/012088478X">Engineering: A Compiler</a> by Kieth Cooper and Linda Torczon
 - <a href="https://www.amazon.com/Introduction-Bit-Assembly-Programming-Linux/dp/1484921909">Introduction to 64-bit Assembly Programming for Linux and OSX</a> by Ray Seyfarth
 <br><br>
-And lastly, the following course was a great overview of the project:</br>
+The following courses provided a great overview of the project goals:</br>
  - <a href="https://www.udemy.com/course/compiler-design-n/">Compiler Design</a> by Edutainer India (on Udemy)
 <br>
-I opted to build my compiler in C using only the theoretical knowledge gained from the courses to test my understanding of the theoretical concepts. <b>I strongly recommend against coding a compiler in C</b>.
+I opted to build my compiler in C using only the theoretical knowledge gained from the courses in order to test my understanding of the theoretical concepts. I do however <b>strongly recommend against coding a compiler in C</b>.
 And without further ado, here's a brief overview of my design approach and overall progress (so far, this will change as I get further along).
 
 ## Compiler Structure
@@ -123,9 +123,35 @@ This is where the First and Follow gets murky in C. But first a quick explanatio
  This is valid C code but is completely dependent on what `X` is for it to be computed. This can be interpreted as either `y` being multiplied by the value of `X`, or `y` being a pointer variable of the `typedef/define`d  data structure `X`. This grammar can't be computed without looking somewhere in memory for an explanation as to what `X` is.<br><br>
 
 The bad news is that C is both context free and context sensitive at the same time. The good news is that it's far more context free than it is sensitive. Understanding this will be important for understanding how to control the main semantic analysis loop because some tokens  that are context sensitive can't be checked as loosely as the language's other context free counterparts. One irritating example I still have nightmares about is the elusive `{` token. It's sometimes the start of a scope block and other times it's the start of an `array`. So with this token, you have to check that the previous token isn't a `=` variable. If it is, it's treated as an array and all other times it's treated as a scope block.<br><br>
-Simple enough, right? Yeah, I made the mistake of thinking that too. With this in mind, the First and Follow structure for the C language gets a layer of depth added to it that lends to its complexity. Details like; sure a `{` token is valid to follow after a `=` token but thats only in a special case and no other. Similarly unless we're ending an array, a `;` _cannot_ follow a `}`; another unique check with only one scenario.<br><br>
-But more on that in due time. I still have to fix my code.<br><br>
-Next, we'll discuss errors recovery. The idea makes use of the First and Follow concept. But more on that when I've made some headway on it.<br><br>
+Simple enough, right? Yeah, I made the mistake of thinking that too. With this in mind, the First and Follow structure for the C language gets a layer of depth added to it that lends to its complexity. Details like; sure a `{` token is valid to follow after a `=` token but thats only in a special case and no other. Similarly unless we're ending an array, a `;` _cannot_ follow a `}`; another unique check with only one scenario.<br><br><br>
+It's been a couple of weeks since I last update this section, but I've almost completed the Semantic Analysis phase and concluded that it's time to drill into the messy details of this step.
+
+### Semantic Analysis - The Approach
+
+One of the hardest challenges I found in this step is determining what errors must happen at this point and which should be carried on to the next phase of intermediate code generation. I naively thought I could have every single error in this step, and I probably could get away with it, but the more errors I had to check for, the more bloated this step became with check after check existing in 1 single loop. The amount of data structures used to store variables, function prototypes as well as struct/union definitions also added to the complexity of checking certain conditions; examples of this being having to check all 3 tables for the existence of a specific label.<br><br>
+
+#### pseudocode for semantic analyzer
+```
+rules = list_of_key_and_rules
+first_and_follow = create_first_follow_token_rule()
+error_table = create_error_messages()
+
+function semantic_analyzer(tokens):
+
+    prev_token = null
+    next_token = tokens[1]
+    
+    for token in tokens:
+        if token in rules and validate_first_and_follow(prev_token, token, next_token) is True:
+            rules[token].rule(token)
+            
+        else 
+    
+    
+    
+    
+
+```
 
 ##### Work in Progress by AlysonBee (Alyson Ngonyama).
 
