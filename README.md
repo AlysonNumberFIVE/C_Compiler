@@ -130,24 +130,7 @@ It's been a couple of weeks since I last update this section, but I've almost co
 
 One of the hardest challenges I found in this step is determining what errors must happen at this point and which should be carried on to the next phase of intermediate code generation. I naively thought I could have every single error in this step, and I probably could get away with it, but the more errors I had to check for, the more bloated this step became with check after check existing in 1 single loop. The amount of data structures used to store variables, function prototypes as well as struct/union definitions also added to the complexity of checking certain conditions; examples of this being having to check all 3 tables for the existence of a specific label.<br><br>
 
-#### pseudocode for semantic analyzer
-```
-rules = list_of_key_and_rules
-first_and_follow = create_first_follow_token_rule()
-error_table = create_error_messages()
-
-function semantic_analyzer(tokens):
-
-    prev_token = null
-    next_token = tokens[1]
-    
-    for token in tokens:
-        if token in rules and validate_first_and_follow(prev_token, token, next_token) is True:
-            rules[token].rule(token)
-            
-        else 
-    
-    
+#### pseudocode for semantic analyzer coming next.
     
     
 
