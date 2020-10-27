@@ -612,7 +612,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	t_token	*halt;
 	t_token	*temp;
 	t_token *function_test;
-	printf("entering\n");
 
 	// handling type comparisontra
 	t_token *prev;

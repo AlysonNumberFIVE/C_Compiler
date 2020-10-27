@@ -137,6 +137,8 @@ t_db	*get_object_from_db(char *name)
 
 void	drop_last_table(void)
 {
+	if (!list || max_number <= 0)
+		return;
 	free(list[max_number]);
 	list[max_number] = NULL;
 	max_number--;

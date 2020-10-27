@@ -561,8 +561,8 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		if (handle_native_csg(prev, trav->name) == 3)
 		{	
-			//if (!(trav->next && strcmp(trav->next->name, ";") == 0))
-			//	drop_last_table();
+			if (!(trav->next && strcmp(trav->next->name, ";") == 0))
+				drop_last_table();
 		//	stack = pop_stack(stack);
 		}
 		else if (strcmp(trav->name, "continue") == 0 || strcmp(trav->name, "break") == 0)
@@ -591,7 +591,6 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else if (value_found(trav->name, commands))
 		{
-			printf("value found %s\n", trav->name);
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav, ff_list);
 			else if (strcmp(trav->name, "while") == 0)
