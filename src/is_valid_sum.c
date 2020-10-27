@@ -663,6 +663,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				handle_struct_dereferencing(equation);
 				equation = skip_struct_info(equation);
 				equation = equation->next;
+				symbol = true;
 			}
                         else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {

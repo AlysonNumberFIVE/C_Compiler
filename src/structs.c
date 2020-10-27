@@ -142,6 +142,7 @@ bool		insert_struct_into_db(char *struct_name, char *name, int depth)
 	return (false);
 }
 t_token		*struct_loop(t_token *token);
+bool		does_struct_exist(char *struct_name);
 
 t_token		*handle_nested_struct(t_token *token, char *struct_name)
 {
@@ -166,6 +167,16 @@ t_token		*handle_nested_struct(t_token *token, char *struct_name)
 	if (strcmp(trav->name, ";") == 0)
 	{
 		temp = create_temp_var(head);
+		if (does_struct_exist(temp->type) == true)
+		{
+			parameter = create_new_parameter(temp->name, temp->type, temp->depth);
+			all_structs = add_struct_variable(all_structs, struct_name, parameter);
+			param_free(parameter);
+		}
+		else
+		{
+			error_mode(trav, "struct doesn't exist");
+		}
 	}
 	else if (strcmp(trav->name, "{") == 0)
 	{
@@ -177,8 +188,28 @@ t_token		*handle_nested_struct(t_token *token, char *struct_name)
                 all_structs = add_struct_variable(all_structs, struct_name, parameter);
                 param_free(parameter);
 		//trav = trav->next;
-	}	
+	}
 	return trav;
+}
+
+bool		does_struct_exist(char *struct_name)
+{
+	extern t_struct	*all_structs;
+	t_struct	*trav;
+	char		**naming;
+
+	naming = split(struct_name, ' ');
+	trav = all_structs;
+	while (trav)
+	{
+		if (strcmp(trav->struct_name, naming[1]) == 0)
+		{
+			free2d(naming);
+			return (true);
+		}
+		trav = trav->next;
+	}
+	return (false);
 }
 
 t_token		*struct_loop(t_token *token)
@@ -276,6 +307,94 @@ t_token		*struct_loop(t_token *token)
 	return (trav);
 }
 
+t_struct	*get_struct(char *struct_datatype)
+{
+	char **name;
+	t_struct *struct_block;
+	extern t_struct *all_structs;
+
+	name = split(struct_datatype, ' ');
+	struct_block = all_structs;
+	while (struct_block)
+	{
+		if (struct_block && strcmp(struct_block->struct_name, name[1]) == 0)
+		{
+			free2d(name);
+			return (struct_block);
+		}
+		struct_block = struct_block->next;
+	}
+	return (NULL);
+}
+
+t_fvars		*get_struct_variable(char *struct_name, char *var_name)
+{
+	t_struct *this_struct;
+	t_fvars	**param;
+	int	counter;
+
+	this_struct = get_struct(struct_name);
+	if (!this_struct)
+	{
+		return (NULL);
+	}
+	counter = 0;
+	param = this_struct->variables;
+	while (counter < this_struct->struct_param_number)
+	{
+		if (strcmp(param[counter]->name, var_name) == 0)
+			return (param[counter]);
+		counter++;
+	}
+	return (NULL);
+}
+
+bool		recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)
+{	
+	t_fvars *parameter;
+	trav = trav->next;
+	if (trav && strcmp(trav->name, ";") == 0)
+	{
+		return (true);
+	}
+	else if (trav && strcmp(trav->name, "->") == 0)
+	{
+		trav = trav->next;
+		parameter = get_struct_variable(struct_var->type, trav->name);
+		if (parameter)
+		{
+			printf("parameter %s\n", parameter->name);
+			printf("trav is %s\n", trav->name);
+			printf("success\n");
+			return (recursive_struct_variable_call(trav, parameter));
+		}
+	}
+	else if (trav && strcmp(trav->name, "[") == 0)
+	{
+		int depth_count = 0;
+		int num = 0;
+		int bracket = 0;
+		while (trav)
+		{
+			if (strcmp(trav->name, "[") == 0 && bracket == 0 && num == 0)
+				bracket++;	
+			else if (strcmp(trav->type, "NUM") == 0 && bracket == 1 && num == 0)
+				num = 1;
+			else if (strcmp(trav->type, "]") == 0 && bracket == 1 && num == 1)
+			{
+				num = 0;
+				bracket--;
+				depth_count++;
+			}
+			else
+			{
+				printf("synta error\n\n");
+			}
+			trav = trav->next;
+		}
+	}
+}
+
 bool		handle_struct_dereferencing(t_token *token)
 {
 	t_token	*trav;
@@ -301,14 +420,18 @@ bool		handle_struct_dereferencing(t_token *token)
 		{
 			trav = trav->next->next;
 			counter = 0;
+
 			while (counter < trav_struct->struct_param_number)
 			{
+				printf("trav name is %s\n", trav->name);
+				printf("vars is %s\n", trav_struct->variables[counter]->name);
 				if (strcmp(trav_struct->variables[counter]->name, trav->name) == 0)
 				{
-					/*printf("found %s\n", trav->name);
+					printf("found %s\n", trav->name);
 					printf("variable datatype %s", trav_struct->variables[counter]->type);
 					printf("variable depth %d\n", trav_struct->variables[counter]->depth);
-					*/
+					recursive_struct_variable_call(trav, 
+						trav_struct->variables[counter]);
 					return (true);
 				}
 				counter++;

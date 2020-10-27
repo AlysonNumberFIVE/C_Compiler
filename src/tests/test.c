@@ -38,7 +38,7 @@ void	*printf(char *str)
 void for_loop_test(void) 
 {
 	struct _char testing;
-	testing->z && 42; 
+//	testing->z && 42; 
 	char *q = function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
 	int x = 42;
