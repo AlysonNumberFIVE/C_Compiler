@@ -560,7 +560,6 @@ t_token *array_indexing(t_token *token, t_db *object)
 
 	braces = 0;
 	depth_count = 0;
-	printf("TOKEN IS %s\n", token->name);
 	token = token->next;
 	while (token)
 	{
@@ -613,7 +612,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	t_token	*halt;
 	t_token	*temp;
 	t_token *function_test;
-
+	printf("entering\n");
 
 	// handling type comparisontra
 	t_token *prev;
@@ -624,7 +623,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
         symbol = false;
 	equation = tokens;
         while (equation && (strcmp(equation->name, end_token)))
-        {	
+        {
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
@@ -726,12 +725,13 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				return (false);
 			}
 		}
-	
         	equation = equation->next;
 	}
 	if (symbol == false)
+	{
 		error_mode(equation, "Invalid syntax");
-	if (strcmp(equation->name, ";") != 0)
+	}
+	if (equation && strcmp(equation->name, ";") != 0)
 	{
 		error_mode(equation, "Invalid syntax");
 	}

@@ -561,8 +561,8 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		if (handle_native_csg(prev, trav->name) == 3)
 		{	
-			if (!(trav->next && strcmp(trav->next->name, ";") == 0))
-				drop_last_table();
+			//if (!(trav->next && strcmp(trav->next->name, ";") == 0))
+			//	drop_last_table();
 		//	stack = pop_stack(stack);
 		}
 		else if (strcmp(trav->name, "continue") == 0 || strcmp(trav->name, "break") == 0)
@@ -591,12 +591,15 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else if (value_found(trav->name, commands))
 		{
+			printf("value found %s\n", trav->name);
 			if (strcmp(trav->name, "for") == 0)
 				trav = semantic_for(prev, trav, ff_list);
 			else if (strcmp(trav->name, "while") == 0)
 				trav = semantic_while(prev, trav, ff_list, do_trigger);
 			else if (strcmp(trav->name, "if") == 0) 
+			{
 				trav = semantic_if(prev, trav, ff_list);
+			}
 			else if (strcmp(trav->name, "else") == 0)
 				trav = semantic_else(prev, trav, ff_list);
 			
@@ -615,7 +618,7 @@ bool	semantic_analysis(t_token *tokens)
 		{
 			validate_function(head);
 			head = trav;
-			if (strcmp(trav->name, "{") == 0)
+			if (trav && strcmp(trav->name, "{") == 0)
 			{
 				set_defined(NULL, 2);
 				add_new_table();

@@ -1,7 +1,7 @@
 
-
+/*
 #include "../inc/compiler.h"
-
+*/
 
 void    print_variables(t_variable *variables)
 {
@@ -29,8 +29,9 @@ void    print_function(t_function_table *functions)
         printf("function_name : %s\n", trav->function_name);
         printf("datatype : %s\n", trav->datatype);
         printf("(");
-        if (trav->variables)
+        if (trav->variables) {
             print_variables(trav->variables);
+	}
         else
             printf("void\n");
         printf(")");

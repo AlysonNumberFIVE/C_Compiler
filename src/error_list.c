@@ -25,7 +25,8 @@ t_token	*error_mode(t_token *token, char *message)
 {
 	t_token *trav;
 	extern char **start;
-
+	if (!token)
+		return (trav);
 	trav = token;
 	printf("%s : %d ", token->filename, token->line);
 	printf("Error : %s : '%s'\n", message, token->name);

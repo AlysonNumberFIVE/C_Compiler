@@ -47,6 +47,7 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, ">>", "ID NUM");
 	ht_insert(ht, "|", "ID NUM");
 	ht_insert(ht, "/", "ID NUM");
+	ht_insert(ht, "else", "{ if");
 	ht_insert(ht, "+", "ID NUM");
 	ht_insert(ht, "-", "ID NUM");
 	ht_insert(ht, "++", ") ;");

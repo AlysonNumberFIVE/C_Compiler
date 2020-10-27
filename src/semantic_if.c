@@ -18,6 +18,7 @@ t_token *semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list)
         char *prev_type;
         bool found;
         char *test;
+	int brackets;
 
         test = NULL;
         found = false;
@@ -27,9 +28,15 @@ t_token *semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list)
         trav = trav->next;
         if (strcmp(trav->name, "(") == 0)
                 trav = trav->next;
-
-        while (trav && handle_native_csg(trav->name, trav->next->name) != SCOPE)
+	brackets = 1;
+        while (trav->next && handle_native_csg(trav->name, trav->next->name) != SCOPE)
         {
+		if (strcmp(trav->name, "(") == 0)
+			brackets++;
+		else if (strcmp(trav->name, ")") == 0)
+			brackets--;
+		if (brackets == 0)
+			break;
                 if (value_found(trav->name, start))
                         error_mode(trav, "Error : variable declaration forbidden in while loops\n");
                 if (trav->next && check_next_token(ff_list, trav->next->name, trav->name) == false)
@@ -40,8 +47,13 @@ t_token *semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list)
                 trav = trav->next;
                 counter++;
         }
-        sub_sequence = push_token(sub_sequence, ";", "SEMICOLON", trav->line, trav->filename);
-        if (is_valid_equation(sub_sequence, ";"))
+	if (handle_native_csg(trav->name, trav->next->name) != SCOPE)
+	{
+		error_mode(trav, "shorthand if/else statements forbidden");
+		return (trav);
+	}
+	sub_sequence = push_token(sub_sequence, ";", "SEMICOLON", trav->line, trav->filename);
+	if (is_valid_equation(sub_sequence, ";"))
         {
                 return (trav);
         }

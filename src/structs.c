@@ -287,10 +287,14 @@ bool		handle_struct_dereferencing(t_token *token)
 
 	counter = 0;
 	object = get_object_from_db(token->name);
+	if (!object)
+	{
+		error_mode(token, "variable doesnt exist");
+		return (false);
+	}
 	trav = token;
 	trav_struct = all_structs;
 	segments = split(object->type, ' ');
-
 	while (trav_struct)
 	{
 		if (strcmp(trav_struct->struct_name, segments[1]) == 0)
@@ -305,6 +309,7 @@ bool		handle_struct_dereferencing(t_token *token)
 					printf("variable datatype %s", trav_struct->variables[counter]->type);
 					printf("variable depth %d\n", trav_struct->variables[counter]->depth);
 					*/
+					return (true);
 				}
 				counter++;
 			}
@@ -313,6 +318,7 @@ bool		handle_struct_dereferencing(t_token *token)
 //		printf("trav struct name %s\n", trav_struct->struct_name);
 		trav_struct = trav_struct->next;
 	}
+	return (false);
 }
 
 
