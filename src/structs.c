@@ -351,6 +351,10 @@ t_fvars		*get_struct_variable(char *struct_name, char *var_name)
 
 bool		recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)
 {	
+	char *label_name;
+
+	label_name = strdup(trav->name);
+	printf("here we are\n");
 	t_fvars *parameter;
 	trav = trav->next;
 	if (trav && strcmp(trav->name, ";") == 0)
@@ -374,6 +378,7 @@ bool		recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)
 		int depth_count = 0;
 		int num = 0;
 		int bracket = 0;
+		printf("BEFORE squares\n");
 		while (trav)
 		{
 			if (strcmp(trav->name, "[") == 0 && bracket == 0 && num == 0)

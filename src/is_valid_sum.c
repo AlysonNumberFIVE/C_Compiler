@@ -557,6 +557,7 @@ t_token *array_indexing(t_token *token, t_db *object)
 {
 	int depth_count;
 	int braces;
+	t_fvars *variables;
 
 	braces = 0;
 	depth_count = 0;
@@ -573,7 +574,6 @@ t_token *array_indexing(t_token *token, t_db *object)
 		token = token->next;
 		if (strcmp(token->type, "NUM") != 0)
 		{
-			error_mode(token, "syntax error; array indexing must be an integer");
 			break;
 		}
 		token = token->next;
@@ -590,13 +590,22 @@ t_token *array_indexing(t_token *token, t_db *object)
 			break;
 	}
 	if (braces != 0)
-	{
 		error_mode(token, "syntax error; missing closing square bracket");
+	if (strcmp(token->name, "->") == 0)
+	{
+		// bool            recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)i
+		variables = get_struct_variable(object->type, token->next->name);
+		if (variables)
+			printf("found\n");
+		if (object->depth - depth_count != 1)
+			error_mode(token, "struct indexing too deep/not deep enough");
+		token = token->next->next;
+		recursive_struct_variable_call(token, variables);
+		while (token && strcmp(token->name, ";") != 0)
+			token = token->next;
 	}
 	if (object->depth - depth_count < 0)
-	{
 		error_mode(token, "array dereferencing too deep");;
-	}
 	return (token);
 }
 

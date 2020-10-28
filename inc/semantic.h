@@ -95,6 +95,8 @@ bool		validate_function(t_token *token);
 bool		check_next_token(t_hashtable *ff_list, char *next_token, char *current_token);
 char		*valid_datatypes(t_token *token);
 t_token		*skip_distance(t_token *token, char *len);
+t_fvars		*get_struct_variable(char *struct_name, char *a);
+bool            recursive_struct_variable_call(t_token *trav, t_fvars *struct_var);
 
 #endif
 
