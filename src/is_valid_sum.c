@@ -447,6 +447,7 @@ bool	type_comparison(t_token *prev, t_token *current)
 		}
 		else
 		{
+			printf("before\n");
 			tprev->datatype = strdup(object_prev->type);
 			tprev->depth = object_prev->depth;
 		}
@@ -461,8 +462,6 @@ bool	type_comparison(t_token *prev, t_token *current)
 		tprev->datatype = strdup("int");
 		tprev->depth = 0;
 	}
-	
-
 	if (strcmp(current->type, "ID") == 0)
 	{
 		object_current = get_object_from_db(current->name);
@@ -488,11 +487,9 @@ bool	type_comparison(t_token *prev, t_token *current)
 		tcurrent->datatype = strdup("int");
 		tcurrent->depth = 0;
 	}
-
 	if (strcmp(tcurrent->datatype, tprev->datatype) == 0 &&
 		tcurrent->depth == tprev->depth)
 		return (true);
-	printf("Error : variable datatype size mismatch\n");
 	return (false);
 }
 
@@ -599,13 +596,17 @@ t_token *array_indexing(t_token *token, t_db *object)
 			printf("found\n");
 		if (object->depth - depth_count != 1)
 			error_mode(token, "struct indexing too deep/not deep enough");
-		token = token->next->next;
+		token = token->next;
 		recursive_struct_variable_call(token, variables);
-		while (token && strcmp(token->name, ";") != 0)
-			token = token->next;
+		while (token->next && strcmp(token->next->name, "->") == 0)
+		{
+			printf("token is %s\n", token->name);
+			token = token->next->next;
+		}
 	}
 	if (object->depth - depth_count < 0)
-		error_mode(token, "array dereferencing too deep");;
+		error_mode(token, "array dereferencing too deep");
+	printf(" >> %s\n",token->name);
 	return (token);
 }
 
@@ -632,6 +633,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	equation = tokens;
         while (equation && (strcmp(equation->name, end_token)))
         {
+		printf("%s\n", equation->name);
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
@@ -676,8 +678,10 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			}
                         else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {
-				if (prev)
+				/*if (prev)
+				{
 					type_comparison(prev, equation);
+				}*/
 			        prev = equation;
 				db_value = get_object_from_db(equation->name);	
                                 if (db_value == NULL)
@@ -685,11 +689,16 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                                 	return (false);
 				}
 				if (strcmp(equation->next->name, "[") == 0)
+				{
 					equation = array_indexing(equation, db_value);
+					prev = NULL;
+					//prev = equation;
+				}
 				symbol = true;				
 			} 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
 			{	
+				printf("HERE WE ARE\n");
 				if (prev)
 					type_comparison(prev, equation);
 				prev = equation;

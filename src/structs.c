@@ -314,6 +314,11 @@ t_struct	*get_struct(char *struct_datatype)
 	extern t_struct *all_structs;
 
 	name = split(struct_datatype, ' ');
+	if (name[1] == NULL)
+	{
+		free2d(name);
+		return (NULL);
+	}
 	struct_block = all_structs;
 	while (struct_block)
 	{
@@ -332,7 +337,7 @@ t_fvars		*get_struct_variable(char *struct_name, char *var_name)
 	t_struct *this_struct;
 	t_fvars	**param;
 	int	counter;
-
+	
 	this_struct = get_struct(struct_name);
 	if (!this_struct)
 	{
@@ -354,16 +359,14 @@ bool		recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)
 	char *label_name;
 
 	label_name = strdup(trav->name);
-	printf("here we are\n");
 	t_fvars *parameter;
 	trav = trav->next;
 	if (trav && strcmp(trav->name, ";") == 0)
-	{
 		return (true);
-	}
 	else if (trav && strcmp(trav->name, "->") == 0)
 	{
 		trav = trav->next;
+		printf("before\n");
 		parameter = get_struct_variable(struct_var->type, trav->name);
 		if (parameter)
 		{
@@ -371,6 +374,10 @@ bool		recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)
 			printf("trav is %s\n", trav->name);
 			printf("success\n");
 			return (recursive_struct_variable_call(trav, parameter));
+		}
+		else
+		{
+			printf("error with parameters\n");
 		}
 	}
 	else if (trav && strcmp(trav->name, "[") == 0)
@@ -425,7 +432,6 @@ bool		handle_struct_dereferencing(t_token *token)
 		{
 			trav = trav->next->next;
 			counter = 0;
-
 			while (counter < trav_struct->struct_param_number)
 			{
 				printf("trav name is %s\n", trav->name);

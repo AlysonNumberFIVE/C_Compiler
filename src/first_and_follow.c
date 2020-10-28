@@ -11,7 +11,7 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, "const", "* ID )");
 	ht_insert(ht, "void", "* ID )");
 	ht_insert(ht, "struct", "ID )");
-	ht_insert(ht, "int", "* ID )");
+	ht_insert(ht, "int", "* ID ) unsigned");
 	ht_insert(ht, "short", "* ID )");
 	ht_insert(ht, "double", "* ID )");
 	ht_insert(ht, "float", "* ID )");
@@ -19,7 +19,7 @@ t_hashtable *first_and_follow(void)
 	ht_insert(ht, "long", "* ID )");
 	ht_insert(ht, "longlong", "* ID )");
 	ht_insert(ht, "signed", "* ID )");
-	ht_insert(ht, "unsigned", "int char long double");
+	ht_insert(ht, "unsigned", "ID int char long double");
 	ht_insert(ht, "do", "{");
 	ht_insert(ht, "void", "* ID )");
 	ht_insert(ht, "for", "(");

@@ -151,7 +151,7 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 
         trav = trav->next;
         while (trav && strcmp(trav->name, ";") && strcmp(trav->name, "{"))
-        {	
+        {
         	if (strcmp(trav->name, ",") == 0 || strcmp(trav->name, ")") == 0)
                 {
                 	if (!temp_var->name || !temp_var->type)
@@ -179,6 +179,7 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
                  }
                  else if (value_found(trav->name, start))
                  {
+			printf("here\n");	
                  	temp_var = create_temp_var(trav);
         		if (!temp_var->name || !temp_var->type)
 			{
@@ -410,9 +411,9 @@ bool	validate_function(t_token *token)
 		if (temp_var->name == NULL)
 			return (false);
 	}
-	
+
 	possible_function_name = strdup(temp_var->name);
-	trav = temp_var->curr;	
+	trav = temp_var->curr;
 	if (strcmp(trav->name, ";") == 0)
 		insert_into_db(temp_var->type, temp_var->name, NULL, temp_var->depth);
 	else if (strcmp(trav->name, "(") == 0)
@@ -534,7 +535,7 @@ bool	semantic_analysis(t_token *tokens)
 	brackets = 0;
 	max_number= 0;
 	in_function = false;
-	start = split("char const void struct int short double float size_t long longlong signed void unsigned", ' ');
+	start = split("char const void struct int short double float size_t long signed void unsigned", ' ');
         ff_list = first_and_follow();
 	commands = command_blocks();
 	if (value_found(tokens->name, start) == false)
@@ -546,7 +547,7 @@ bool	semantic_analysis(t_token *tokens)
 	trav = tokens;
 	head = trav;
 	while (trav)
-	{	
+	{
 		if (strcmp(trav->name, "{") == 0 )
 		{	
 			if (prev && strcmp(prev, "=") == 0)
@@ -615,6 +616,7 @@ bool	semantic_analysis(t_token *tokens)
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
+			printf("eval \n");
 			validate_function(head);
 			head = trav;
 			if (trav && strcmp(trav->name, "{") == 0)

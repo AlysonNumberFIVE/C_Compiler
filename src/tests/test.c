@@ -35,11 +35,16 @@ void	*printf(char *str)
 	return (0);
 }
 
+void	*malloc(size_t size) {
+	return (0);
+}
+
 void for_loop_test(void) 
 {
-	struct _char testing;
+	struct _char *testing;
 	char *q = function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
+	testing->x = malloc(42); 
 	int x = 42;
 	int daedalus = 1 + 2 + 4 ;
 	(char *)aw = "str";
