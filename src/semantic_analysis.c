@@ -143,7 +143,6 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
 
 	if (!sanity_ftest)
 		functions = push_function(functions, temp_var->name, temp_var->type, temp_var->depth);
-
        	if (strcmp(trav->next->name, "void") == 0 && strcmp(trav->next->next->name, ")") == 0 &&
          	(strcmp(trav->next->next->next->name, ";") == 0 ||
         	strcmp(trav->next->next->next->name, "{") == 0))
@@ -179,7 +178,6 @@ bool	save_function(t_temp_var *temp_var, t_token *trav, char *function_name)
                  }
                  else if (value_found(trav->name, start))
                  {
-			printf("here\n");	
                  	temp_var = create_temp_var(trav);
         		if (!temp_var->name || !temp_var->type)
 			{
@@ -616,7 +614,8 @@ bool	semantic_analysis(t_token *tokens)
 		else if (handle_native_csg(prev, trav->name) == SCOPE
 			 || strcmp(trav->name, ";") == 0)
 		{
-			printf("eval \n");
+			if (strcmp(head->name, "}") == 0)
+				head = head->next;
 			validate_function(head);
 			head = trav;
 			if (trav && strcmp(trav->name, "{") == 0)

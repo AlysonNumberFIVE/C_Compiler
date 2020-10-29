@@ -11,7 +11,7 @@ struct test {
 int	main(void)
 {
 	struct test ***pointer;
-
-	pointer[0][0]->next->next->next + 42 + i + 11;
+	int x;
+	x +  pointer[0][0]->next->next->next + 42;
 	return 0;
 }

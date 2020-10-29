@@ -633,7 +633,11 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	equation = tokens;
         while (equation && (strcmp(equation->name, end_token)))
         {
-		printf("%s\n", equation->name);
+		if (symbol == true)
+			printf("true ");
+		else
+			printf("false ");
+		printf(" %s ", equation->name);
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
@@ -678,6 +682,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			}
                         else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {
+				printf("equation in hte ID is %s\n", equation->name);
 				/*if (prev)
 				{
 					type_comparison(prev, equation);
@@ -686,6 +691,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				db_value = get_object_from_db(equation->name);	
                                 if (db_value == NULL)
 				{
+					error_mode(equation, "Variable doesn't exist");
                                 	return (false);
 				}
 				if (strcmp(equation->next->name, "[") == 0)
