@@ -14,7 +14,8 @@ source_files =  scope_database.c scope_stack.c semantic_analysis.c \
 	semantic_while.c main.c open_files.c datatype_experiment.c \
 	error_list.c error_recovery.c first_and_follow.c functions.c \
 	handle_csg.c hashtable.c is_valid_sum.c \
-	lexer.c lexer_token_types.c lexer_utils.c token_control.c 
+	lexer.c lexer_token_types.c lexer_utils.c token_control.c \
+	resolve_typedefs.c 
 
 object_files = $(source_files:.c=.o)
 

@@ -1,4 +1,5 @@
 
+#include "../inc/typedefs.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,7 +89,8 @@ int	main(int argc, char **argv)
 
 	tokens = lexer(files);
 
-	semantic_analysis(tokens);
+	resolve_typedefs(tokens);
+//	semantic_analysis(tokens);
 
 //	print_token(tokens);	
 

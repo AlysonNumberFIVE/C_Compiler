@@ -100,7 +100,7 @@ void    ht_insert(t_hashtable *table, char *key, char *value)
     ht_item *current_item;
     ht_item *item;
     int      index;
-
+    
     item = create_item(key, value);
     index = hash_function(key);
     current_item = table->items[index];

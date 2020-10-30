@@ -1,11 +1,15 @@
 
 
 
+
 //string str = NULL;
 char *null;
 
-struct test {
+typedef struct test {
 	struct test *next;
+	struct x{
+		int a;
+	}*b;
 };
 
 struct a {
@@ -22,5 +26,7 @@ struct b {
 int main(void)
 {
 	int x = x + 42;
+	char *name = "str";
+	sizeof(42 + 1 * *name);
 	return (0);
 }
