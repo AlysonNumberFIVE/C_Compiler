@@ -78,6 +78,7 @@ t_token		*semantic_for(char *prev, t_token *token, t_hashtable *ff_list);
 t_token		*semantic_while(char *prev, t_token *token, t_hashtable *ff_list, bool do_trigger);
 t_token		*semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list);
 t_token		*semantic_else(char *prev_name, t_token *token, t_hashtable *ff_list);
+t_token		*semantic_sizeof(t_token *token);
 
 t_stack		*push_stack(t_stack *head, int scope_name);
 t_token		*struct_loop(t_token *val);

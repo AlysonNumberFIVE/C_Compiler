@@ -2,17 +2,20 @@
 
 
 
-typedef struct s_list {
+struct s_list {
 	int n;
 	struct s_list *next;
-}	t_list;
-
-t_list	*new_list(int n)
+};
+void	*malloc(int x)
 {
-	t_list *new;
+	return ("null");
+}
+void	*new_list(int n)
+{
+	struct s_list *new;
 
-	new = (t_list *)malloc(sizeof(t_list));
-	new->n = n;
+	new = (void *)malloc(42);
+	new->n = 1;
 	new->next = NULL;
 	return (new);
 }

@@ -7,11 +7,8 @@ void 	malloc(int unsigned avl)
 
 int	main(void)
 {
-	(char *)malloc(sizeof(42));
+	int x = {1, 2, 3};
+	char *var = (char *)malloc(42);
 	return (0);
 }
 
-int	main(int argc)
-{
-	return (0);
-}

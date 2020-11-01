@@ -15,6 +15,10 @@ t_token	*skip_typecast(t_token *token)
 		token = skip_distance(token, datatype);
 		token = token->next;
 	}
+	else if (strcmp(token->name, "struct") == 0)
+	{
+		token = token->next->next;
+	}
 	while (token && strcmp(token->name, "*") == 0)
 		token = token->next;
 	if (strcmp(token->name, ")") != 0)
@@ -622,6 +626,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	t_token	*halt;
 	t_token	*temp;
 	t_token *function_test;
+	t_function *to_find;
 
 	// handling type comparisontra
 	t_token *prev;
@@ -633,16 +638,11 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	equation = tokens;
         while (equation && (strcmp(equation->name, end_token)))
         {
-		if (symbol == true)
-			printf("true ");
-		else
-			printf("false ");
-		printf(" %s ", equation->name);
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
 		{
-			if (equation && valid_datatypes(equation->next))
+			if (equation && (valid_datatypes(equation->next) || strcmp(equation->name, "struct") == 0))
 			{
 				equation = skip_typecast(equation); 
 			}
@@ -678,11 +678,12 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				handle_struct_dereferencing(equation);
 				equation = skip_struct_info(equation);
 				equation = equation->next;
+				if (strcmp(equation->name, "=") == 0)
+					equation = equation->next;
 				symbol = true;
 			}
                         else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {
-				printf("equation in hte ID is %s\n", equation->name);
 				/*if (prev)
 				{
 					type_comparison(prev, equation);
@@ -704,9 +705,14 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			} 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
 			{	
-				printf("HERE WE ARE\n");
-				if (prev)
-					type_comparison(prev, equation);
+			//	if (prev)
+			//		type_comparison(prev, equation);
+				to_find = get_function(equation->name);
+				if (!to_find)
+				{
+					error_mode(equation, "Function doesn't exist");
+					return (false);
+				}
 				prev = equation;
 				function_test = extract_function(equation);
 				halt = equation;
@@ -728,6 +734,15 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			{
 				if (prev)
 					type_comparison(prev, equation);
+				prev = equation;
+				symbol = true;
+			}
+			else if (strcmp(equation->name, "sizeof") == 0)
+			{
+				printf("===============================\n");
+				equation = semantic_sizeof(equation);
+				printf("equation is %s\n", equation->name);
+				printf("================================\n");
 				prev = equation;
 				symbol = true;
 			}

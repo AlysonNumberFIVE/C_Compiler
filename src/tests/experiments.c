@@ -1,10 +1,10 @@
 
 
-
+#include <stdio.h>
 
 //string str = NULL;
 char *null;
-
+int x = 42;
 typedef struct test {
 	struct test *next;
 	struct x{
@@ -25,8 +25,11 @@ struct b {
 };
 int main(void)
 {
-	int x = x + 42;
-	char *name = "str";
-	sizeof(42 + 1 * *name);
+	int x = 1;
+
+	if (42) {
+		extern int x;
+		printf("x is %d\n", x);
+	}
 	return (0);
 }

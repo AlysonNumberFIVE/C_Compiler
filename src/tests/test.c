@@ -29,21 +29,20 @@ char *var(char *name);
 int constant(void);
 int main(int argc, char **argv);
 void once_more(char *str);
-
 void	*printf(char *str)
 {
 	return (0);
-}
+} 
 
 void for_loop_test(char *va) 
 {
-//	struct _char *testing;
+	struct _char *testing;
 	char *q = function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
-//	testing->x = (char *)malloc(42); 
-	int x = 42;
+	testing->x = (char *)malloc(sizeof(42)); 
 	int daedalus = 1 + 2 + 4 ;
 	(char *)aw = "str";
+	char *new = (char *)printf("hello");
 	var("hello"); 
 	for (int i = 0; ((int)123213  + 1) + 124 < 15; i++) 
 	{

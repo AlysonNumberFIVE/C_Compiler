@@ -558,7 +558,11 @@ bool	semantic_analysis(t_token *tokens)
 			//if (!(trav->next && strcmp(trav->next->name, ";") == 0))
 			brackets--;
 		}
-		if (handle_native_csg(prev, trav->name) == 3)
+		if (strcmp(trav->name, "extern") == 0)
+		{
+
+		}
+		else if (handle_native_csg(prev, trav->name) == 3)
 		{	
 			if (!(trav->next && strcmp(trav->next->name, ";") == 0))
 				drop_last_table();
@@ -569,6 +573,10 @@ bool	semantic_analysis(t_token *tokens)
 			if (assert_inner_loop() == false)
 				error_mode(trav, "cannot have 'continue' or 'break' outside of scope loop");
 		}
+		else if (strcmp(trav->name, "sizeof") == 0)
+		{
+			trav = semantic_sizeof(trav);
+		}
 		else if (strcmp(trav->name, "return") == 0)
 		{
 			if (stack == NULL)
@@ -576,7 +584,7 @@ bool	semantic_analysis(t_token *tokens)
 				error_mode(trav, "return statement outside of function block");
 			}
 		}
-		else if (strcmp(trav->name, "struct") == 0)
+		else if (strcmp(trav->name, "struct") == 0 && strcmp(back->name, "(") != 0)
 		{
 			trav = struct_loop(trav);	
 			if (strcmp(trav->name, ";") != 0)
@@ -659,7 +667,6 @@ bool	semantic_analysis(t_token *tokens)
 		if (brackets < 0)
 		{
 			printf("Error : curly brace mismatch\n\n");
-			printf("brackets are %d\n", brackets);	
 		}
 		if (strcmp(trav->name, "}") && trav->next == NULL)
 			break ;

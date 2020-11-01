@@ -434,13 +434,8 @@ bool		handle_struct_dereferencing(t_token *token)
 			counter = 0;
 			while (counter < trav_struct->struct_param_number)
 			{
-				printf("trav name is %s\n", trav->name);
-				printf("vars is %s\n", trav_struct->variables[counter]->name);
 				if (strcmp(trav_struct->variables[counter]->name, trav->name) == 0)
 				{
-					printf("found %s\n", trav->name);
-					printf("variable datatype %s", trav_struct->variables[counter]->type);
-					printf("variable depth %d\n", trav_struct->variables[counter]->depth);
 					recursive_struct_variable_call(trav, 
 						trav_struct->variables[counter]);
 					return (true);

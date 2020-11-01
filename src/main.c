@@ -89,8 +89,9 @@ int	main(int argc, char **argv)
 
 	tokens = lexer(files);
 
-	resolve_typedefs(tokens);
-//	semantic_analysis(tokens);
+//	tokens = resolve_typedefs(tokens);
+
+	semantic_analysis(tokens);
 
 //	print_token(tokens);	
 

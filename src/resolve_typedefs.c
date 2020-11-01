@@ -233,18 +233,18 @@ t_token		*resolve_typedefs(t_token *token)
 		}
 		else if (does_typedef_exist(trav->name))
 		{
-			printf("Here we aer again\n");
 			trav = replace_section(trav, prev);
 			if (!trav) break ;
 		}
 		prev = trav;
 		trav = trav->next;
 	}
-	while (token)
+	t_token *h = token;
+	while (h)
 	{
-		printf(" %s ", token->name);
-		token = token->next;
-	}	
+		printf(" %s ", h->name);
+		h = h->next;
+	}
 	printf("\n\n\n");
-	print_typedefs(typedef_list);
+	return (token);
 }
