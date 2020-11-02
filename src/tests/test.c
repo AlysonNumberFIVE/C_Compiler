@@ -39,7 +39,7 @@ void for_loop_test(char *va)
 	struct _char *testing;
 	char *q = function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
 	char *aw;
-	testing->x = (char *)malloc(sizeof(42)); 
+	(char *)malloc(42);
 	int daedalus = 1 + 2 + 4 ;
 	(char *)aw = "str";
 	char *new = (char *)printf("hello");

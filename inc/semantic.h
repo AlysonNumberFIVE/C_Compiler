@@ -54,6 +54,7 @@ int     determine_pointer_depth(t_token *list);
 //t_stack *push_stack(t_stack *head, char *function_name);
 int     semantic_function(t_token **tokens);
 
+void	print_error_message(t_token *position);
 
 t_function *new_function(char *function_name, char *type, int depth);
 t_function      *add_function(t_function *head, char *function_name, char *type, int depth);

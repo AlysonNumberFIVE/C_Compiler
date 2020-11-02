@@ -394,6 +394,13 @@ bool	validate_function(t_token *token)
 		}
 		called = true;
 		to_check = does_variable_exist(token->name);
+		t_token *h = token; int counter = 0;
+		while (h && counter != 5)
+		{
+			printf(" %s ", h->name);
+			h = h->next;
+			counter++;
+		}
 		if (strcmp(token->name, "*") != 0 && strcmp(token->name, "(") != 0 && strcmp(token->name, "@") != 0 && 
 			!does_variable_exist(token->name) && !does_function_exist(token->name))
 		{
@@ -510,6 +517,18 @@ bool	assert_inner_loop(void)
 	return (false);
 }
 
+
+void	save_sizeof(void)
+{
+	t_function *all_functions;
+	t_fvars *parameters;
+
+	parameters = create_new_parameter("n", "int", 0);
+	all_functions = push_function(all_functions, "sizeof", "size_t", 0);
+	functions = new_parameter(all_functions, "sizeof", parameters);
+	param_free(parameters);
+}
+
 bool	semantic_analysis(t_token *tokens)
 {
 	t_token		*trav;
@@ -535,6 +554,7 @@ bool	semantic_analysis(t_token *tokens)
 	in_function = false;
 	start = split("char const void struct int short double float size_t long signed void unsigned", ' ');
         ff_list = first_and_follow();
+//	save_sizeof();
 	commands = command_blocks();
 	if (value_found(tokens->name, start) == false)
 	{
@@ -586,10 +606,13 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else if (strcmp(trav->name, "struct") == 0 && strcmp(back->name, "(") != 0)
 		{
+			print_x(trav, 6);
 			trav = struct_loop(trav);	
 			if (strcmp(trav->name, ";") != 0)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
+			printf("after structn\n");
+			print_x(trav, 6);
 			head = trav->next;
 		}
 		else if (strcmp(trav->name, "do") == 0)

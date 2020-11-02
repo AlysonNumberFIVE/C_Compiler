@@ -50,7 +50,7 @@ bool valid_operator(char *token)
 			return (true);
 		counter++;
 	}
-	return (true);
+	return (false);
 }
 
 t_token *extract_function(t_token *token)
@@ -175,6 +175,7 @@ t_token	*extract_section(t_token *token)
 	trav = token;
 	new = NULL;
 	brackets = 0;
+	printf("extract_section\n");
 	while (trav && strcmp(trav->name, ",") != 0)
 	{
 		if (strcmp(trav->name, "(") == 0)
@@ -184,14 +185,18 @@ t_token	*extract_section(t_token *token)
 		}
 		else if (strcmp(trav->name, ")") == 0)
 			brackets--;
+		new = push_token(new, trav->name, trav->type, trav->line, trav->filename);
 		if (brackets == 0 && bracket_flag == true)
 			break ;	
 		if (brackets < 0)
 			break ;
-		new = push_token(new, trav->name, trav->type, trav->line, trav->filename);
+	//	new = push_token(new, trav->name, trav->type, trav->line, trav->filename);KME
 		trav = trav->next;
 	}
 	new = push_token(new, ";", "SEMICOLON", trav->line, trav->filename);
+	if (valid_operator(new->name) == true)
+		new = new->next;
+	print_x(new, 10);
 	return (new);		
 }
 
@@ -230,6 +235,7 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 	trav = type_list;
 	while (trav)
 	{
+		printf("trav->name %s\n", trav->name);
 		if (strcmp(trav->type, "LITERAL") == 0)
 		{
 			if (strcmp(parameters[counter]->type, "char") == 0 &&
@@ -346,7 +352,7 @@ bool test_function_evaluation(t_token *function)
 		}
 		carry = carry->next;
 	}
-//	DELETE(param_assert);
+	//DELETE(param_assert);
 	evaluate_function_parameters(param_name, param_assert);
 	return (true);
 }
@@ -638,6 +644,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	equation = tokens;
         while (equation && (strcmp(equation->name, end_token)))
         {
+		printf(" e:%s ", equation->name);
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
@@ -685,10 +692,9 @@ bool is_valid_equation(t_token *tokens, char *end_token)
                         else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") != 0)
                         {
 				/*if (prev)
-				{
 					type_comparison(prev, equation);
-				}*/
-			        prev = equation;
+			        */
+				prev = equation;
 				db_value = get_object_from_db(equation->name);	
                                 if (db_value == NULL)
 				{
@@ -705,8 +711,8 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			} 
 			else if (strcmp(equation->type, "ID") == 0 && strcmp(equation->next->name, "(") == 0)
 			{	
-			//	if (prev)
-			//		type_comparison(prev, equation);
+			/*	if (prev)
+					type_comparison(prev, equation); */
 				to_find = get_function(equation->name);
 				if (!to_find)
 				{
@@ -717,16 +723,16 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 				function_test = extract_function(equation);
 				halt = equation;
 				temp = extract_function_type(halt->name, halt);
-	 				//print_segment(function_test);
-				
+	 				print_segment(function_test);
 				test_function_evaluation(function_test);
 	
 				halt->next = temp;
 				equation = skip_function(equation);
 				temp->next = equation;
+				symbol = true;
 				if (!equation)
 					return (true);
-
+		
 			} 
                         else if (strcmp(equation->type, "NUM") == 0 ||
 				strcmp(equation->type, "CHAR") == 0 ||
@@ -739,11 +745,9 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 			}
 			else if (strcmp(equation->name, "sizeof") == 0)
 			{
-				printf("===============================\n");
 				equation = semantic_sizeof(equation);
-				printf("equation is %s\n", equation->name);
-				printf("================================\n");
 				prev = equation;
+				equation = equation->next;
 				symbol = true;
 			}
 			else

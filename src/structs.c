@@ -363,6 +363,11 @@ bool		recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)
 	trav = trav->next;
 	if (trav && strcmp(trav->name, ";") == 0)
 		return (true);
+	else if (trav && strcmp(trav->name, "=") == 0)
+	{
+		trav = trav->next;
+		return (is_valid_equation(trav, ";"));
+	}
 	else if (trav && strcmp(trav->name, "->") == 0)
 	{
 		trav = trav->next;
@@ -382,8 +387,8 @@ bool		recursive_struct_variable_call(t_token *trav, t_fvars *struct_var)
 	}
 	else if (trav && strcmp(trav->name, "[") == 0)
 	{
-		int depth_count = 0;
 		int num = 0;
+		int depth_count = 0;
 		int bracket = 0;
 		printf("BEFORE squares\n");
 		while (trav)

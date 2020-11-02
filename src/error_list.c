@@ -2,7 +2,37 @@
 #include "../inc/semantic.h"
 #include "../inc/token.h"
 #include "../inc/compiler.h"
+#include "../inc/database.h"
 
+void	error_type_checker(t_token *first, t_token *second)
+{
+	extern t_file *files;
+	t_token	*nfirst;
+	t_function *function;
+	t_db *object;
+	t_token *nsecond;
+
+	if (strcmp(first->type, "LITERAL") == 0 || strcmp(second->type, "LITERAL") == 0)
+	{
+		printf("%s %d Warning : adding literal can cause undefined behaviour\n",
+			first->filename, first->line);
+		if (strcmp(first->name, "LITERAL") == 0)
+			print_error_message(first);
+		else
+			print_error_message(second);
+	}
+	else
+	{
+		if (strcmp(first->type, "ID") == 0) 
+		{
+			object = get_object_from_db(first->name);
+			if (!object)
+			{
+				function = get_function(first->name);
+			}
+		}
+	}
+}
 
 void	print_error_message(t_token *position)
 {

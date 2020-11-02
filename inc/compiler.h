@@ -181,7 +181,7 @@ typedef struct s_variable_block
         int depth;
 }       t_temp_var;
 
-
+void		print_x(t_token *token, int x);
 t_temp_var      *create_temp_var(t_token *token);
 void        init_datatypes(void);
 t_hashtable *create_table(int size);

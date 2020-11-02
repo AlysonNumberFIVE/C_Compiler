@@ -11,6 +11,23 @@
 
 t_file	*files = NULL;
 
+void	print_x(t_token *token, int x)
+{
+	int counter;
+	t_token *trav;
+	
+	counter = 0;
+	trav = token;
+	printf("print_%d\n", x);
+	while (counter < x && trav)
+	{
+		printf(" %s ", trav->name);
+		trav = trav->next;
+		counter++;
+	}
+	printf("\n\n");
+}
+
 char    *read_file(char *filename)
 {
     int fd;
