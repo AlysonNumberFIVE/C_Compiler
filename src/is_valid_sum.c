@@ -175,7 +175,6 @@ t_token	*extract_section(t_token *token)
 	trav = token;
 	new = NULL;
 	brackets = 0;
-	printf("extract_section\n");
 	while (trav && strcmp(trav->name, ",") != 0)
 	{
 		if (strcmp(trav->name, "(") == 0)
@@ -770,6 +769,7 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 		}
         	equation = equation->next;
 	}
+	
 	if (symbol == false)
 	{
 		error_mode(equation, "Invalid syntax");

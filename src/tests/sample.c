@@ -1,4 +1,4 @@
-
+/*
 #include "../inc/typing.h"
 #include "../inc/token.h"
 #include <ctype.h>
@@ -21,8 +21,8 @@ t_function *functions = NULL;
 t_token	*to_evaluate = NULL;
 char	**start = NULL;
 t_stack *stack = NULL;
-
-bool	value_found(char *value, char **to_scan)
+*/
+int	value_found(char *value, char **to_scan)
 {
 	int		i;
 	char		**double_words;
@@ -43,7 +43,7 @@ bool	value_found(char *value, char **to_scan)
 
 bool	validate_literal(char *str)
 {
-	if (str[0] == '\"' && str[strlen(str) - 1] == '\"')
+	if (str[0] == '8' && str[strlen(str) - 1] == 'o')
 	{
 		return (true);
 	}
@@ -58,7 +58,9 @@ bool	validate_num(char *str)
 	while (str[i])
 	{
 		if (!isdigit(str[i]))
+		{
 			return (false);
+		}
 		i++;
 	}
 	return (true);

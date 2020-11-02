@@ -29,20 +29,20 @@ t_token *semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list)
         if (strcmp(trav->name, "(") == 0)
                 trav = trav->next;
 	brackets = 1;
-        while (trav->next && handle_native_csg(trav->name, trav->next->name) != SCOPE)
+        while (trav && handle_native_csg(trav->name, trav->next->name) != SCOPE)
         {
 		if (strcmp(trav->name, "(") == 0)
 			brackets++;
 		else if (strcmp(trav->name, ")") == 0)
 			brackets--;
-		if (brackets == 0)
-			break;
                 if (value_found(trav->name, start))
                         error_mode(trav, "Error : variable declaration forbidden in while loops\n");
                 if (trav->next && check_next_token(ff_list, trav->next->name, trav->name) == false)
-                        printf("unspecified error %s and %s\n", trav->name, trav->next->name);
+                        printf("unspecified error (%s) and (%s)\n", trav->name, trav->next->name);
                 sub_sequence = push_token(sub_sequence, trav->name, trav->type,
                         trav->line, trav->filename);
+		if (brackets <= 0)
+			break;
                 prev = trav;
                 trav = trav->next;
                 counter++;
@@ -52,6 +52,7 @@ t_token *semantic_if(char *prev_name, t_token *token, t_hashtable *ff_list)
 		error_mode(trav, "shorthand if/else statements forbidden");
 		return (trav);
 	}
+	
 	sub_sequence = push_token(sub_sequence, ";", "SEMICOLON", trav->line, trav->filename);
 	if (is_valid_equation(sub_sequence, ";"))
         {

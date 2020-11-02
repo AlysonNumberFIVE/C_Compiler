@@ -1,10 +1,10 @@
-
+/*
 #include <unistd.h>
 #include <fcntl.h>
 #include "../inc/compiler.h"
 #include <time.h>
 #include <sys/stat.h>
-
+*/
 char labels[5][2] = {"*\0", "/\0", "^\0", "+\0", "-\0"};
 
 /*
@@ -31,9 +31,9 @@ void    free_bracket(char **token)
     free(token);
 }
 
-size_t  arraylen(char **array)
+long arraylen(char **array)
 {
-    size_t  i;
+    long  i;
 
     i = 0;
     while (array[i])

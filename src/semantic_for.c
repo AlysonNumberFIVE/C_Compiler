@@ -5,8 +5,6 @@
 #include "../inc/compiler.h"
 
 
-
-
 t_token	*semantic_for(char *prev, t_token *components, t_hashtable *ff_list)
 {
 	int commas;

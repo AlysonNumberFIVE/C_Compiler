@@ -40,11 +40,14 @@ void	print_error_message(t_token *position)
 	extern t_file *files;
 
 	trav = files;
+
 	while (trav)
 	{
 		if (strcmp(position->filename, files->filename) == 0)
 		{
-			printf(": %s\n\n", trav->content[position->line - 1]);
+			if (arraylen(trav->content) < position->line)
+				exit(1);
+			printf(": %s\n\n", trav->content[position->line]);
 			break;
 		}
 		trav = trav->next;
@@ -89,11 +92,11 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
        	{
 		if (stack && stack->scope_name == 4)
                 {
-			printf("here\n");
                		error = NULL; printf("%s %d ", trav->filename, trav->line);
                        	trav = error_recover(trav, "missing semilcolon",
                         	push_token(error, ";", "SEMICOLON", trav->line, trav->filename)); 
 			print_error_message(trav);	
+			trav = trav->next;
                 }
                 else if (brackets != 0)
                 {
@@ -108,6 +111,7 @@ t_token	*panic_mode(t_token *trav, t_token *back, int brackets)
                         trav = forward_recovery(trav, "missing semicolon",
                         	push_token(error, ";", "SEMICOLON", trav->line, trav->filename));
                 	print_error_message(trav);
+			trav = trav->next;
 		}
          }
          else if (strcmp(trav->name, "}") == 0)

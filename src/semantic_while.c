@@ -47,21 +47,30 @@ t_token	*semantic_while(char *prev_name, t_token *token, t_hashtable *ff_list, b
 	sub_sequence = NULL;
 	trav = token;
 	trav = trav->next;
+	int brackets;
 	if (strcmp(trav->name, "(") == 0)
 		trav = trav->next;
-	
+	else
+		return (trav);
+	brackets = 1;
 	while (trav && handle_native_csg(trav->name, trav->next->name) != SCOPE)
 	{
 		if (strcmp(trav->name, ")") == 0 && strcmp(trav->next->name, ";") == 0)
 		{
 			break ;
 		}
+		if (strcmp(trav->name, ")") == 0)
+			brackets--;
+		if (strcmp(trav->name, "(") == 0)
+			brackets++;
 		if (value_found(trav->name, start))
 			error_mode(trav, "Error : variable declaration forbidden in while loops\n");
 		if (trav->next && check_next_token(ff_list, trav->next->name, trav->name) == false)
 			printf("unspecified error %s and %s\n", trav->name, trav->next->name);
 		sub_sequence = push_token(sub_sequence, trav->name, trav->type,
 			trav->line, trav->filename);
+		if (brackets <= 0)
+			break;
 		prev = trav;
 		trav = trav->next;
 		counter++;	

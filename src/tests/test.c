@@ -37,7 +37,7 @@ void	*printf(char *str)
 void for_loop_test(char *va) 
 {
 	struct _char *testing;
-	char *q = function("name", function("second", "again", "hero" + 4 + 11), 42) + 2 + *testing->x;
+	char *q = function("name", function("second", "again",  4 + 11), 42) + 2 + *testing->x;
 	char *aw;
 	(char *)malloc(42);
 	int daedalus = 1 + 2 + 4 ;
