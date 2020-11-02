@@ -601,14 +601,10 @@ bool	semantic_analysis(t_token *tokens)
 		}
 		else if (strcmp(trav->name, "struct") == 0 && strcmp(back->name, "(") != 0)
 		{
-			printf("struct checker\n");
-			print_x(trav, 6);
 			trav = struct_loop(trav);	
 			if (strcmp(trav->name, ";") != 0)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
-			printf("after structn\n");
-			print_x(trav, 6);
 			head = trav->next;
 		}
 		else if (strcmp(trav->name, "do") == 0)

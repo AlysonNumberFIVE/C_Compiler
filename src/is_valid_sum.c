@@ -195,21 +195,21 @@ t_token	*extract_section(t_token *token)
 	new = push_token(new, ";", "SEMICOLON", trav->line, trav->filename);
 	if (valid_operator(new->name) == true)
 		new = new->next;
-	print_x(new, 10);
 	return (new);		
 }
 
 int	type_len(t_token *list)
 {
-	int count;
-	t_token *trav;	
+	int	count;
+	t_token	*trav;
+	int 	brackets;
 
+	brackets = 0;
 	trav = list;
-	count = 0;
-	while (trav)
+	while (trav) 
 	{
-		trav = trav->next;
 		count++;
+		trav = trav->next;
 	}
 	return (count);
 }
@@ -225,16 +225,18 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 
 	counter = 0;
 	to_get = get_function(function_name);
+	print_x(type_list, 10);
+	printf("param_number %d\n", to_get->param_number);
 	if (type_len(type_list) != to_get->param_number)
 	{
-		printf("Error : Incorrect parameters for function \"%s\"\n", to_get->function_name);
-		return (false);
+		printf("%d %d \n", type_len(type_list), to_get->param_number);
+	//	printf("Error : Incorrect parameters for function \"%s\"\n", to_get->function_name);
+//		return (false);
 	}
 	parameters = to_get->parameters;
 	trav = type_list;
 	while (trav)
 	{
-		printf("trav->name %s\n", trav->name);
 		if (strcmp(trav->type, "LITERAL") == 0)
 		{
 			if (strcmp(parameters[counter]->type, "char") == 0 &&
@@ -286,6 +288,11 @@ bool	evaluate_function_parameters(char *function_name, t_token *type_list)
 		}
 		counter++;	
 		trav = trav->next;
+	}
+	if (counter != to_get->param_number)
+	{
+		printf("%d %d\n", counter, to_get->param_number);
+		printf("Error : Incorrect parameters for function \"%s\"\n", to_get->function_name);	
 	}
 }
 
@@ -339,8 +346,10 @@ bool test_function_evaluation(t_token *function)
 		}
 		else 
 		{
-			param_assert = push_token(param_assert, carry->name,
-				carry->type, carry->line, carry->filename);
+			if (strcmp(carry->type, "NUM") == 0 || strcmp(carry->type, "LITERAL") == 0||
+				strcmp(carry->type, "ID") == 0)
+				param_assert = push_token(param_assert, carry->name,
+					carry->type, carry->line, carry->filename);
 			new = extract_section(carry);
 			//print_segment(new);
 			carry = skip_section(carry);
@@ -351,7 +360,7 @@ bool test_function_evaluation(t_token *function)
 		}
 		carry = carry->next;
 	}
-	//DELETE(param_assert);
+	DELETE(param_assert);
 	evaluate_function_parameters(param_name, param_assert);
 	return (true);
 }
@@ -456,7 +465,6 @@ bool	type_comparison(t_token *prev, t_token *current)
 		}
 		else
 		{
-			printf("before\n");
 			tprev->datatype = strdup(object_prev->type);
 			tprev->depth = object_prev->depth;
 		}
@@ -536,12 +544,10 @@ bool handle_pointer_dereferencing(t_token *pointer)
 		this_function = get_function(pointer->name);
 		deref->depth = this_function->depth - depth_to_minus;
 		deref->datatype = this_function->type;
-		printf("run function check\n");
 	}
 	else if (strcmp(pointer->next->name, "->") == 0 || 
 		strcmp(pointer->next->name, ".") == 0)
 	{
-		printf("Fail the shit\n");	
 		return (false);
 	}
 	else
@@ -643,7 +649,6 @@ bool is_valid_equation(t_token *tokens, char *end_token)
 	equation = tokens;
         while (equation && (strcmp(equation->name, end_token)))
         {
-		printf(" e:%s ", equation->name);
 		if (strcmp(equation->name, ";") == 0)
 			break ;
                 if (strcmp(equation->name, "(") == 0)
