@@ -136,15 +136,26 @@ One of the hardest challenges I found in this step is determining what errors mu
 
 #### pseudocode for semantic analyzer coming next.
     
-    
+```
+function Syntax_Semantic_Analyzer(tokens):
 
+     AST_block = AST()
+     AST_block.consume(token)
+     
+     for token in tokens:
+        if peek(token->next) is valid for AST_block[current]:
+            AST_block.consume(token)
+        
+        if AST_block is True:
+            determine_AST_rule(AST_block)
+          
+        else:
+            handle_error_recovery(token)
+        
+        AST_block.clear()
 ```
 
-##### Work in Progress by AlysonBee (Alyson Ngonyama).
-
-
-
- 
+            
  
 
 
