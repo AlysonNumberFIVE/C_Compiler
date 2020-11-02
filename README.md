@@ -20,8 +20,12 @@ My compiler is divided into 3 sections.
 - <b>Lexical Analysis</b>
 The tokenizing process of getting each and every valid token in the source file regardless of correctness. Error handling isn't implemented just yet.
 
-- <b>Syntax Analysis</b>
-Verifying the correctness of each token and it's position in the source file. Error messages and warning are dumped at this stage for the usual suspects (missing semicolons, invalid variables, incorrect syntax etc.)
+- <b>Semantic and Syntax Analysis</b>
+EDIT: So it turns out that I mistakenly skipped the "parsing" phase (sort of), and merged the step into semantic analyss. So to explain this step more accurtely, we'll need some sub headings..<br>
+      <b>Parsing:</b><br>
+             - <b>Syntactic Analysis</b> - Verifying the correct order of tokens for the code to be valid syntactically. Variable datatypes, existing/non-existent datatypes aren't evaluated.<br>
+             - <b>Semantic Analysis</b> - Checking that symbols are used correctly. Are equations written accurately? Are functions being called with the correct parameters? Do they exist? These kinds of questions are answered at this specific step.<br>
+       I'm aiming to separate these two steps out as it's continuously causing errors with accurate message printing and unforseen segmnetatino faults as the code is so large and disorganized.
 
 - <b>Intermediate Code Generation</b>
 Once all the code is verified as correct, this step is where the C code is translated into intermediate code in no particular language. The code at this point is similar to its assembly counterpart in structure but is kept custom to allow for the eventual translation from it into the target assembly of the system it's compiled on.
