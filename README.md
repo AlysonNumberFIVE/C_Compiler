@@ -136,15 +136,32 @@ One of the hardest challenges I found in this step is determining what errors mu
 
 #### pseudocode for semantic analyzer coming next.
     
-    
-
 ```
+function Syntax_Semantic_Analyzer(tokens):
 
-##### Work in Progress by AlysonBee (Alyson Ngonyama).
-
-
-
- 
+     AST_block = AST()
+     AST_block.consume(token)
+     accurate = True
+     
+     for token in tokens:
+        if peek(token->next) is valid for AST_block[current]:
+            AST_block.consume(token)
+        
+        if AST_block is True:
+            determine_AST_rule(AST_block)
+          
+        else:
+            accurate = False
+            handle_error_recovery(token)
+        
+        AST_block.clear()
+    
+    return accurate
+```
+In the above pseudocode, the `AST_Block` holds the statements that are complete bodies of code that can be logically evaluated. Take for example the code `char` `*` `function` `(` `void` `*` `str` `)`; these tokens in succession can be evaluated as a function declaration or definition. Once `AST_block` `consumes` the final token (in this case, a `;`), the AST_block can the be evaluated.<br>
+If at any point the `AST_block` consumes a token that doesn't conform to C's spec, it treats this AST as an error and attempts to repair itself in a way that makes it possible for parsing to continue, but the source code is treated as invalid.<br?
+The code being C, it came out a lot messier than the clean representation above, and probably would've been a lot clearner in a simpler language too.
+            
  
 
 
