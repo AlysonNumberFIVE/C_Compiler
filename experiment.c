@@ -10,6 +10,8 @@ int main(void)
 {
 	struct a *val;
 	val->next = 42;
+	int x;
+	&x = 1;
 	function(1 + function(42 + (1 / 42)));	
 	if (42) {int x = 42; }
 }	

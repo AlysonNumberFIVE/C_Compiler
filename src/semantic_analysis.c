@@ -407,6 +407,8 @@ bool	validate_function(t_token *token)
 	}
 	else 
 	{
+		if (strcmp(token->name, "&") == 0)
+			printf("Can't have '&' on the LHS\n");
 		temp_var = create_temp_var(token);
 		if (temp_var->name == NULL)
 			return (false);
@@ -561,6 +563,7 @@ bool	semantic_analysis(t_token *tokens)
 	head = trav;
 	while (trav)
 	{
+		printf(" %s ", trav->name);
 		if (strcmp(trav->name, "{") == 0 )
 		{	
 			if (prev && strcmp(prev, "=") == 0)
