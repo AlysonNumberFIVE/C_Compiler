@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "alylibc/inc/lib.h"
 
+int	line = 1;
+
 char 	**extract(char **str, int from, int to)
 {
 	char **new;
@@ -66,14 +68,26 @@ bool	in(char **str, char *c)
 
 char	*address_line(char *op1, char *sym, char *op2)
 {
-	char *line;
+	char *l;
 
-	
+	printf("t%d = %s  %s  %s\n", line, op1, sym, op2);
 }
 
+void	print_list(char **str)
+{
+	int i;
 
+	printf("print_list\n");
+	i = 0;
+	while (str[i])
+	{
+		printf(" %s ", str[i]);
+		i++;
+	}
+	printf("\n");
+}
 
-char 	**mathematics(char **equation)
+char 	*mathematics(char **equation)
 {
 	int counter;
 	int index;
@@ -81,6 +95,8 @@ char 	**mathematics(char **equation)
 	int total;
 	char **first_half;
 	char **second_half;
+	char *t;
+	
 	
 	counter = 0;
 	while (in(equation, "*") == true || in(equation, "/") == true)
@@ -91,32 +107,40 @@ char 	**mathematics(char **equation)
 			if (strcmp(equation[counter + 1], "/") == 0 || strcmp(equation[counter + 1], "*") == 0)
 			{
 				address_line(equation[counter], equation[counter + 1], equation[counter + 2]);
-				if (strcmp(equation[counter + 1], "/") == 0)
-					value = atoi(equation[counter]) / atoi(equation[counter + 2]);
-				else
-					value = atoi(equation[counter]) * atoi(equation[counter + 2]);
+				t = join("t", itoa(line));
+				line++;		
 				first_half = extract(equation, 0, counter);
-				second_half = extract(equation, counter + 3, arraylen(equation));
-				equation = insertion(first_half, itoa(value), second_half);
+				second_half = extract(&equation[counter + 3], counter, arraylen(equation) - 3);
+				equation = insertion(first_half, t, second_half);
 				total = value;
+				
 				break;
 			}
 			counter++;
 		}		
 	}
-
-	while (in(equation, "+") == true || in(equation, "=") == true)
+	counter = 0;
+	while (in(equation, "+") == true || in(equation, "-") == true)
 	{
 		counter = 0;
 		while (equation[counter + 2])
 		{
-			if (strcmp(equation[counter + 1], "+") == 0 || strcmp(equation[counter + 1], "-"))
+			if (strcmp(equation[counter + 1], "+") == 0 || strcmp(equation[counter + 1], "-") == 0)
 			{
-				address_line(equa
+				address_line(equation[counter], equation[counter + 1], equation[counter + 2]);
+				t = join("t", itoa(line));
+	
+				line++;
+				first_half = extract(equation, 0, counter);
+				second_half = extract(&equation[counter + 3], counter, arraylen(equation) - 3);
+				equation = insertion(first_half, t, second_half);
+				break;
 			}
+			counter++;
 		}
 	}
-	return (NULL);
+	t = join("t", itoa(line - 1));
+ 	return (t);
 }
 
 
@@ -130,6 +154,7 @@ bool	three_address_code(char **str)
 	char **equation;
 	int counter = 0;
 	int brackets = 0;
+	char *ret;
 
 	equation = str;
 	while (str[counter])
@@ -146,19 +171,27 @@ bool	three_address_code(char **str)
 			if (brackets == 0)
 			{
 				first_half = extract(str, 0, start_index);
-				second_half = extract(str, end_index + 1, arraylen(str));
-				equation = extract(str, start_index + 1, end_index);
+				second_half = extract(&str[end_index + 1], end_index, arraylen(str) - 1);
+				equation = extract(&str[start_index + 1], start_index, end_index - 1);
 				break;
 			}
 		}
+		counter++;
 	}
-	equation = mathematics(equation);
-
-	return (false);
+	ret = mathematics(equation);
+	if (first_half || second_half)
+	{
+		equation = insertion(first_half, ret, second_half);
+	 	return (three_address_code(equation));
+	}	
+	return (true);
 	
 }
 
 int main(void)
 {
+	char **equation = split("1 * 2 + 5 * 3 * 8 + 4 / 18 + ( 11 - 1 ) * ( 4 + 7 * 2 )", ' ');
+	printf("1 * 2 + 5 * 3 * 8 + 4 / 18 + ( 11 - 1 ) * ( 4 + 7 * 2 ) \n\n");
+	three_address_code(equation);
 	return (0);
 }
