@@ -6,6 +6,35 @@
 #include <fcntl.h>
 
 
+char datatype_list[12][10] = {
+	"unsigned\0",
+	"short\0",
+	"long\0",
+	"int\0",
+	"char\0",
+	"void\0",
+	"float\0",
+	"double\0",
+	"signed\0",
+	"struct\0",
+	"union\0"
+};
+
+
+bool	    reserved_datatype_word(char *name)
+{
+	int i;
+
+	i = 0;
+	while (i < 12)
+	{
+		if (strcmp(datatype_list[i], name) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
 t_token     *ellipse_found(char *buffer, size_t index, char *real_name)
 {
     char            *var_name;
@@ -240,7 +269,9 @@ t_token     *id_found(char *buffer, size_t index)
     }
     while (isalnum(buffer[index]) || buffer[index] == '_');
     read_count = index;
-    if (reserved_word(var_name) == true)
+    if (reserved_datatype_word(var_name) == true)
+	token = new_token(var_name, "DATATYPE", line, current_file);
+    else if (reserved_word(var_name) == true)
         token = new_token(var_name, "KEYWORD", line, current_file);
     else
         token = new_token(var_name, "ID", line, current_file);

@@ -108,7 +108,7 @@ char	*valid_datatypes(t_token *token)
 	while (valid_datatypes[i])
 	{
 		trav = token;
-		while (trav && strcmp(trav->type, "KEYWORD") == 0)
+		while (trav && strcmp(trav->type, "DATATYPE") == 0)
 		{
 			found = arraypush(found, trav->name);
 			trav = trav->next;

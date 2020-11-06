@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "../inc/parser.h"
 #include "../inc/compiler.h"
 #include "../inc/semantic.h"
 #include "../inc/token.h"
@@ -106,11 +107,12 @@ int	main(int argc, char **argv)
 
 	tokens = lexer(files);
 
+	parser(tokens);
 //	tokens = resolve_typedefs(tokens);
 
-	semantic_analysis(tokens);
+//	semantic_analysis(tokens);
 
-	print_token(tokens);	
+//	print_token(tokens);	
 
 	//  three_address_code(tokens);
 

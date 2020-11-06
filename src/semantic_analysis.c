@@ -634,6 +634,7 @@ bool	semantic_analysis(t_token *tokens)
 			stack = push_stack(stack, FOR);
 			add_new_table();
 			head = trav;
+			printf("head is %s\n", head->name);
 			if (head && strcmp(head->name, "{") == 0)
 			{
 				brackets++;

@@ -56,7 +56,7 @@ typedef struct s_datatype
     struct s_datatype   *next;
 }   t_datatype;
 
-struct s_datatype datatypes[13];
+//struct s_datatype datatypes[13];
 
 static char hashes[5][10] = {
     "#include\0", "#define\0", "#ifndef\0", "#define\0", "#endif\0"
