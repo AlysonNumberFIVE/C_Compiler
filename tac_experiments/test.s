@@ -1,11 +1,5 @@
 	.file	"test.c"
 	.text
-	.section	.rodata
-.LC0:
-	.string	"hello"
-.LC1:
-	.string	"1"
-	.text
 	.globl	main
 	.type	main, @function
 main:
@@ -17,31 +11,10 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$16, %rsp
 	movl	$1, -4(%rbp)
-	cmpl	$1, -4(%rbp)
-	jne	.L2
-	cmpl	$5, -4(%rbp)
-	jne	.L3
-	cmpl	$1, -4(%rbp)
-	jne	.L2
-	movl	$4, %edx
-	leaq	.LC0(%rip), %rsi
-	movl	$1, %edi
+	movl	$1, -8(%rbp)
 	movl	$0, %eax
-	call	write@PLT
-	jmp	.L2
-.L3:
-	cmpl	$6, -4(%rbp)
-	jne	.L2
-	movl	$1, %edx
-	leaq	.LC1(%rip), %rsi
-	movl	$1, %edi
-	movl	$0, %eax
-	call	write@PLT
-.L2:
-	movl	$0, %eax
-	leave
+	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc

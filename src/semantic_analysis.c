@@ -538,11 +538,12 @@ bool	semantic_analysis(t_token *tokens)
 	t_token		*head;
 	extern int	max_number;
 	int		brackets;
+
 	t_token		*error;	
 	t_token		*back;
 	bool		IS_ARR;
 	bool		do_trigger;
-
+	
 	do_trigger = false;
 	IS_ARR = false;
 	error = NULL;
@@ -563,7 +564,7 @@ bool	semantic_analysis(t_token *tokens)
 	head = trav;
 	while (trav)
 	{
-		printf(" %s ", trav->name);
+	//	ast = push_token(ast, trav->name, trav->type, trav->line, trav->filename);
 		if (strcmp(trav->name, "{") == 0 )
 		{	
 			if (prev && strcmp(prev, "=") == 0)
@@ -608,6 +609,7 @@ bool	semantic_analysis(t_token *tokens)
 			if (strcmp(trav->name, ";") != 0)
 				trav = error_recover(trav, "Missing semicolon", 
 					push_token(error, ";", "SEMICOLON", trav->line, trav->filename));	
+			//PRINT_AST(ast);
 			head = trav->next;
 		}
 		else if (strcmp(trav->name, "do") == 0)
@@ -645,6 +647,7 @@ bool	semantic_analysis(t_token *tokens)
 			if (strcmp(head->name, "}") == 0)
 				head = head->next;
 			validate_function(head);
+			//PRINT_AST(ast);
 			head = trav;
 			if (trav && strcmp(trav->name, "{") == 0)
 			{

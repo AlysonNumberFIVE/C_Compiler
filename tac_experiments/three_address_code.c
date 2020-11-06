@@ -91,7 +91,7 @@ void	print_list(char **str)
 	while (str[i])
 	{
 		printf(" %s ", str[i]);
-		i++;
+
 	}
 	printf("\n");
 }
@@ -234,6 +234,15 @@ void 	print_asm(t_code *asesmbly)
 		printf("%d : %s\n", trav->line_number, trav->line);
 		trav = trav->next;
 	}	
+}
+
+bool	tac_conditions(char **str)
+{
+	int counter;
+	char *block;
+
+	block = strdup(str[0]);
+		
 }
 
 t_code	*edit_last_line(t_code *assembly)

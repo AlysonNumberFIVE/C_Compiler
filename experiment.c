@@ -1,6 +1,3 @@
-
-
-
 struct a {
 	int i;
 	struct a *next;

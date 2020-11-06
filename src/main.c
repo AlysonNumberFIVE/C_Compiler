@@ -110,7 +110,7 @@ int	main(int argc, char **argv)
 
 	semantic_analysis(tokens);
 
-//	print_token(tokens);	
+	print_token(tokens);	
 
 	//  three_address_code(tokens);
 
