@@ -1,1 +1,3 @@
-adsfint x(int 42)
+
+
+int x( | intasdlg y)
