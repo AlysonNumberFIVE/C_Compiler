@@ -20,7 +20,7 @@ char datatypes[13][10] = {
         "struct\0",
         "union\0"
 };
-
+/*
 typedef struct s_parse_stack
 {
 	char *token;
@@ -29,7 +29,7 @@ typedef struct s_parse_stack
 	struct s_parse_stack *next;
 	struct s_parse_stack *prev;
 }	t_pstack;
-
+*/
 int		stack_height = 0;
 t_pstack	*pstack = NULL;
 t_hashtable	*symbol_table = NULL;
@@ -68,6 +68,7 @@ t_pstack	*add_ptoken(t_pstack *head, char *token, char *type)
 		trav = trav->next;
 	trav->next = new_ptoken(token, type);
 	trav->next->prev = trav;
+	trav = trav->next;
 	return (trav);
 }
 
@@ -129,26 +130,15 @@ bool	legal_datatype(char *to_find)
 bool	evaluate_datatype(t_token *token)
 {
 	if (stack_height > 3)
-	{
 		return (false_error(token, 3));
-		/*
-		printf("error: two or more data type in declaration specifiers\n");
-		clear_pstack();
-		return (false); */
-	}
 	if (legal_datatype(token->name) == false)
-	{
 		return (false_error(token, 1));
-		/*
-		printf("error : unknown type name '%s'\n\n", token->name);
-		clear_pstack();
-		return (false);*/
-	}
 	pstack = push_ptoken(pstack, token->name, token->type);
 	if (stack_height > 1)
 	{
-		printf(" %s\n", token->name);
-		printf("evaluate correctness of datataypes\n");
+		if (token->next && strcmp(token->next->type, "DATATYPE") != 0)
+			is_datatype_correct(pstack);
+	
 	}
 	return (true);	
 }
@@ -190,7 +180,6 @@ bool	evaluate_id(t_token *token)
 	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
-		printf("brackets is %d\n", brackets);
 		if (brackets < 0)
 			return (false_error(token, 15));
 	}
@@ -277,13 +266,11 @@ bool	evaluate_bracket(t_token *token)
 	}
 	else if (token->next && strcmp(token->next->type, "NUM") == 0)
 	{
-		printf("typing %s\n", typing);
 		return (false_error(token, 4));
 	}
 	
 	else if (token->next && legal_datatype(token->next->name) == false)
 	{
-		printf("here\n");
 		if (strcmp(token->name, "ID") != 0)
 			return (false_error(token, 4));
 		else return (false_error(token, 2));

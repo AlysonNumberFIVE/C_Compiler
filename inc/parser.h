@@ -9,6 +9,17 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+typedef struct s_parse_stack
+{
+	char *token;
+	char *type;
+	char *construct;
+	struct s_parse_stack *next;
+	struct s_parse_stack *prev;
+}	t_pstack;
+
 bool	parser(t_token *tokens);
+bool	is_datatype_correct(t_pstack *stack);
+char 	**psplit(char *str, char c);
 
 #endif
