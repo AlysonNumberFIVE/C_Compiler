@@ -438,6 +438,13 @@ bool	evaluate_semicolon(t_token *token)
 	return (false);
 }
 
+bool	evaluate_curly(t_token *token)
+{
+	if (typing && strcmp(typing, "ASSIGN") == 0)
+	{
+	}
+}
+
 void	print_error_line(t_token *token)
 {
 	extern t_file *files;
@@ -457,6 +464,8 @@ void	print_error_line(t_token *token)
 		file = file->next;
 	}	
 }
+
+
 
 bool	parser(t_token *token)
 {
