@@ -38,8 +38,8 @@ bool		datatype_set = false;
 char		*typing = NULL;
 int		brackets = 0;
 int		datatype_len = 0;
-
 bool		false_error(t_token *token, int message);
+
 void		init_symbol_table(void)
 {
 	symbol_table = create_table(600);
@@ -132,7 +132,7 @@ bool	evaluate_datatype(t_token *token)
 	bool flag;
 
 	flag = false;
-	if (stack_height > 3)
+	if (datatype_len > 3)
 		return (false_error(token, 3));
 	if (legal_datatype(token->name) == false)
 		return (false_error(token, 1));
@@ -142,7 +142,7 @@ bool	evaluate_datatype(t_token *token)
 	{
 		if (token->next && strcmp(token->next->type, "DATATYPE") != 0)
 		{
-			if ((flag = is_datatype_correct(pstack, datatype_len)) == false)
+			if (is_datatype_correct(pstack, datatype_len) == false)
 			{
 				datatype_len = 0;
 				return (false_error(token, 3));
@@ -163,6 +163,7 @@ bool	evaluate_datatype(t_token *token)
 }
 bool	false_error(t_token *token, int message)
 {
+	printf("%s:%d: ", token->filename, token->line);
 	if (message == 1) printf("error : expected ';', ',' or 'asm' before '%s' token\n\n", token->next->name);
 	else if (message == 2) printf("error : unknown type name '%s'\n\n", token->next->name);
 	else if (message == 3) printf("error : two or more data types in declaration specifiers\n\n");
@@ -184,6 +185,9 @@ bool	false_error(t_token *token, int message)
 	else if (message == 15) printf("error : declaration for parameter '%s' but no such poarameter\n\n",
 		token->name);
 	else if (message == 16) printf("error : expectin ';', ',' or ')' before numeric or string constant\n\n");
+	else if (message == 17) printf("error : expected '}' at the end of input\n\n");
+	else if (message == 18) printf("error : expected '{' at the end of input\n\n");
+	else if (message == 19) printf("error : expected identifier or '(' before numeric or string constant\n\n");
 	clear_pstack();
 	return (false);
 }
@@ -207,14 +211,21 @@ bool	evaluate_id(t_token *token)
 	{
 		pstack = push_ptoken(pstack, token->name, token->type);
 		pstack->construct = strdup("FUNCTION");	
+		ht_insert(symbol_table, token->name, "function");
 		typing = strdup("FUNCTION");
 	}
-	else if (token->next && strcmp(token->next->name, ";") == 0 ||
-			strcmp(token->next->name, "=") == 0)
+	else if (token->next && strcmp(token->next->name, ";") == 0)
 	{
 		pstack = push_ptoken(pstack, token->name, token->type);
 		pstack->construct = strdup("VARIABLE");	
+		ht_insert(symbol_table, token->name, "variable");
 		typing = strdup("VARIABLE");
+	}
+	else if (token->next && strcmp(token->next->name, "=") == 0)
+	{
+		pstack = push_ptoken(pstack, token->name, token->type);
+		pstack->construct = strdup("ASSIGN");
+		typing = strdup("ASSIGN");	
 	}
 	else if (token->next && strcmp(token->next->name, ",") == 0 ||
 			strcmp(token->next->name, ")") == 0)
@@ -225,11 +236,7 @@ bool	evaluate_id(t_token *token)
 	else
 	{
 		if (!pstack) return (false_error(token, 2));
-	//	if (!pstack) printf("error : unknown datatype '%s'\n\n", token->name);
 		else return (false_error(token, 12));
-	/*	printf("error : expected ';', ',', '=' or 'asm' before %s\n\n", token->next->name);	
-		clear_pstack();
-		return (false);*/
 	}
 	return (true);
 }
@@ -260,7 +267,6 @@ bool	peek(t_token *token)
 
 bool	evaluate_bracket(t_token *token)
 {
-//	brackets++;
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "DATATYPE") == 0 ||
@@ -294,29 +300,16 @@ bool	evaluate_bracket(t_token *token)
 			return (false_error(token, 4));
 		else return (false_error(token, 2));
 	}
-	/*
-	else if (token->next)
-	{
-		return (false_error(token, 4));
-		
-		printf("error : expected declaration specifiers or '...' before '%s' token\n\n",
-			token->next->name);
-		clear_pstack();
-		return (false);
-	} */
 	return (true);
 }
 
 bool	evaluate_bracket2(t_token *token)
 {
-//	brackets--;
 	if (strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (!token->next)
 		{
-			printf("error : expected '}' at the end\n\n");
-			clear_pstack();
-			return (false);
+			return (false_error(token, 17));
 		}
 		else if (token->next && strcmp(token->next->name, ";") == 0)
 		{
@@ -324,17 +317,18 @@ bool	evaluate_bracket2(t_token *token)
 			else if (brackets < 0) return (false_error(token, 7));
 			// successful run : clean up and return true
 			clear_pstack();
+			free(typing);
+			typing = NULL;
 			return (true);
 		}
 		else if (token->next && strcmp(token->next->name, ")") == 0 && brackets == 0)
 		{
-			printf("error : expected declaration specifier before ')' token\n\n");
+			printf("%s:%d: error : expected declaration specifier before ')' token\n\n"
+				,token->filename, token->line);
 		}
 		else if (token->next && strcmp(token->next->name, "{") != 0 )
 		{
-			printf("error : expected '{' at the end\n\n");
-			clear_pstack();
-			return (false);	
+			return (false_error(token, 18));
 		}
 	}
 	return (true);
@@ -347,10 +341,6 @@ bool	evaluate_comma(t_token *token)
 		if (token->next && legal_datatype(token->next->name) == true)
 			return (true);
 		return (false_error(token, 4));
-	/*	printf("error : expected declaration specifiers or '...' before '%s' token\n\n",
-			token->next->name);
-		clear_pstack();
-		return (false);  */
 	}
 	printf("scope not set\n");
 }
@@ -360,18 +350,20 @@ bool	evaluate_number(t_token *token)
 	if (typing && strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (brackets > 0)
-		{
-			printf("error : expected ';', ',' or ')' before numeric constant\n\n");
-			clear_pstack();
-			return (false);
-		}
+			return (false_error(token, 16));
 		else
 			return (false_error(token, 8));
 	}
-	else if (typing && strcmp(typing, "VARIABLE") == 0)
+	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
 		if (token->next && strcmp(token->next->name, ";") != 0)
+		{
 			return (false_error(token, 8));
+		}
+	}
+	else if (!typing)
+	{
+		return (false_error(token, 19));
 	}
 	return (true);
 }
@@ -388,10 +380,62 @@ bool	evaluate_asterisk(t_token *token)
 		if (token->next && strcmp(token->next->type, "NUM") == 0)
 			return (false_error(token, 9));
 	}
-	else if (token->next && strcmp(token->next->type, "ID") != 0)
+	else if (token->next && strcmp(token->next->type, "ID") != 0 &&
+			strcmp(token->next->name, "*") != 0)
 		return (false_error(token, 10));
 	else if (!token->next)
 		return (false_error(token, 13));
+}
+
+bool	evaluate_equ(t_token *token) 
+{
+	char *symbol_type;
+
+	if (typing && strcmp(typing, "VARIABLE") == 0)
+	{
+		if (token->next && strcmp(token->next->name, "{") == 0)
+		{
+			free(typing);
+			typing = strdup("ARRAY");
+			return (true);
+		}
+		else if (token->next && strcmp(token->next->type, "ID") == 0)
+		{
+			printf("check if variable is CALL or ASSIGN\n");
+			printf("do symbol table check\n");
+			symbol_type = ht_search(symbol_table, token->name);
+			if (symbol_type && strcmp(symbol_type, "variable") == 0)
+			{
+				free(typing);
+				typing = strdup("ASSIGN");
+			}
+			else if (symbol_type && strcmp(symbol_type, "function") == 0)
+			{
+				free(typing);
+				typing = strdup("CALL");
+			}
+			else if (strcmp(token->next->type, "LITERAL") == 0 || 
+				strcmp(token->next->type, "NUM") == 0)
+			{
+				free(typing);
+				typing = strdup("ASSIGN");
+			}
+			return (true);		
+		}	
+	}
+	
+}
+
+bool	evaluate_semicolon(t_token *token)
+{
+	if (strcmp(token->name, ";") == 0)
+	{
+		free(typing);
+		typing = NULL;
+		clear_pstack();
+		return (true);
+	}
+	return (false);
 }
 
 void	print_error_line(t_token *token)
@@ -421,15 +465,16 @@ bool	parser(t_token *token)
 
 	guidance = true;
 	ff_list = first_and_follow();
+	init_symbol_table();
 	trav = token;
 	while (trav)
 	{
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
+
 		if (strcmp(trav->type, "DATATYPE") == 0)
-		{
 			guidance = evaluate_datatype(trav);
-		}
+		
 		if (guidance == true)
 		{
 			if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
@@ -437,7 +482,9 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, "*") == 0) guidance = evaluate_asterisk(trav);
 			else if (strcmp(trav->name, ")") == 0) guidance = evaluate_bracket2(trav);
 			else if (strcmp(trav->name, ",") == 0) guidance = evaluate_comma(trav);
-			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);		
+			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
+			else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
+			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
 		//	if (guidance == false) print_error_line(trav);	
 		}
 		trav = trav->next;

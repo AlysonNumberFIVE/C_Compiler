@@ -122,9 +122,12 @@ static t_temp	*delete_node(t_temp *head, char *name)
 static bool	evaluate_datatype_line(char **against, t_pstack *to_check, int datatype_len)
 {
 	t_temp	*temp;
+	t_temp	*second;
 	int 	i;
 	t_pstack *trav;
 	int 	counter;
+	t_temp	*temp_head;	
+	t_temp	*second_head;
 	
 	counter = 0;
 	temp = NULL;
@@ -136,15 +139,47 @@ static bool	evaluate_datatype_line(char **against, t_pstack *to_check, int datat
 		trav = trav->prev;
 		counter++;
 	}
+	temp_head = temp;
+	
+	second = NULL;
 	i = 0;
-	while (against[i] && temp)
-	{	
-		temp = delete_node(temp, against[i]);
+	while (against[i])
+	{
+		second = push_temp(second, against[i]);
 		i++;
 	}
-	
-	if (!temp && against[i] == NULL) return (true);
-	else {return (false);} 
+	second_head = second;
+	while (second)
+	{
+		temp = temp_head;
+		while (temp)
+		{
+			if (temp->name && second->name && strcmp(second->name, 
+				temp->name) == 0)
+			{
+				free(temp->name);
+				temp->name = NULL;
+				free(second->name);
+				second->name = NULL;
+				break;
+			}
+			temp = temp->next;
+		}
+		second = second->next;
+	}
+	second = second_head;
+	while (second)
+	{
+		if (second->name) return (false);
+		second = second->next;
+	}
+	temp = temp_head;
+	while (temp)
+	{
+		if (temp->name) return (false);
+		temp = temp->next;
+	}
+	return (true);
 }
 
 
