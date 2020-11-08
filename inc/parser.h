@@ -19,7 +19,7 @@ typedef struct s_parse_stack
 }	t_pstack;
 
 bool	parser(t_token *tokens);
-bool	is_datatype_correct(t_pstack *stack);
+bool	is_datatype_correct(t_pstack *stack, int datatype_len);
 char 	**psplit(char *str, char c);
 
 #endif

@@ -37,7 +37,7 @@ t_hashtable	*ff_list = NULL;
 bool		datatype_set = false;
 char		*typing = NULL;
 int		brackets = 0;
-
+int		datatype_len = 0;
 
 bool		false_error(t_token *token, int message);
 void		init_symbol_table(void)
@@ -129,16 +129,35 @@ bool	legal_datatype(char *to_find)
 
 bool	evaluate_datatype(t_token *token)
 {
+	bool flag;
+
+	flag = false;
 	if (stack_height > 3)
 		return (false_error(token, 3));
 	if (legal_datatype(token->name) == false)
 		return (false_error(token, 1));
 	pstack = push_ptoken(pstack, token->name, token->type);
-	if (stack_height > 1)
+	datatype_len++;
+	if (datatype_len > 0 && pstack)
 	{
 		if (token->next && strcmp(token->next->type, "DATATYPE") != 0)
-			is_datatype_correct(pstack);
-	
+		{
+			if ((flag = is_datatype_correct(pstack, datatype_len)) == false)
+			{
+				datatype_len = 0;
+				return (false_error(token, 3));
+			}
+			datatype_len = 0;
+			if (typing && strcmp(typing, "FUNCTION") == 0)
+			{
+				if (strcmp(token->next->type, "ID") == 0 || 
+					strcmp(token->next->name, ",") == 0)
+					return (true);
+				else if (strcmp(token->next->type, "NUM") == 0 ||
+					strcmp(token->next->type, "LITERAL") == 0)
+					return (false_error(token, 16));
+			}
+		}	
 	}
 	return (true);	
 }
@@ -164,6 +183,7 @@ bool	false_error(t_token *token, int message)
 		token->next->name);
 	else if (message == 15) printf("error : declaration for parameter '%s' but no such poarameter\n\n",
 		token->name);
+	else if (message == 16) printf("error : expectin ';', ',' or ')' before numeric or string constant\n\n");
 	clear_pstack();
 	return (false);
 }
@@ -268,7 +288,6 @@ bool	evaluate_bracket(t_token *token)
 	{
 		return (false_error(token, 4));
 	}
-	
 	else if (token->next && legal_datatype(token->next->name) == false)
 	{
 		if (strcmp(token->name, "ID") != 0)
@@ -411,7 +430,7 @@ bool	parser(t_token *token)
 		{
 			guidance = evaluate_datatype(trav);
 		}
-		if (guidance)
+		if (guidance == true)
 		{
 			if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
 			else if (strcmp(trav->name, "(") == 0) guidance = evaluate_bracket(trav);

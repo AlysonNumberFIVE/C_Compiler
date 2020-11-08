@@ -119,7 +119,7 @@ static t_temp	*delete_node(t_temp *head, char *name)
 	return (head);
 }
 
-static bool	evaluate_datatype_line(char **against, t_pstack *to_check)
+static bool	evaluate_datatype_line(char **against, t_pstack *to_check, int datatype_len)
 {
 	t_temp	*temp;
 	int 	i;
@@ -130,10 +130,11 @@ static bool	evaluate_datatype_line(char **against, t_pstack *to_check)
 	temp = NULL;
 	i = 0;
 	trav = to_check;
-	while (trav)
+	while (trav && counter < datatype_len)
 	{
 		temp = push_temp(temp, trav->token);
 		trav = trav->prev;
+		counter++;
 	}
 	i = 0;
 	while (against[i] && temp)
@@ -142,12 +143,12 @@ static bool	evaluate_datatype_line(char **against, t_pstack *to_check)
 		i++;
 	}
 	
-	if (!temp && against[i] == NULL) {printf("SUCCESS (its empty)\n");return (true);}
+	if (!temp && against[i] == NULL) return (true);
 	else {return (false);} 
 }
 
 
-bool	is_datatype_correct(t_pstack *stack)
+bool	is_datatype_correct(t_pstack *stack, int datatype_len)
 {
 	t_pstack *trav;
 	int i;
@@ -159,7 +160,7 @@ bool	is_datatype_correct(t_pstack *stack)
 	while (i < C_SIZE)
 	{
 		clist = split(c_datatypes[i], ' ');
-		if (evaluate_datatype_line(clist, stack) == true)
+		if (evaluate_datatype_line(clist, stack, datatype_len) == true)
 		{
 			free2d(clist);
 			return (true);
@@ -167,7 +168,6 @@ bool	is_datatype_correct(t_pstack *stack)
 		free2d(clist);
 		i++; 
 	} 
-	printf("FAILURE\n");
 	return (false);
 }	
 
