@@ -480,27 +480,10 @@ bool	evaluate_semicolon(t_token *token)
 	return (false);
 }
 
-
-void	print_error_line(t_token *token)
+bool	evaluate_curly(t_token *token)
 {
-	extern t_file *files;
-	t_file	*file;
-	char **lines;
-
-	file = files;
-	while (file)
-	{
-		if (strcmp(file->filename, token->filename) == 0)
-		{
-			lines = split(file->solidcontent, '\n');
-			printf("%s\n\n", lines[0]);
-			free2d(lines);
-			break;
-		}	
-		file = file->next;
-	}	
+	
 }
-
 
 void	error_cleanup(void)
 {
@@ -537,6 +520,7 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
 			else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
+	//		else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			if (guidance == false) 
 			{
 				error_cleanup();
