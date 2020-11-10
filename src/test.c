@@ -1,6 +1,7 @@
 
 int x;
 unsigned char
+/*
 char *hello_world(int x);
 42 + 1 =
 int x = 42
