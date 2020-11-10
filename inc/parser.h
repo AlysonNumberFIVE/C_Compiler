@@ -29,5 +29,6 @@ bool	is_datatype_correct(t_pstack *stack, int datatype_len);
 char 	**psplit(char *str, char c);
 t_current_var *push_curr_var(t_current_var *head, char *name);
 void	free_curr_var(t_current_var *head);
+bool	symbol_table_manager(t_current_var *current_variable);
 
 #endif

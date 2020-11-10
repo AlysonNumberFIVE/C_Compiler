@@ -491,6 +491,7 @@ bool	evaluate_equ(t_token *token)
 		trav = trav->next;
 	}
 	printf("%s\n\n\n", typing);
+	symbol_table_manager(current_variable);
 	free_curr_var(current_variable);
 	current_variable = NULL;
 	if (typing && strcmp(typing, "VARIABLE") == 0)
@@ -539,6 +540,7 @@ bool	evaluate_semicolon(t_token *token)
 			trav = trav->next;
 		} 
 		printf(" %s\n\n\n", typing);
+		symbol_table_manager(current_variable);	
 		free_curr_var(current_variable);
 		current_variable = NULL;
 		free(typing);
