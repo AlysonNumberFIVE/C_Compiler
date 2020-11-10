@@ -188,15 +188,16 @@ bool	is_datatype_correct(t_pstack *stack, int datatype_len)
 	t_pstack *trav;
 	int i;
 	char **clist;
+	extern t_current_var	*current_variable;
 	
 	trav = stack;
 	i = 0;
-	
 	while (i < C_SIZE)
 	{
 		clist = split(c_datatypes[i], ' ');
 		if (evaluate_datatype_line(clist, stack, datatype_len) == true)
 		{
+			current_variable = push_curr_var(current_variable, c_datatypes[i]);
 			free2d(clist);
 			return (true);
 		}

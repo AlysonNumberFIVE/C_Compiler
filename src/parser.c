@@ -20,29 +20,67 @@ char datatypes[13][10] = {
         "struct\0",
         "union\0"
 };
-/*
-typedef struct s_parse_stack
-{
-	char *token;
-	char *type;
-	char *construct;
-	struct s_parse_stack *next;
-	struct s_parse_stack *prev;
-}	t_pstack;
-*/
+
 int		stack_height = 0;
 t_pstack	*pstack = NULL;
-t_hashtable	*symbol_table = NULL;
 t_hashtable	*ff_list = NULL;
 bool		datatype_set = false;
 char		*typing = NULL;
 int		brackets = 0;
 int		datatype_len = 0;
+t_current_var	*current_variable = NULL;
+
 bool		false_error(t_token *token, int message);
 
-void		init_symbol_table(void)
+t_current_var	*new_curr_var(char *name)
 {
-	symbol_table = create_table(600);
+	t_current_var *new;
+
+	new = (t_current_var *)malloc(sizeof(t_current_var));
+	new->str = strdup(name);
+	new->next = NULL;
+	return (new);
+}
+
+t_current_var	*add_curr_var(t_current_var *head, char *name)
+{
+	t_current_var	*trav;
+
+	trav = head;
+	while (trav->next)
+		trav = trav->next;
+	trav->next = new_curr_var(name);
+	return (trav);
+}
+
+t_current_var	*push_curr_var(t_current_var *head, char *name)
+{
+	t_current_var	*trav;
+
+	trav = head;
+	if (trav == NULL)
+	{
+		trav = new_curr_var(name);
+	}
+	else
+	{
+		trav = add_curr_var(head, name);
+		trav = head;
+	}
+	return (trav);
+}
+
+void		free_curr_var(t_current_var *head)
+{
+	t_current_var 	*trav;
+
+	while (head)
+	{
+		trav = head;
+		head = head->next;
+		free(trav->str);
+		free(trav);
+	}
 }
 
 t_pstack	*new_ptoken(char *token, char *type)
@@ -211,14 +249,12 @@ bool	evaluate_id(t_token *token)
 	{
 		pstack = push_ptoken(pstack, token->name, token->type);
 		pstack->construct = strdup("FUNCTION");	
-		ht_insert(symbol_table, token->name, "function");
 		typing = strdup("FUNCTION");
 	}
 	else if (token->next && strcmp(token->next->name, ";") == 0)
 	{
 		pstack = push_ptoken(pstack, token->name, token->type);
 		pstack->construct = strdup("VARIABLE");	
-		ht_insert(symbol_table, token->name, "variable");
 		typing = strdup("VARIABLE");
 	}
 	else if (token->next && strcmp(token->next->name, "=") == 0)
@@ -238,6 +274,7 @@ bool	evaluate_id(t_token *token)
 		if (!pstack) return (false_error(token, 2));
 		else return (false_error(token, 12));
 	}
+	current_variable = push_curr_var(current_variable, token->name);
 	return (true);
 }
 
@@ -316,9 +353,6 @@ bool	evaluate_bracket2(t_token *token)
 			if (brackets > 0) return (false_error(token, 6));
 			else if (brackets < 0) return (false_error(token, 7));
 			// successful run : clean up and return true
-			clear_pstack();
-			free(typing);
-			typing = NULL;
 			return (true);
 		}
 		else if (token->next && strcmp(token->next->name, ")") == 0 && brackets == 0)
@@ -342,7 +376,6 @@ bool	evaluate_comma(t_token *token)
 			return (true);
 		return (false_error(token, 4));
 	}
-	printf("scope not set\n");
 }
 
 bool	evaluate_number(t_token *token)
@@ -403,7 +436,6 @@ bool	evaluate_equ(t_token *token)
 		{
 			printf("check if variable is CALL or ASSIGN\n");
 			printf("do symbol table check\n");
-			symbol_type = ht_search(symbol_table, token->name);
 			if (symbol_type && strcmp(symbol_type, "variable") == 0)
 			{
 				free(typing);
@@ -430,6 +462,16 @@ bool	evaluate_semicolon(t_token *token)
 {
 	if (strcmp(token->name, ";") == 0)
 	{
+		// print current_var
+		t_current_var *trav = current_variable;
+		while (trav)
+		{
+			printf(" %s | ", trav->str);
+			trav = trav->next;
+		} 
+		printf(" %s\n\n\n", typing);
+		free_curr_var(current_variable);
+		current_variable = NULL;
 		free(typing);
 		typing = NULL;
 		clear_pstack();
@@ -438,12 +480,6 @@ bool	evaluate_semicolon(t_token *token)
 	return (false);
 }
 
-bool	evaluate_curly(t_token *token)
-{
-	if (typing && strcmp(typing, "ASSIGN") == 0)
-	{
-	}
-}
 
 void	print_error_line(t_token *token)
 {
@@ -466,6 +502,14 @@ void	print_error_line(t_token *token)
 }
 
 
+void	error_cleanup(void)
+{
+	if (current_variable)
+	{
+		free_curr_var(current_variable);
+		current_variable = NULL;
+	}
+}
 
 bool	parser(t_token *token)
 {
@@ -474,7 +518,6 @@ bool	parser(t_token *token)
 
 	guidance = true;
 	ff_list = first_and_follow();
-	init_symbol_table();
 	trav = token;
 	while (trav)
 	{
@@ -494,13 +537,11 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
 			else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
-		//	if (guidance == false) print_error_line(trav);	
+			if (guidance == false) 
+			{
+				error_cleanup();
+			}
 		}
 		trav = trav->next;
 	}
 }
-/*
-int	main(void)
-{
-	return (0);
-} */
