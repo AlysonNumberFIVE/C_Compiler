@@ -29,6 +29,7 @@ char		*typing = NULL;
 int		brackets = 0;
 int		datatype_len = 0;
 t_current_var	*current_variable = NULL;
+int		asterisk_count = 0;
 
 bool		false_error(t_token *token, int message);
 
@@ -226,13 +227,19 @@ bool	false_error(t_token *token, int message)
 	else if (message == 17) printf("error : expected '}' at the end of input\n\n");
 	else if (message == 18) printf("error : expected '{' at the end of input\n\n");
 	else if (message == 19) printf("error : expected identifier or '(' before numeric or string constant\n\n");
+
+	else if (message == 20) printf("error : suze of array has non-integer type\n\n");
+	else if (message == 21) printf("error : expected expression before '%s' token\n\n",
+		token->next->name);
 	clear_pstack();
 	return (false);
 }
 
 bool	evaluate_id(t_token *token)
 {
-	
+	char *pointer_number;
+
+	pointer_number = NULL;
 	if (!typing)
 	{
 		if (brackets < 0)
@@ -257,6 +264,12 @@ bool	evaluate_id(t_token *token)
 		pstack->construct = strdup("VARIABLE");	
 		typing = strdup("VARIABLE");
 	}
+	else if (token->next && strcmp(token->next->name, "[") == 0)
+	{
+		pstack = push_ptoken(pstack, token->name, token->type);
+		pstack->construct = strdup("VARIABLE");
+		typing = strdup("VARIABLE");
+	}
 	else if (token->next && strcmp(token->next->name, "=") == 0)
 	{
 		pstack = push_ptoken(pstack, token->name, token->type);
@@ -274,7 +287,14 @@ bool	evaluate_id(t_token *token)
 		if (!pstack) return (false_error(token, 2));
 		else return (false_error(token, 12));
 	}
+	if (asterisk_count > 0)
+		pointer_number = itoa(asterisk_count);
+	else 
+		pointer_number = strdup("0");	
+	current_variable = push_curr_var(current_variable, pointer_number);
 	current_variable = push_curr_var(current_variable, token->name);
+	free(pointer_number);
+	asterisk_count = 0;
 	return (true);
 }
 
@@ -407,17 +427,56 @@ bool	evaluate_asterisk(t_token *token)
 	{
 		if (token->next && strcmp(token->next->type, "NUM") == 0)
 			return (false_error(token, 9));
+		asterisk_count++;
 	}
 	else if (typing && strcmp(typing, "VARIABLE") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "NUM") == 0)
 			return (false_error(token, 9));
+		asterisk_count++;
 	}
 	else if (token->next && strcmp(token->next->type, "ID") != 0 &&
 			strcmp(token->next->name, "*") != 0)
 		return (false_error(token, 10));
 	else if (!token->next)
 		return (false_error(token, 13));
+	asterisk_count++;
+	return (true);
+}
+
+bool	evaluate_block1(t_token *token)
+{
+//	if (typing && strcmp(typing, "VARAIBLE") == 0)
+//	{
+		if (token->next && strcmp(token->next->name, "]") == 0)
+			return (true);
+		if (token->next && (strcmp(token->next->type, "NUM") != 0 ||
+			strcmp(token->next->type, "ID") != 0 ||
+			strcmp(token->next->name, "]") != 0))
+			return (false_error(token, 20));
+		else if (token->next && strcmp(token->next->type, "ID") == 0)
+			printf("Check the type of this variable\n");
+		else if (token->next && strcmp(token->next->name, "]") == 0)
+			return (true);
+		else 
+			return (false_error(token, 21));
+//	}
+	return (false_error(token, 10));
+}
+
+bool	evaluate_block2(t_token *token)
+{
+	if (typing && strcmp(typing, "VARIABLE") == 0)
+	{
+		if (token->next && strcmp(token->next->name, "[") == 0 ||
+			strcmp(token->next->name, "=") == 0 ||
+			strcmp(token->next->name, ";") == 0)
+			return (true);
+		else if (token->next && strcmp(token->next->type, "NUM") == 0 ||
+			strcmp(token->next->type, "LITERAL") == 0)
+			return (false_error(token, 12));		
+	}
+	return (false_error(token, 1));
 }
 
 bool	evaluate_equ(t_token *token) 
@@ -492,6 +551,7 @@ void	error_cleanup(void)
 		free_curr_var(current_variable);
 		current_variable = NULL;
 	}
+	asterisk_count = 0;
 }
 
 bool	parser(t_token *token)
@@ -520,6 +580,8 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
 			else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
+			else if (strcmp(trav->name, "[") == 0) guidance = evaluate_block1(trav);
+			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
 	//		else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			if (guidance == false) 
 			{

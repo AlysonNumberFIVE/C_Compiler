@@ -1,7 +1,11 @@
 
-int x;
-unsigned char
+
+char str[] 212
 /*
+char **split(char *str, char c);
+int *x;
+unsigned char
+
 char *hello_world(int x);
 42 + 1 =
 int x = 42
