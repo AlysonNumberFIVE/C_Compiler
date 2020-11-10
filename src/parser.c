@@ -482,7 +482,17 @@ bool	evaluate_block2(t_token *token)
 bool	evaluate_equ(t_token *token) 
 {
 	char *symbol_type;
+	t_current_var *trav;
 
+	trav = current_variable;
+	while (trav)
+	{
+		printf(" %s | ", trav->str);
+		trav = trav->next;
+	}
+	printf("%s\n\n\n", typing);
+	free_curr_var(current_variable);
+	current_variable = NULL;
 	if (typing && strcmp(typing, "VARIABLE") == 0)
 	{
 		if (token->next && strcmp(token->next->name, "{") == 0)
@@ -582,6 +592,7 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
 			else if (strcmp(trav->name, "[") == 0) guidance = evaluate_block1(trav);
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
+		//	else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly1(trav);
 	//		else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			if (guidance == false) 
 			{

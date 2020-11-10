@@ -1,6 +1,7 @@
 
 
-char str[] 212
+//char str[] 212
+char **str = 42;
 /*
 char **split(char *str, char c);
 int *x;
