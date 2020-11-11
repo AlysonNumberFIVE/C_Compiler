@@ -1,6 +1,6 @@
 
 
-
+#include "../inc/symbol.h"
 #include "../inc/parser.h"
 #define C_SIZE 29
 char 	c_datatypes[30][30] = {

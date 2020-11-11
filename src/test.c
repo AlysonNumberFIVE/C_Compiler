@@ -1,8 +1,8 @@
 
 
 //char str[] 212
-char **str = 42;
 //char *str;
+int y;
 char **split(char *str, char c);
 /*
 char **split(char *str, char c);

@@ -1,5 +1,5 @@
 
-
+#include "../inc/symbol.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -23,6 +23,7 @@ char datatypes[13][10] = {
 
 char		*this_var = NULL; // for printing out defective variable naming stuff.
 
+t_function	*functions = NULL;
 int		stack_height = 0;
 t_pstack	*pstack = NULL;
 t_hashtable	*ff_list = NULL;
@@ -32,7 +33,6 @@ int		brackets = 0;
 int		datatype_len = 0;
 t_current_var	*current_variable = NULL;
 int		asterisk_count = 0;
-
 bool		false_error(t_token *token, int message);
 
 t_current_var	*new_curr_var(char *name)
@@ -560,7 +560,22 @@ bool	evaluate_semicolon(t_token *token)
 
 bool	evaluate_curly(t_token *token)
 {
+	extern int scope_depth;
+
+	if (typing && strcmp(typing, "FUNCTION") == 0)
+	{
+		scope_depth++;
+		free(typing);
+		typing = NULL;
+		free_curr_var(current_variable);
+		current_variable = NULL;
+		if (token->next && strcmp(token->next->type, "ID") == 0 ||
+			strcmp(token->next->type, "DATATYPE") == 0 ||
+			strcmp(token->next->name, "*") == 0)
+			return (true);
 	
+	}
+	return (false);
 }
 
 void	error_cleanup(void)
@@ -601,7 +616,7 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
 			else if (strcmp(trav->name, "[") == 0) guidance = evaluate_block1(trav);
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
-		//	else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly1(trav);
+			else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly1(trav);
 	//		else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			if (guidance == false) 
 			{

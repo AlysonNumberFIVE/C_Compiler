@@ -15,7 +15,7 @@ t_function	*new_function(char *name, char *type, int depth)
 	new_function = (t_function *)malloc(sizeof(t_function));
 	new_function->name = strdup(name);
 	new_function->parameters = NULL;
-	new_function->type;
+	new_function->type = type;
 	new_function->depth = depth;
 	new_function->next = NULL;
 	return (new_function);
@@ -188,6 +188,8 @@ bool		add_variable_to_table(char *name, char *type, int depth)
 	int nullifier;
 	t_variable *name_checker;
 	int found;
+	extern t_function *functions;
+	t_function	*function;
 	
 	found = false;
 	name_checker = NULL;
@@ -212,6 +214,19 @@ bool		add_variable_to_table(char *name, char *type, int depth)
 				break;		
 			}
 			name_checker = name_checker->next;
+		}
+		if (found == false)
+		{
+			function = functions;
+			while (function)
+			{
+				if (strcmp(function->name, name) == 0)
+				{
+					found = true;
+					break;
+				}
+				function = function->next;
+			}
 		}
 		if (found == true)
 			return (false);

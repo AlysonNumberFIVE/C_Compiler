@@ -96,14 +96,14 @@ static char reserved[33][9] = {
     "float\0",     "for\0",     "gaoto\0",     "if\0",
     "size_t\0"
 };
-
+/*
 typedef struct  s_variable
 {
     char    *name;
     char    *datatype;
     char    *value;
     struct s_variable   *next;
-}   t_variable;
+}   t_variable; */
 
 
 typedef struct  s_scope
@@ -111,7 +111,7 @@ typedef struct  s_scope
     int depth;
     struct s_scope *next;
     struct s_cope *prev;
-    t_variable *variables;
+    //t_variable *variables;
 }   t_scope;
 
 // function info
@@ -120,7 +120,7 @@ typedef struct  s_function_table
 {
     char *function_name;
     char *datatype;
-    t_variable *variables;
+    //t_variable *variables;
     bool is_defined; 
     struct s_function_table *next;
 }   t_function_table;
