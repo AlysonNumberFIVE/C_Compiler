@@ -14,13 +14,49 @@ typedef struct  s_current_variable
         struct s_current_variable *next;
 }       t_current_var;
 
-bool	symbol_table_manager(t_current_var *current_variable)
+t_function	*functions = NULL;
+t_str_uni	*structs_unions = NULL;
+
+int 	search_for_variable(char *name, char *type, int depth, char *typing)
+{
+	t_function *function;
+	t_variable *variable;
+	extern t_variable **scope_table;
+	extern int 	scope_depth;	
+	bool flag;
+	
+	flag = false;
+	if (typing && strcmp(typing, "FUNCTION") == 0)
+	{
+		function = functions;
+		while (function)
+		{
+			if (strcmp(function->name, name) == 0)
+			{
+				flag = true;
+				break;
+			}
+			function = function->next;
+		}
+		if (flag == true) printf("FUNCTION FOUND\n");
+		else function = push_function(function, name, type, depth);
+	}
+	else if (typing && strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0)
+	{
+		if (add_variable_to_table(name, type, depth) == false)
+			return (-1);
+	}
+}
+
+int	symbol_table_manager(t_current_var *current_variable, char *typing)
 {
 	char *name;
 	char *type;
 	int depth;
 	t_current_var *traverse;
 	int count;
+	int flag;
+	extern char *this_var;
 
 	count = 0;
 	if (!current_variable)
@@ -39,10 +75,13 @@ bool	symbol_table_manager(t_current_var *current_variable)
 		count++;
 		traverse = traverse->next;
 	}
+	this_var = strdup(name);
 	printf("\n\n");
 	printf("datatype : %s\n", type);
 	printf("depth    : %d\n", depth);
 	printf("name     : %s\n", name);
+	flag = search_for_variable(name, type, depth, typing);
+	if (flag < 0) return (flag);
 	traverse = traverse->next;
 	if (traverse)
 	{

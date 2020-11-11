@@ -39,7 +39,7 @@ t_variable      *push_variable(t_variable *variable, char *name, char *type, int
 void            free_variables(t_variable *variable);
 t_function      *add_function_params(t_function *functions, char *name, t_variable *params);
 t_str_uni       *add_struct_members(t_str_uni *struct_union, char *name, t_variable *params);
-bool            add_variable_to_table(t_variable *variable);
+bool            add_variable_to_table(char *name, char *type, int depth);
 bool		drop_scope_block(void);
 void		new_scope_block(void);
 bool    	does_variable_exist(char *name, char *typing);

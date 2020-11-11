@@ -1,6 +1,7 @@
 
 
-#include "../symbol.h"
+#include "../inc/symbol.h"
+
 
 // function pushing
 
@@ -113,7 +114,7 @@ t_variable	*push_variable(t_variable *variable, char *name, char *type, int dept
 {
 	t_variable	*traverse;
 	
-	variable = traverse;
+	traverse = variable;
 	if (traverse == NULL)
 	{
 		traverse = new_variable(name, type, depth); 
@@ -182,7 +183,7 @@ t_str_uni	*add_struct_members(t_str_uni *struct_union, char *name, t_variable *p
 	return (struct_union);
 }
 
-bool		add_variable_to_table(t_variable *variable)
+bool		add_variable_to_table(char *name, char *type, int depth)
 {
 	int nullifier;
 	t_variable *name_checker;
@@ -205,18 +206,17 @@ bool		add_variable_to_table(t_variable *variable)
 		name_checker = scope_table[scope_depth];
 		while (name_checker)
 		{
-			if (strcmp(name_checker->name, variable->name) == 0)
+			if (strcmp(name_checker->name, name) == 0)
 			{
 				found = true;
 				break;		
 			}
-e			name_checker = name_checker->next;
+			name_checker = name_checker->next;
 		}
 		if (found == true)
 			return (false);
 	}
-	scope_table[scope_depth] = push_variable(scope_table[scope_depth],
-		variable->name, variable->type, variable->depth);
+	scope_table[scope_depth] = push_variable(scope_table[scope_depth], name, type, depth);
 	return (true);
 }
 
@@ -233,7 +233,7 @@ void	new_scope_block(void)
 {
 	scope_depth++;
 }
-
+/*
 bool	does_variable_exist(char *name, char *typing)
 {
 	t_variable	*variable;
@@ -277,11 +277,7 @@ bool	does_variable_exist(char *name, char *typing)
 		}
 	} 
 }
-
-int	main(void)
-{
-	return (0);
-}
+*/
 
 
 

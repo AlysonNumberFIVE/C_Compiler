@@ -21,6 +21,8 @@ char datatypes[13][10] = {
         "union\0"
 };
 
+char		*this_var = NULL; // for printing out defective variable naming stuff.
+
 int		stack_height = 0;
 t_pstack	*pstack = NULL;
 t_hashtable	*ff_list = NULL;
@@ -231,6 +233,7 @@ bool	false_error(t_token *token, int message)
 	else if (message == 20) printf("error : suze of array has non-integer type\n\n");
 	else if (message == 21) printf("error : expected expression before '%s' token\n\n",
 		token->next->name);
+	else if (message == 22) printf("error : conflicting type or redefiniton of variable '%s'\n\n", this_var); 
 	clear_pstack();
 	return (false);
 }
@@ -482,6 +485,7 @@ bool	evaluate_equ(t_token *token)
 {
 	char *symbol_type;
 	t_current_var *trav;
+	bool symtab_manager;
 
 	trav = current_variable;
 	while (trav)
@@ -490,7 +494,8 @@ bool	evaluate_equ(t_token *token)
 		trav = trav->next;
 	}
 	printf("%s\n\n\n", typing);
-	symbol_table_manager(current_variable);
+	symtab_manager = symbol_table_manager(current_variable, typing);
+	if (symtab_manager == false) return (false_error(token, 22));
 	free_curr_var(current_variable);
 	current_variable = NULL;
 	if (typing && strcmp(typing, "VARIABLE") == 0)
@@ -529,6 +534,8 @@ bool	evaluate_equ(t_token *token)
 
 bool	evaluate_semicolon(t_token *token)
 {
+	bool symtab_manager;
+
 	if (strcmp(token->name, ";") == 0)
 	{
 		// print current_var
@@ -539,11 +546,12 @@ bool	evaluate_semicolon(t_token *token)
 			trav = trav->next;
 		} 
 		printf(" %s\n\n\n", typing);
-		symbol_table_manager(current_variable);	
+		symtab_manager = symbol_table_manager(current_variable, typing);	
 		free_curr_var(current_variable);
 		current_variable = NULL;
 		free(typing);
 		typing = NULL;
+		if (symtab_manager == false) return (false_error(token, 22));
 		clear_pstack();
 		return (true);
 	}
@@ -599,9 +607,6 @@ bool	parser(t_token *token)
 			{
 				error_cleanup();
 			}
-			printf(" %s  ", trav->name);
-			printf(" %d ", asterisk_count);
-			printf(" %s\n", typing);
 		}
 		trav = trav->next;
 	}
