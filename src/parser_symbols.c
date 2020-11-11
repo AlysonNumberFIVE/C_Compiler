@@ -45,11 +45,40 @@ int 	search_for_variable(char *name, char *type, int depth, char *typing)
 	{
 		if (add_variable_to_table(name, type, depth) == false)
 		{
-			printf("FAIL\n");
 			return (1);
 		}
 	}
 	return (0);
+}
+
+t_variable	*variable_chain(t_current_var *traverse, char *function_name)
+{
+	int count;
+	char *name;
+	char *type;
+	int depth;
+	t_variable *var;
+
+	var = NULL;
+	count = 0;
+	while (traverse)
+	{
+		if (count == DATATYPE) type = strdup(traverse->str);
+		else if (count == POINTER_DEPTH) depth = atoi(traverse->str);
+		else if (count == VARIABLE_NAME)
+		{
+			name = strdup(traverse->str);
+			var = push_variable(var, name, type, depth); 
+			free(name);
+			free(type);
+			functions = add_function_params(functions, function_name, var);
+		}
+		if (count == 2)
+			count = 0;
+		else 
+			count++;
+		traverse = traverse->next;
+	}
 }
 
 int	symbol_table_manager(t_current_var *current_variable, char *typing)
@@ -88,11 +117,14 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 	flag = search_for_variable(name, type, depth, typing);
 	printf("flag is inside %d\n", flag);
 	if (flag > 0) return (flag);
+	free(name);
+	free(type);
 	traverse = traverse->next;
 	if (traverse)
 	{
 		printf("\nVARIABLES\n");
-		count = 0;
+		variable_chain(traverse, this_var);
+	/*	count = 0;
 		while (traverse)
 		{
 			if (count == DATATYPE) type = strdup(traverse->str);
@@ -110,7 +142,7 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 			else
 				count++;
 			traverse = traverse->next;
-		}
+		}*/
 	}
 	return (0);	
 }
