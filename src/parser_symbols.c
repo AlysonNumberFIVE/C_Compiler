@@ -44,8 +44,12 @@ int 	search_for_variable(char *name, char *type, int depth, char *typing)
 	else if (typing && strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0)
 	{
 		if (add_variable_to_table(name, type, depth) == false)
-			return (-1);
+		{
+			printf("FAIL\n");
+			return (1);
+		}
 	}
+	return (0);
 }
 
 int	symbol_table_manager(t_current_var *current_variable, char *typing)
@@ -59,6 +63,7 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 	extern char *this_var;
 
 	count = 0;
+	flag = 0;
 	if (!current_variable)
 		return (false);
 	traverse = current_variable;
@@ -81,7 +86,8 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 	printf("depth    : %d\n", depth);
 	printf("name     : %s\n", name);
 	flag = search_for_variable(name, type, depth, typing);
-	if (flag < 0) return (flag);
+	printf("flag is inside %d\n", flag);
+	if (flag > 0) return (flag);
 	traverse = traverse->next;
 	if (traverse)
 	{
@@ -106,7 +112,7 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 			traverse = traverse->next;
 		}
 	}
-	return (true);	
+	return (0);	
 }
 /*
 bool	parser_conflicts(t_current_var *current_variable, char *typing)

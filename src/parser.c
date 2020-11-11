@@ -485,7 +485,7 @@ bool	evaluate_equ(t_token *token)
 {
 	char *symbol_type;
 	t_current_var *trav;
-	bool symtab_manager;
+	int symtab_manager;
 
 	trav = current_variable;
 	while (trav)
@@ -495,9 +495,10 @@ bool	evaluate_equ(t_token *token)
 	}
 	printf("%s\n\n\n", typing);
 	symtab_manager = symbol_table_manager(current_variable, typing);
-	if (symtab_manager == false) return (false_error(token, 22));
 	free_curr_var(current_variable);
 	current_variable = NULL;
+	printf("SYMTAB VALUE %d\n", symtab_manager);
+	if (symtab_manager == 1) return (false_error(token, 22));
 	if (typing && strcmp(typing, "VARIABLE") == 0)
 	{
 		if (token->next && strcmp(token->next->name, "{") == 0)
@@ -534,7 +535,7 @@ bool	evaluate_equ(t_token *token)
 
 bool	evaluate_semicolon(t_token *token)
 {
-	bool symtab_manager;
+	int symtab_manager;
 
 	if (strcmp(token->name, ";") == 0)
 	{
@@ -551,7 +552,8 @@ bool	evaluate_semicolon(t_token *token)
 		current_variable = NULL;
 		free(typing);
 		typing = NULL;
-		if (symtab_manager == false) return (false_error(token, 22));
+		printf("symtab again %d\n", symtab_manager);
+		if (symtab_manager == 1) return (false_error(token, 22));
 		clear_pstack();
 		return (true);
 	}
