@@ -14,8 +14,6 @@ typedef struct  s_current_variable
         struct s_current_variable *next;
 }       t_current_var;
 
-
-
 bool	symbol_table_manager(t_current_var *current_variable)
 {
 	char *name;
@@ -25,18 +23,50 @@ bool	symbol_table_manager(t_current_var *current_variable)
 	int count;
 
 	count = 0;
+	if (!current_variable)
+		return (false);
 	traverse = current_variable;
 	while (traverse)
 	{
+		printf(" %s | ", traverse->str);
 		if (count == DATATYPE) type = strdup(traverse->str);
 		else if (count == POINTER_DEPTH) depth = atoi(strdup(traverse->str));
-		else if (count == VARIABLE_NAME) name = strdup(traverse->str);
+		else if (count == VARIABLE_NAME) 
+		{
+			name = strdup(traverse->str);
+			break;
+		}
 		count++;
 		traverse = traverse->next;
 	}
+	printf("\n\n");
 	printf("datatype : %s\n", type);
 	printf("depth    : %d\n", depth);
 	printf("name     : %s\n", name);
+	traverse = traverse->next;
+	if (traverse)
+	{
+		printf("\nVARIABLES\n");
+		count = 0;
+		while (traverse)
+		{
+			if (count == DATATYPE) type = strdup(traverse->str);
+			else if (count == POINTER_DEPTH) depth = atoi(strdup(traverse->str));
+			else if (count == VARIABLE_NAME)
+			{
+				name = strdup(traverse->str);
+				printf("\tdatatype   : %s\n", type);
+				printf("\tdepth      : %d\n", depth);
+				printf("\tname       : %s\n", name);
+				printf("\n\n");
+			}
+			if (count == 2)
+				count = 0;
+			else
+				count++;
+			traverse = traverse->next;
+		}
+	}
 	return (true);	
 }
 /*

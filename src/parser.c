@@ -324,6 +324,7 @@ bool	peek(t_token *token)
 
 bool	evaluate_bracket(t_token *token)
 {
+	asterisk_count = 0;
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "DATATYPE") == 0 ||
@@ -427,13 +428,11 @@ bool	evaluate_asterisk(t_token *token)
 	{
 		if (token->next && strcmp(token->next->type, "NUM") == 0)
 			return (false_error(token, 9));
-		asterisk_count++;
 	}
 	else if (typing && strcmp(typing, "VARIABLE") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "NUM") == 0)
 			return (false_error(token, 9));
-		asterisk_count++;
 	}
 	else if (token->next && strcmp(token->next->type, "ID") != 0 &&
 			strcmp(token->next->name, "*") != 0)
@@ -600,6 +599,9 @@ bool	parser(t_token *token)
 			{
 				error_cleanup();
 			}
+			printf(" %s  ", trav->name);
+			printf(" %d ", asterisk_count);
+			printf(" %s\n", typing);
 		}
 		trav = trav->next;
 	}
