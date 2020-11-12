@@ -2,6 +2,9 @@
 
 //char str[] 212
 //char *str;
+
+int j;
+int main() {j;}}
 int y;
 char **split(char *str, char c);
 /*
@@ -20,6 +23,5 @@ int hello());
 int against(void *h);
 char i;
 char *value(int x));*/
-int x; 
 int x = 24;
 unsigned char hello(unsigned char x, int y); 

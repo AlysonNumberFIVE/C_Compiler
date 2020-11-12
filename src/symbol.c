@@ -135,9 +135,9 @@ void		free_variables(t_variable *variable)
 	{
 		traverse = variable;
 		variable = variable->next;
-		free(variable->name);
-		free(variable->type);
-		free(variable);
+		free(traverse->name);
+		free(traverse->type);
+		free(traverse);
 	}
 }
 

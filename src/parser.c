@@ -234,6 +234,8 @@ bool	false_error(t_token *token, int message)
 	else if (message == 21) printf("error : expected expression before '%s' token\n\n",
 		token->next->name);
 	else if (message == 22) printf("error : conflicting type or redefiniton of variable '%s'\n\n", this_var); 
+	else if (message == 23) printf("error : '%s' undeclared (first used in this function)\n\n",
+		token->name); 
 	clear_pstack();
 	return (false);
 }
@@ -249,6 +251,12 @@ bool	evaluate_id(t_token *token)
 		{
 			return (false_error(token, 15));
 		}
+	}
+	if (!pstack)
+	{
+		if (token->next && search_for_label(token->name, token->next->name) == false)
+			return (false_error(token, 23));	
+		printf("A BLATANT ID IS BEING SUMMONED\n");
 	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
@@ -569,13 +577,36 @@ bool	evaluate_curly(t_token *token)
 		typing = NULL;
 		free_curr_var(current_variable);
 		current_variable = NULL;
+		clear_pstack();
 		if (token->next && strcmp(token->next->type, "ID") == 0 ||
 			strcmp(token->next->type, "DATATYPE") == 0 ||
-			strcmp(token->next->name, "*") == 0)
+			strcmp(token->next->name, "*") == 0 ||
+			strcmp(token->next->name, "}") == 0)
 			return (true);
-	
+			
 	}
 	return (false);
+}
+
+bool	evaluate_curly2(t_token *token)
+{
+	extern int scope_depth;
+
+	if (scope_depth == 0)	
+		return (false_error(token, 10));
+	drop_scope_block();
+	if (typing)
+	{
+		free(typing);
+		typing = NULL;
+	}
+	if (current_variable)
+	{
+		free_curr_var(current_variable);
+		current_variable = NULL;
+	}
+	clear_pstack();
+	return (true);
 }
 
 void	error_cleanup(void)
@@ -603,7 +634,8 @@ bool	parser(t_token *token)
 
 		if (strcmp(trav->type, "DATATYPE") == 0)
 			guidance = evaluate_datatype(trav);
-		
+		else if (!pstack && strcmp(trav->type, "ID") == 0)
+			guidance = evaluate_id(trav);
 		if (guidance == true)
 		{
 			if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
@@ -616,12 +648,13 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
 			else if (strcmp(trav->name, "[") == 0) guidance = evaluate_block1(trav);
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
-			else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly1(trav);
-	//		else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
+			else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
+			else if (strcmp(trav->name, "}") == 0) guidance = evaluate_curly2(trav);
 			if (guidance == false) 
 			{
 				error_cleanup();
 			}
+
 		}
 		trav = trav->next;
 	}
