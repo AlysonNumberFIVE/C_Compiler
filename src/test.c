@@ -4,10 +4,14 @@
 //char *str;
 
 int j;
-int main() {j;}}
+char *str = "42";
+int main() {
+	***;
+	*str;
+}
 int y;
 char **split(char *str, char c);
-/*
+
 char **split(char *str, char c);
 int *x;
 unsigned char
@@ -22,6 +26,6 @@ int x( intadsf y);
 int hello());
 int against(void *h);
 char i;
-char *value(int x));*/
+char *value(int x));
 int x = 24;
 unsigned char hello(unsigned char x, int y); 

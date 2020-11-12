@@ -18,7 +18,7 @@ typedef struct  s_current_variable
 t_str_uni	*structs_unions = NULL;
 
 
-bool	search_for_label(char *name, char *next_token)
+int	search_for_label(char *name, char *next_token)
 {
 	extern t_function	*functions;
 	extern t_variable	**scope_table;
@@ -35,15 +35,17 @@ bool	search_for_label(char *name, char *next_token)
 		{
 			if (strcmp(function->name, name) == 0)
 			{
-				return (true);
+				return (0);
 			}
 			function = function->next;
 		}
+		return (1);
 	}
 	else 
 	{
+		printf(" %s\n", name);
 		if (!scope_table)
-			return (false);
+			return (2);
 		counter = scope_depth;
 		while (counter > -1)
 		{	
@@ -51,13 +53,14 @@ bool	search_for_label(char *name, char *next_token)
 			while (traverse)
 			{
 				if (strcmp(traverse->name, name) == 0)
-					return (true);
+					return (0);
 				traverse = traverse->next;
 			}
 			counter--;
 		}
+		return (2);
 	}
-	return (false);
+	return (0);
 }
 
 int 	search_for_variable(char *name, char *type, int depth, char *typing)

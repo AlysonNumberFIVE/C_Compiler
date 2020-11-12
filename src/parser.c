@@ -236,6 +236,8 @@ bool	false_error(t_token *token, int message)
 	else if (message == 22) printf("error : conflicting type or redefiniton of variable '%s'\n\n", this_var); 
 	else if (message == 23) printf("error : '%s' undeclared (first used in this function)\n\n",
 		token->name); 
+	else if (message == 24) printf("error :: called object '%s' is not a function or function pointer\n\n",
+		token->name);
 	clear_pstack();
 	return (false);
 }
@@ -243,6 +245,7 @@ bool	false_error(t_token *token, int message)
 bool	evaluate_id(t_token *token)
 {
 	char *pointer_number;
+	int flag;
 
 	pointer_number = NULL;
 	if (!typing)
@@ -254,9 +257,13 @@ bool	evaluate_id(t_token *token)
 	}
 	if (!pstack)
 	{
-		if (token->next && search_for_label(token->name, token->next->name) == false)
-			return (false_error(token, 23));	
-		printf("A BLATANT ID IS BEING SUMMONED\n");
+		
+		if (token->next)
+		{
+			flag = search_for_label(token->name, token->next->name);
+			if (flag == 1) return (false_error(token, 23));	
+			else if (flag == 2) return (false_error(token, 24));
+		}
 	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
@@ -435,6 +442,13 @@ bool	evaluate_number(t_token *token)
 
 bool	evaluate_asterisk(t_token *token)
 {
+	if (!pstack)
+	{
+		if (token->next && strcmp(token->next->name, "*") == 0 || 
+			token->next && strcmp(token->next->name, "ID") == 0)
+			return (true);
+		else return (false_error(token, 21));	
+	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "NUM") == 0)

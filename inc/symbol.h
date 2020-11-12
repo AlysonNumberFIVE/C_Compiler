@@ -43,6 +43,6 @@ bool            add_variable_to_table(char *name, char *type, int depth);
 bool		drop_scope_block(void);
 void		new_scope_block(void);
 bool    	does_variable_exist(char *name, char *typing);
-bool		search_for_label(char *name, char *next_token);
+int		search_for_label(char *name, char *next_token);
 
 #endif
