@@ -1,5 +1,4 @@
 
 STILL TO DO
 -----------
-- Make error messages a little more elegant in printing
-- handle recursive STRUCT variable calling.
+- Redoing everything

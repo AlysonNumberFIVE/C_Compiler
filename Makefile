@@ -7,15 +7,9 @@ extern_lib = lib.a
 
 extern_dir = alylibc/
 
-
-source_files =  scope_database.c scope_stack.c semantic_analysis.c \
-	semantic_else.c semantic_for.c semantic_if.c \
-	semantic_variable.c structs.c \
-	semantic_while.c main.c open_files.c datatype_experiment.c \
-	error_list.c error_recovery.c first_and_follow.c functions.c \
-	handle_csg.c hashtable.c is_valid_sum.c \
-	lexer.c lexer_token_types.c lexer_utils.c token_control.c \
-	resolve_typedefs.c semantic_sizeof.c
+source_files =  parser.c first_and_follow.c open_files.c token_control.c \
+		lexer.c lexer_utils.c lexer_token_types.c main.c \
+		hashtable.c parser_datatype.c parser_symbols.c symbol.c
 
 object_files = $(source_files:.c=.o)
 
