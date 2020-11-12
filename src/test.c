@@ -1,10 +1,10 @@
 
-
-//char str[] 212
-//char *str;
-
+char str[] 212
+char *str;
+"hello";
 int j;
-char *str = "42";
+char *stxr = 11 + asldg;
+/*
 int main() {
 	***;
 	*str;
@@ -28,4 +28,4 @@ int against(void *h);
 char i;
 char *value(int x));
 int x = 24;
-unsigned char hello(unsigned char x, int y); 
+unsigned char hello(unsigned char x, int y); */

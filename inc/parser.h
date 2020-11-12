@@ -30,5 +30,11 @@ char 	**psplit(char *str, char c);
 t_current_var *push_curr_var(t_current_var *head, char *name);
 void	free_curr_var(t_current_var *head);
 bool	symbol_table_manager(t_current_var *current_variable, char *typing);
+bool	false_error(t_token *token, int message);
+
+bool    equ_tokens(char *name);
+bool    sum_tokens(char *name);
+
+bool	evaluate_literal(t_token *token);
 
 #endif

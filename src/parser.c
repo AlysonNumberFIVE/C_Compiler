@@ -213,8 +213,8 @@ bool	false_error(t_token *token, int message)
 	else if (message == 5) printf("error : expected '}' at the end\n\n");
 	else if (message == 6) printf("error : expected ',' or ';' before ')' token\n\n");
 	else if (message == 7) printf("error : expected ';' before ')' token\n\n");
-	else if (message == 8) printf("error : expected identifier or ')' before numeric constant\n\n");
-	else if (message == 9) printf("error : expected identiifer or '(' before numeric constant\n\n");
+	else if (message == 8) printf("error : expected identifier or ')' before string or numeric constant\n\n");
+	else if (message == 9) printf("error : expected identiifer or '(' before string or numeric constant\n\n");
 	else if (message == 10) printf("error : expected identifier or '(' before '%s' token\n\n",
 		token->next->name);
 	else if (message == 11) printf("error : expected identifier or ')' at end of input\n\n");
@@ -236,8 +236,9 @@ bool	false_error(t_token *token, int message)
 	else if (message == 22) printf("error : conflicting type or redefiniton of variable '%s'\n\n", this_var); 
 	else if (message == 23) printf("error : '%s' undeclared (first used in this function)\n\n",
 		token->name); 
-	else if (message == 24) printf("error :: called object '%s' is not a function or function pointer\n\n",
+	else if (message == 24) printf("error : called object '%s' is not a function or function pointer\n\n",
 		token->name);
+	else if (message == 25) printf("error : lvalue required as left operand of assignment\n\n");
 	clear_pstack();
 	return (false);
 }
@@ -246,8 +247,8 @@ bool	evaluate_id(t_token *token)
 {
 	char *pointer_number;
 	int flag;
-
 	pointer_number = NULL;
+
 	if (!typing)
 	{
 		if (brackets < 0)
@@ -255,9 +256,12 @@ bool	evaluate_id(t_token *token)
 			return (false_error(token, 15));
 		}
 	}
-	if (!pstack)
+	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
-		
+		return (search_for_label(token->name, token->next->name));
+	}
+	if (!pstack)
+	{		
 		if (token->next)
 		{
 			flag = search_for_label(token->name, token->next->name);
@@ -428,7 +432,11 @@ bool	evaluate_number(t_token *token)
 	}
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
-		if (token->next && strcmp(token->next->name, ";") != 0)
+		if (token->next && equ_tokens(token->next->name) == true)
+		{
+			return (false_error(token, 25));
+		}
+		else if (token->next && strcmp(token->next->name, ";") != 0)
 		{
 			return (false_error(token, 8));
 		}
@@ -658,7 +666,8 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, ")") == 0) guidance = evaluate_bracket2(trav);
 			else if (strcmp(trav->name, ",") == 0) guidance = evaluate_comma(trav);
 			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
-			else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
+			else if (equ_tokens(trav->name) == true) guidance = evaluate_equ(trav);
+		//	else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
 			else if (strcmp(trav->name, "[") == 0) guidance = evaluate_block1(trav);
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
