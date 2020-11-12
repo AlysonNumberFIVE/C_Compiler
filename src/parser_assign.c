@@ -2,6 +2,14 @@
 
 #include "../inc/parser.h"
 
+t_token	*left = NULL;
+t_token	*right = NULL;
+
+bool	evaluate_equation(void)
+{
+	
+}
+
 bool	evaluate_literal(t_token *token)
 {
 	extern char *typing;
@@ -15,4 +23,6 @@ bool	evaluate_literal(t_token *token)
 			return (true);
 	}
 	return (false_error(token, 9));
-}	
+}
+
+

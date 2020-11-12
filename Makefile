@@ -10,7 +10,7 @@ extern_dir = alylibc/
 source_files =  parser.c first_and_follow.c open_files.c token_control.c \
 		lexer.c lexer_utils.c lexer_token_types.c main.c \
 		hashtable.c parser_datatype.c parser_symbols.c symbol.c \
-		parser_group_tokens.c
+		parser_group_tokens.c parser_assign.c
 
 object_files = $(source_files:.c=.o)
 
