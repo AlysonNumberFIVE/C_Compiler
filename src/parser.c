@@ -240,6 +240,8 @@ bool	false_error(t_token *token, int message)
 	else if (message == 24) printf("error : called object '%s' is not a function or function pointer\n\n",
 		token->name);
 	else if (message == 25) printf("error : lvalue required as left operand of assignment\n\n");
+	else if (message == 26) printf("error : array '%s' assumed to have one element\n\n", 
+		token->name); 
 	clear_pstack();
 	return (false);
 }
@@ -249,7 +251,8 @@ bool	evaluate_id(t_token *token)
 	char *pointer_number;
 	int flag;
 	pointer_number = NULL;
-
+	
+	printf("typing is %s and token is %s\n", typing, token->name);
 	if (!typing)
 	{
 		if (brackets < 0)
@@ -262,7 +265,8 @@ bool	evaluate_id(t_token *token)
 		return (search_for_label(token->name, token->next->name));
 	}
 	if (!pstack)
-	{		
+	{	
+		printf("STACK EMPTY\n");	
 		if (token->next)
 		{
 			flag = search_for_label(token->name, token->next->name);
@@ -272,8 +276,7 @@ bool	evaluate_id(t_token *token)
 	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
-		if (brackets < 0)
-			return (false_error(token, 15));
+		if (brackets < 0) return (false_error(token, 15));
 	}
 	if (token->next && strcmp(token->next->name, "(") == 0)
 	{
@@ -299,8 +302,15 @@ bool	evaluate_id(t_token *token)
 		pstack->construct = strdup("ASSIGN");
 		typing = strdup("ASSIGN");	
 	}
+	else if (token->next && strcmp(token->next->name, "]") == 0)
+	{
+		pstack = push_ptoken(pstack, token->name, token->type);
+		pstack->construct = strdup("ASSIGN");
+		typing = strdup("ASSIGN");
+	}
 	else if (token->next && strcmp(token->next->name, ",") == 0 ||
-			strcmp(token->next->name, ")") == 0)
+			strcmp(token->next->name, ")") == 0 || 
+			strcmp(token->next->name, "]") == 0) 
 	{
 		if (!typing || strcmp(typing, "FUNCTION") != 0)
 			return (false);
@@ -496,13 +506,27 @@ bool	evaluate_asterisk(t_token *token)
 
 bool	evaluate_block1(t_token *token)
 {
-//	if (typing && strcmp(typing, "VARAIBLE") == 0)
-//	{
+	if (typing && strcmp(typing, "ASSIGN") == 0)
+	{
+		if (token->next && strcmp(token->next->name, "NUM") != 0 ||
+			strcmp(token->next->name, "ID") != 0)
+			return (false_error(token, 26));
+		else
+			return (true);
+	}
+	else
+	{
 		if (token->next && strcmp(token->next->name, "]") == 0)
 			return (true);
-		if (token->next && (strcmp(token->next->type, "NUM") != 0 ||
+			
+		else if (token->next && strcmp(token->next->type, "NUM") == 0)
+			return (true);
+
+		if (token->next && strcmp(token->next->type, "ID") == 0)
+			return (true);
+		if (token->next && strcmp(token->next->type, "NUM") != 0 ||
 			strcmp(token->next->type, "ID") != 0 ||
-			strcmp(token->next->name, "]") != 0))
+			strcmp(token->next->name, "]") != 0)
 			return (false_error(token, 20));
 		else if (token->next && strcmp(token->next->type, "ID") == 0)
 			printf("Check the type of this variable\n");
@@ -510,13 +534,14 @@ bool	evaluate_block1(t_token *token)
 			return (true);
 		else 
 			return (false_error(token, 21));
-//	}
+	}
 	return (false_error(token, 10));
 }
 
 bool	evaluate_block2(t_token *token)
 {
-	if (typing && strcmp(typing, "VARIABLE") == 0)
+	printf(" Typing 538 is %s\n", typing);
+	if (typing && strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0)
 	{
 		if (token->next && strcmp(token->next->name, "[") == 0 ||
 			strcmp(token->next->name, "=") == 0 ||
@@ -720,12 +745,12 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
 			else if (sum_tokens(trav->name) == true) guidance = evaluate_sum(trav);
 			else if (equ_tokens(trav->name) == true) guidance = evaluate_equ(trav);
-		//	else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
 			else if (strcmp(trav->name, "[") == 0) guidance = evaluate_block1(trav);
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
 			else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			else if (strcmp(trav->name, "}") == 0) guidance = evaluate_curly2(trav);
+			
 			if (guidance == false) 
 			{
 				error_cleanup();

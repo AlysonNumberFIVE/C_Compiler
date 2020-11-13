@@ -66,7 +66,6 @@ int	search_for_label(char *name, char *next_token)
 	}
 	else 
 	{
-		printf(" %s\n", name);
 		if (!scope_table)
 			return (2);
 		counter = scope_depth;
