@@ -32,7 +32,7 @@ t_variable	*search_variable(char *name)
 		variable = scope_table[scope_depth];
 		while (variable)
 		{
-			if (strcmp(variable->name, name)
+			if (strcmp(variable->name, name) == 0)
 				return (variable);
 			variable = variable->next;
 		}

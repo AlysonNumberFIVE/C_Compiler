@@ -1,10 +1,13 @@
 
+
+char i = 1 + 2;
+/*
 char str[] 212
 char *str;
 "hello";
 int j;
 char *stxr = 11 + asldg;
-/*
+
 int main() {
 	***;
 	*str;

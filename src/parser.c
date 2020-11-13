@@ -1,4 +1,5 @@
 
+#include "../inc/token.h"
 #include "../inc/symbol.h"
 #include <stdio.h>
 #include <unistd.h>
@@ -423,6 +424,9 @@ bool	evaluate_comma(t_token *token)
 
 bool	evaluate_number(t_token *token)
 {
+	extern t_token *left;
+	extern t_token *right;
+	
 	if (typing && strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (brackets > 0)
@@ -432,9 +436,23 @@ bool	evaluate_number(t_token *token)
 	}
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
+		if (!left) {
+			left = push_token(left, token->name, 
+			token->type, -1, token->filename);	
+		}
+		else if (!right) {
+			right = push_token(right, token->name, 
+			token->type, -1, token->filename);
+		}
+			
+		evaluate_equation();
 		if (token->next && equ_tokens(token->next->name) == true)
 		{
 			return (false_error(token, 25));
+		}
+		else if (token->next && sum_tokens(token->next->name) == true)
+		{
+			return (true);
 		}
 		else if (token->next && strcmp(token->next->name, ";") != 0)
 		{
@@ -559,7 +577,14 @@ bool	evaluate_equ(t_token *token)
 			return (true);		
 		}	
 	}
-	
+	else if (typing && strcmp(typing, "ASSIGN") == 0)
+	{
+		if (token->next && strcmp(token->next->type, "NUM") == 0 ||
+			strcmp(token->next->type, "ID") == 0)
+		{
+			return (true);
+		}
+	}
 }
 
 bool	evaluate_semicolon(t_token *token)
@@ -631,6 +656,18 @@ bool	evaluate_curly2(t_token *token)
 	return (true);
 }
 
+bool	evaluate_sum(t_token *token)
+{
+
+	if (token->next && strcmp(token->next->type, "ID") == 0 ||
+		strcmp(token->next->type, "NUM") == 0)
+	{
+		return (true);
+	}
+	else
+		return (false_error(token, 21));
+}
+
 void	error_cleanup(void)
 {
 	if (current_variable)
@@ -666,6 +703,7 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, ")") == 0) guidance = evaluate_bracket2(trav);
 			else if (strcmp(trav->name, ",") == 0) guidance = evaluate_comma(trav);
 			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
+			else if (sum_tokens(trav->name) == true) guidance = evaluate_sum(trav);
 			else if (equ_tokens(trav->name) == true) guidance = evaluate_equ(trav);
 		//	else if (strcmp(trav->name, "=") == 0) guidance = evaluate_equ(trav);
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
@@ -680,5 +718,6 @@ bool	parser(t_token *token)
 
 		}
 		trav = trav->next;
+		
 	}
 }

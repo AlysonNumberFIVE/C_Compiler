@@ -44,5 +44,6 @@ bool		drop_scope_block(void);
 void		new_scope_block(void);
 bool    	does_variable_exist(char *name, char *typing);
 int		search_for_label(char *name, char *next_token);
+t_variable	*search_variable(char *name);
 
 #endif
