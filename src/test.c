@@ -1,5 +1,7 @@
 
 
+
+int x = 42;
 char i = 1 + 2;
 /*
 char str[] 212

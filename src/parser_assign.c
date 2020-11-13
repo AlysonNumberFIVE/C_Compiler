@@ -74,10 +74,69 @@ t_hashtable	*type_and_their_sizes(void)
 	size = itoa(sizeof(double));
 	ht_insert(typelist, "double", size); free(size);
 	size = itoa(sizeof(long double));
-	ht_insert(typelist, "long double", size); free(size);*/
+	ht_insert(typelist, "long double", size); free(size);
+	*/
 	return (typelist);
 }
 
+char		*it_is_always_stars(char *i)
+{
+	char *str;
+	int count;
+	char *tmp;
+	int depth;
+
+	depth = atoi(i);
+	str = strdup(" ");
+	count = 0;
+	while (count < depth)
+	{
+		tmp = join(str, "*");
+		free(str);
+		str = strdup(tmp);
+		free(tmp);
+		count++;
+	}
+	return (str);
+}
+
+bool		typecheck_warning(t_variable *left, t_variable *right)
+{
+	char *ldepth;
+	char *rdepth;
+	char *left_token;
+	char *right_token;
+	char *star;
+
+	ldepth = NULL;
+	rdepth = NULL;
+	if (left->depth > 0) ldepth = itoa(left->depth);
+	if (right->depth > 0) rdepth = itoa(right->depth);
+	if (ldepth)
+	{
+		star = it_is_always_stars(ldepth);
+		left_token = join(left->type, star);
+	}
+	else 
+		left_token = strdup(left->type);
+	if (rdepth) 
+	{
+		star = it_is_always_stars(rdepth);
+		right_token = join(right->type, star);
+	}
+	else 
+		right_token = strdup(right->type);	
+	printf("warning : initialization of '%s' from '%s' makes an integer from pointer type\n\n",
+		left_token, right_token);
+}
+
+bool		datatype_comparison(t_variable *left, t_variable *right)
+{
+	if (left->depth != right->depth) 
+	{
+		typecheck_warning(left, right);
+	}	
+}
 
 t_variable	*convert_literal_data(t_token *literal_data)
 {
@@ -134,6 +193,7 @@ bool	evaluate_equation(void)
 		else if (strcmp(right->type, "NUM") == 0 ||
 			strcmp(right->type, "LITERAL") == 0)
 			right_side = convert_literal_data(right);
+		datatype_comparison(left_side, right_side);
 		printf("left datatype  : %s\n", left_side->type);
 		printf("right datatype : %s\n", right_side->type);
 		left->type = strdup(right->type);
