@@ -37,5 +37,6 @@ bool    equ_tokens(char *name);
 bool    sum_tokens(char *name);
 
 bool	evaluate_literal(t_token *token);
+t_current_var *add_index_depth(t_current_var *current_var, int index_depth);
 
 #endif

@@ -540,13 +540,14 @@ bool	evaluate_block1(t_token *token)
 
 bool	evaluate_block2(t_token *token)
 {
-	printf(" Typing 538 is %s\n", typing);
+		
 	if (typing && strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0)
 	{
+		asterisk_count++;
 		if (token->next && strcmp(token->next->name, "[") == 0 ||
 			strcmp(token->next->name, "=") == 0 ||
 			strcmp(token->next->name, ";") == 0)
-			return (true);
+				return (true);
 		else if (token->next && strcmp(token->next->type, "NUM") == 0 ||
 			strcmp(token->next->type, "LITERAL") == 0)
 			return (false_error(token, 12));		
@@ -561,6 +562,8 @@ bool	evaluate_equ(t_token *token)
 	int symtab_manager;
 	extern t_token *left;
 
+	if (asterisk_count > 0)
+		current_variable = add_index_depth(current_variable, asterisk_count);
 	trav = current_variable;
 	while (trav)
 	{
@@ -572,7 +575,7 @@ bool	evaluate_equ(t_token *token)
 	symtab_manager = symbol_table_manager(current_variable, typing);
 	free_curr_var(current_variable);
 	current_variable = NULL;
-	
+	asterisk_count = 0;	
 	if (symtab_manager == 1) return (false_error(token, 22));
 	if (typing && strcmp(typing, "VARIABLE") == 0)
 	{
@@ -624,6 +627,8 @@ bool	evaluate_semicolon(t_token *token)
 	if (strcmp(token->name, ";") == 0)
 	{
 		// print current_var
+		if (asterisk_count > 0)
+			current_variable = add_index_depth(current_variable, asterisk_count);
 		t_current_var *trav = current_variable;
 		while (trav)
 		{
@@ -636,6 +641,7 @@ bool	evaluate_semicolon(t_token *token)
 		current_variable = NULL;
 		free(typing);
 		typing = NULL;
+		asterisk_count = 0;
 		if (left) 
 		{
 			free(left);
@@ -756,7 +762,6 @@ bool	parser(t_token *token)
 				error_cleanup();
 			}
 		}
-		printf(" %s\n", trav->name);
 		trav = trav->next;
 		
 	}

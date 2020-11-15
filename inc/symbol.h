@@ -33,6 +33,12 @@ typedef struct 	s_structs_or_union
 }	t_str_uni;
 
 
+typedef struct	s_function_call
+{
+	char *name;
+	t_token	*params;
+}	t_fcall;
+
 t_function      *push_function(t_function *function, char *name, char *type, int depth);
 t_str_uni       *push_struct_union(t_str_uni *struct_union, char *name);
 t_variable      *push_variable(t_variable *variable, char *name, char *type, int depth);

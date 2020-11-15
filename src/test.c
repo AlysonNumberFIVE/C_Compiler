@@ -1,11 +1,7 @@
 
 
+char *hello[42];
 
-int x = 42;
-char i = 1 + 2;
-char *str = "hello";
-str[0][0];
-/*
 char str[] 212
 char *str;
 "hello";

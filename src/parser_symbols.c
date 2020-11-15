@@ -17,6 +17,79 @@ typedef struct  s_current_variable
 //t_function	*functions = NULL;
 t_str_uni	*structs_unions = NULL;
 
+
+
+
+void		free_fcall(t_fcall *call)
+{
+	t_token *trav;
+
+	i = 0;
+	free(call->name);
+	while (call->params)
+	{
+		trav = call->params;
+		call->params = call->params->next;
+		free(trav->name);
+		free(trav->type);
+		free(trav->filename);
+		free(trav);	
+	}
+	free(call);
+}
+
+t_fcall		*add_call_params(t_fcall *call, t_token *param)
+{
+	call->params = push_token(call->params, param->name, param->type, param->line, param->filename);
+	return (call);
+}
+
+t_fcall		*create_function_call(char *name)
+{
+	t_fcall *call;
+
+	call = (t_fcall *)malloc(sizeof(t_fcall));
+	call->name = strdup(name);
+	call->params = NULL;
+	return (call);
+}
+
+t_function	*search_function(char *name)
+{
+	extern t_functions	*functions;
+	t_function		*function;
+
+	function = functions;
+	while (function)
+	{
+		if (strcmp(function->name, name) == 0
+			return (function);
+		function = function->next;
+	}
+	return (NULL);
+}
+
+int		verify_function_call(t_fcall *fcall)
+{
+	t_function	*against;
+	t_token		*trav;
+	t_variable	*variable;
+	t_variable	*fparam;
+	
+	against = search_function(fcall->name);
+	if (!against)
+	{
+		printf("Function doesn't exist error\n");
+		return (1);
+	}
+	trav = fcall->params;
+	fparam = against->params;
+	while (trav)
+	{
+			
+	}
+}
+
 t_variable	*search_variable(char *name)
 {
 	t_variable		*variable;
