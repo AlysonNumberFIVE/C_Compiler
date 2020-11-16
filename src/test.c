@@ -11,7 +11,7 @@ int v(int x)
 char *hello(int x, char c);
 int main()
 {
-//	empty();
+	hello(hello(hello()));
 	return (0);
 }
 /*

@@ -35,10 +35,17 @@ int		round_bracket = 0;
 int		datatype_len = 0;
 t_current_var	*current_variable = NULL;
 int		asterisk_count = 0;
-t_fcall		*current_call = NULL;
+t_token		*function_stack = NULL;
+
 
 
 bool		false_error(t_token *token, int message);
+
+t_token		*push_to_stack(t_token *function_stack, t_token *token)
+{
+	function_stack = push_token(function_stack, token->name, token->type,
+		token->line, token->filename);
+}
 
 t_current_var	*new_curr_var(char *name)
 {
@@ -256,13 +263,10 @@ bool	evaluate_id(t_token *token)
 	int flag;
 	pointer_number = NULL;
 
-	printf("token is %s\n", token->name);
 	if (!typing)
 	{
 		if (brackets < 0)
-		{
 			return (false_error(token, 15));
-		}
 	}
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
@@ -270,29 +274,21 @@ bool	evaluate_id(t_token *token)
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
-		current_call = add_call_params(current_call, token);
-		if (token->next && strcmp(token->next->name, ",") == 0 ||
-			strcmp(token->next->name, ")") == 0 ||
-			strcmp(token->next->type, "NUM") == 0)
-			return (true);
-		else
-		{
-			return (false_error(token, 4));
-		}
+		function_stack = push_to_stack(function_stack, token);
 	}
 	if (!pstack)
 	{	
 		if (token->next)
 		{
+			if (strcmp(token->next->name, "(") == 0)
+			{
+				function_stack = push_to_stack(function_stack, token);
+				typing = strdup("CALL");
+				return (true);	
+			}
 			flag = search_for_label(token->name, token->next->name);
 			if (flag == 1) return (false_error(token, 23));	
 			else if (flag == 2) return (false_error(token, 24));
-			if (strcmp(token->next->name, "(") == 0)
-			{
-				current_call = create_function_call(token->name);
-				typing = strdup("CALL");
-				return (true);
-			}
 		}
 	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
@@ -400,7 +396,7 @@ bool	evaluate_bracket(t_token *token)
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
-		return (true);
+		function_stack = push_to_stack(function_stack, token);
 	}
 	if (token->next && (strcmp(token->next->type, "DATATYPE") == 0 ||
 		strcmp(token->next->name, ")") == 0))
@@ -446,6 +442,10 @@ bool	evaluate_bracket2(t_token *token)
 			return (false_error(token, 18));
 		}
 	}
+	else if (typing && strcmp(typing, "CALL") == 0)
+	{
+		function_stack = push_to_stack(function_stack, token);
+	}
 	return (true);
 }
 
@@ -459,12 +459,7 @@ bool	evaluate_comma(t_token *token)
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
-		if (token->next && strcmp(token->next->type, "ID") == 0 ||
-			strcmp(token->next->type, "NUM") == 0 || 
-			strcmp(token->next->type, "LITERAL") == 0 ||
-			strcmp(token->next->type, "CHAR") == 0)
-			return (true);
-		return (false_error(token, 4));
+		function_stack = push_to_stack(function_stack, token);
 	}
 }
 
@@ -482,7 +477,7 @@ bool	evaluate_number(t_token *token)
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
-		current_call = add_call_params(current_call, token);
+		function_stack = push_to_stack(function_stack, token);
 		if (token->next)
 		{
 			if (strcmp(token->next->name, ")") == 0 ||
@@ -529,6 +524,10 @@ bool	evaluate_number(t_token *token)
 
 bool	evaluate_asterisk(t_token *token)
 {
+	if (typing && strcmp(typing, "CALL") == 0)
+	{
+		function_stack = push_to_stack(function_stack, token);
+	}
 	if (!pstack)
 	{
 		if (token->next && strcmp(token->next->name, "*") == 0 || 
@@ -572,6 +571,10 @@ bool	evaluate_block1(t_token *token)
 	}
 	else
 	{
+		if (typing && strcmp(typing, "CALL") == 0)
+		{
+			function_stack = push_to_stack(function_stack, token);
+		}
 		if (token->next && strcmp(token->next->name, "]") == 0)
 			return (true);
 			
@@ -606,6 +609,11 @@ bool	evaluate_block2(t_token *token)
 		else if (token->next && strcmp(token->next->type, "NUM") == 0 ||
 			strcmp(token->next->type, "LITERAL") == 0)
 			return (false_error(token, 12));		
+	}
+	else if (typing && strcmp(typing, "CALL") == 0)
+	{
+		function_stack = push_to_stack(function_stack, token);
+		return (true);
 	}
 	return (false_error(token, 1));
 }
@@ -680,18 +688,6 @@ bool	evaluate_semicolon(t_token *token)
 	if (strcmp(token->name, ";") == 0)
 	{
 		// print current_var
-		if (current_call)
-		{
-			verify_function_call(current_call);
-			t_token *t = current_call->params;
-			while (t)
-			{
-				printf("\t%s\n", t->name);
-				t = t->next;
-			}
-			printf("\n\n");
-		}
-	//	verify_function_call(current_call);	
 		if (asterisk_count > 0)
 			current_variable = add_index_depth(current_variable, asterisk_count);
 		t_current_var *trav = current_variable;
@@ -706,6 +702,13 @@ bool	evaluate_semicolon(t_token *token)
 		current_variable = NULL;
 		free(typing);
 		typing = NULL;
+		t_token *s = function_stack;
+		while (s)
+		{
+			printf(" %s ", s->name);
+			s = s->next;
+		}
+		printf("\n\n");
 		asterisk_count = 0;
 		if (left) 
 		{
@@ -774,6 +777,10 @@ bool	evaluate_sum(t_token *token)
 	if (token->next && strcmp(token->next->type, "ID") == 0 ||
 		strcmp(token->next->type, "NUM") == 0)
 	{
+		if (typing && strcmp(typing, "CALL") == 0)
+		{
+			function_stack = push_to_stack(function_stack, token);
+		}
 		return (true);
 	}
 	else
