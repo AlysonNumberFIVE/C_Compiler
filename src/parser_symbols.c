@@ -1,5 +1,6 @@
 
 
+#include "../inc/token.h"
 #include "../inc/symbol.h"
 //#include "../inc/parser.h"
 
@@ -19,10 +20,10 @@ t_str_uni	*structs_unions = NULL;
 
 
 
-
 void		free_fcall(t_fcall *call)
 {
 	t_token *trav;
+	int i;
 
 	i = 0;
 	free(call->name);
@@ -56,13 +57,13 @@ t_fcall		*create_function_call(char *name)
 
 t_function	*search_function(char *name)
 {
-	extern t_functions	*functions;
+	extern t_function	*functions;
 	t_function		*function;
 
 	function = functions;
 	while (function)
 	{
-		if (strcmp(function->name, name) == 0
+		if (strcmp(function->name, name) == 0)
 			return (function);
 		function = function->next;
 	}
@@ -76,18 +77,52 @@ int		verify_function_call(t_fcall *fcall)
 	t_variable	*variable;
 	t_variable	*fparam;
 	
-	against = search_function(fcall->name);
+	against = search_function(fcall->name);	
 	if (!against)
 	{
 		printf("Function doesn't exist error\n");
 		return (1);
 	}
 	trav = fcall->params;
-	fparam = against->params;
-	while (trav)
+	fparam = against->parameters;
+	while (trav && fparam)
 	{
-			
+		if (strcmp(trav->type, "LITERAL") == 0)
+		{
+			if (!(fparam->depth == 1 && strcmp(fparam->type, "char") == 0))
+			{
+				printf("parameter error with LITERALS\n");
+				return (2);
+			}
+		}
+		else if (strcmp(trav->type, "NUM") == 0)
+		{
+			if (!(fparam->depth == 0 && strcmp(fparam->type, "int") == 0))
+			{
+				printf("parameter error with NUMbers\n");
+				return (3);
+			}
+		}
+		else if (strcmp(trav->type, "ID") == 0)
+		{
+			variable = search_variable(trav->name);
+			printf("v type : %s f type : %s\n", variable->type, fparam->type);
+			printf("v depth : %d f depth : %d\n", variable->depth, fparam->depth);	
+			if (!(variable->depth == fparam->depth && strcmp(trav->type, fparam->type) == 0))
+			{
+				printf("datatype mismatch error\n");
+				return (4);
+			}	
+		}
+		fparam = fparam->next;
+		trav = trav->next;
 	}
+	if (fparam || trav)
+	{
+		printf("parameter length error\n");
+		return (5);
+	}
+	return (0);
 }
 
 t_variable	*search_variable(char *name)
@@ -99,10 +134,10 @@ t_variable	*search_variable(char *name)
 	
 	if (!scope_table)
 		return (false);
-	counter = 0;
+	counter = scope_depth;
 	while (counter > -1)
 	{
-		variable = scope_table[scope_depth];
+		variable = scope_table[counter];
 		while (variable)
 		{
 			if (strcmp(variable->name, name) == 0)
@@ -131,10 +166,12 @@ int	search_for_label(char *name, char *next_token)
 		{
 			if (strcmp(function->name, name) == 0)
 			{
+				printf("function found : %s\n", name);
 				return (0);
 			}
 			function = function->next;
 		}
+		printf("function not found\n");
 		return (1);
 	}
 	else 

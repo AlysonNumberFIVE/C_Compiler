@@ -239,6 +239,8 @@ bool	drop_scope_block(void)
 {
 	if (scope_depth < 0)
 		return (false);
+	if (!scope_table)
+		return (true);
 	free_variables(scope_table[scope_depth]);
 	scope_depth--;
 	return (true);

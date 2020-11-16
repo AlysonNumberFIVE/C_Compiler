@@ -1,7 +1,14 @@
 
 
-char *hello[42];
 
+int c = 0;
+char *hello(int x, char c);
+int main()
+{
+	hello(c, 'c');	
+}
+/*
+char *hello[42];
 char str[] 212
 char *str;
 "hello";

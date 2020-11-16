@@ -4,6 +4,7 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 #include <stdio.h>
+#include "compiler.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -51,5 +52,7 @@ void		new_scope_block(void);
 bool    	does_variable_exist(char *name, char *typing);
 int		search_for_label(char *name, char *next_token);
 t_variable	*search_variable(char *name);
-
+t_fcall		*create_function_call(char *name);
+t_fcall		*add_call_params(t_fcall *head, t_token *param); 
+int		verify_function_call(t_fcall *call);
 #endif

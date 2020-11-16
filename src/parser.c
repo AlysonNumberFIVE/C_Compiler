@@ -34,6 +34,9 @@ int		brackets = 0;
 int		datatype_len = 0;
 t_current_var	*current_variable = NULL;
 int		asterisk_count = 0;
+t_fcall		*current_call = NULL;
+
+
 bool		false_error(t_token *token, int message);
 
 t_current_var	*new_curr_var(char *name)
@@ -251,8 +254,8 @@ bool	evaluate_id(t_token *token)
 	char *pointer_number;
 	int flag;
 	pointer_number = NULL;
-	
-	printf("typing is %s and token is %s\n", typing, token->name);
+
+	printf("token is %s\n", token->name);
 	if (!typing)
 	{
 		if (brackets < 0)
@@ -264,14 +267,31 @@ bool	evaluate_id(t_token *token)
 	{
 		return (search_for_label(token->name, token->next->name));
 	}
+	else if (typing && strcmp(typing, "CALL") == 0)
+	{
+		current_call = add_call_params(current_call, token);
+		if (token->next && strcmp(token->next->name, ",") == 0 ||
+			strcmp(token->next->name, ")") == 0 ||
+			strcmp(token->next->type, "NUM") == 0)
+			return (true);
+		else
+		{
+			return (false_error(token, 4));
+		}
+	}
 	if (!pstack)
 	{	
-		printf("STACK EMPTY\n");	
 		if (token->next)
 		{
 			flag = search_for_label(token->name, token->next->name);
 			if (flag == 1) return (false_error(token, 23));	
 			else if (flag == 2) return (false_error(token, 24));
+			if (strcmp(token->next->name, "(") == 0)
+			{
+				current_call = create_function_call(token->name);
+				typing = strdup("CALL");
+				return (true);
+			}
 		}
 	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
@@ -376,6 +396,11 @@ bool	evaluate_bracket(t_token *token)
 		else 
 			return (false_error(token, 4));
 	}
+	else if (typing && strcmp(typing, "CALL") == 0)
+	{
+	//	current_call = add_call_params(current_call, token);
+		return (true);
+	}
 	if (token->next && (strcmp(token->next->type, "DATATYPE") == 0 ||
 		strcmp(token->next->name, ")") == 0))
 	{
@@ -430,6 +455,15 @@ bool	evaluate_comma(t_token *token)
 			return (true);
 		return (false_error(token, 4));
 	}
+	else if (typing && strcmp(typing, "CALL") == 0)
+	{
+		if (token->next && strcmp(token->next->type, "ID") == 0 ||
+			strcmp(token->next->type, "NUM") == 0 || 
+			strcmp(token->next->type, "LITERAL") == 0 ||
+			strcmp(token->next->type, "CHAR") == 0)
+			return (true);
+		return (false_error(token, 4));
+	}
 }
 
 bool	evaluate_number(t_token *token)
@@ -443,6 +477,21 @@ bool	evaluate_number(t_token *token)
 			return (false_error(token, 16));
 		else
 			return (false_error(token, 8));
+	}
+	else if (typing && strcmp(typing, "CALL") == 0)
+	{
+		current_call = add_call_params(current_call, token);
+		if (token->next)
+		{
+			if (strcmp(token->next->name, ")") == 0 ||
+				strcmp(token->next->name, ",") == 0)
+				return (true);
+			else
+			{
+				printf("CALL ERROR (498)\n");
+				return (false_error(token, 4));
+			}
+		}
 	}
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
@@ -587,8 +636,6 @@ bool	evaluate_equ(t_token *token)
 		}
 		else if (token->next && strcmp(token->next->type, "ID") == 0)
 		{
-			printf("check if variable is CALL or ASSIGN\n");
-			printf("do symbol table check\n");
 			if (symbol_type && strcmp(symbol_type, "variable") == 0)
 			{
 				free(typing);
@@ -627,6 +674,20 @@ bool	evaluate_semicolon(t_token *token)
 	if (strcmp(token->name, ";") == 0)
 	{
 		// print current_var
+		if (current_call)
+		{
+			verify_function_call(current_call);
+			printf("current_call\n");
+			printf("Function : %s\n", current_call->name);
+			t_token *t = current_call->params;
+			while (t)
+			{
+				printf("\t%s\n", t->name);
+				t = t->next;
+			}
+			printf("\n\n");
+		}
+	//	verify_function_call(current_call);	
 		if (asterisk_count > 0)
 			current_variable = add_index_depth(current_variable, asterisk_count);
 		t_current_var *trav = current_variable;
@@ -662,7 +723,6 @@ bool	evaluate_semicolon(t_token *token)
 bool	evaluate_curly(t_token *token)
 {
 	extern int scope_depth;
-
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		scope_depth++;
@@ -674,10 +734,12 @@ bool	evaluate_curly(t_token *token)
 		if (token->next && strcmp(token->next->type, "ID") == 0 ||
 			strcmp(token->next->type, "DATATYPE") == 0 ||
 			strcmp(token->next->name, "*") == 0 ||
-			strcmp(token->next->name, "}") == 0)
+			strcmp(token->next->name, "}") == 0 ||
+			strcmp(token->next->name, "NUM") == 0)
 			return (true);
 			
 	}
+	
 	return (false);
 }
 
@@ -734,17 +796,17 @@ bool	parser(t_token *token)
 	trav = token;
 	while (trav)
 	{
+		printf(" %s\n", trav->name);
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
 
-		if (strcmp(trav->type, "DATATYPE") == 0)
-			guidance = evaluate_datatype(trav);
-		else if (!pstack && strcmp(trav->type, "ID") == 0)
-			guidance = evaluate_id(trav);
+		// these tokens are allowed to start off a phrase
+		if (strcmp(trav->type, "DATATYPE") == 0) guidance = evaluate_datatype(trav);
+		else if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
 		if (guidance == true)
 		{
-			if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
-			else if (strcmp(trav->name, "(") == 0) guidance = evaluate_bracket(trav);
+		//	if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
+			if (strcmp(trav->name, "(") == 0) guidance = evaluate_bracket(trav);
 			else if (strcmp(trav->name, "*") == 0) guidance = evaluate_asterisk(trav);
 			else if (strcmp(trav->name, ")") == 0) guidance = evaluate_bracket2(trav);
 			else if (strcmp(trav->name, ",") == 0) guidance = evaluate_comma(trav);
@@ -763,6 +825,5 @@ bool	parser(t_token *token)
 			}
 		}
 		trav = trav->next;
-		
 	}
 }
