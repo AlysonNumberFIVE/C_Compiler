@@ -1,11 +1,18 @@
 
 
 
+
+//int 	empty();
 int c = 0;
+int v(int x)
+{
+	return 42;
+}
 char *hello(int x, char c);
 int main()
 {
-	hello(c, 'c');	
+//	empty();
+	return (0);
 }
 /*
 char *hello[42];

@@ -31,6 +31,7 @@ t_hashtable	*ff_list = NULL;
 bool		datatype_set = false;
 char		*typing = NULL;
 int		brackets = 0;
+int		round_bracket = 0;
 int		datatype_len = 0;
 t_current_var	*current_variable = NULL;
 int		asterisk_count = 0;
@@ -378,6 +379,7 @@ bool	peek(t_token *token)
 bool	evaluate_bracket(t_token *token)
 {
 	asterisk_count = 0;
+	round_bracket++;
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "DATATYPE") == 0 ||
@@ -398,7 +400,6 @@ bool	evaluate_bracket(t_token *token)
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
-	//	current_call = add_call_params(current_call, token);
 		return (true);
 	}
 	if (token->next && (strcmp(token->next->type, "DATATYPE") == 0 ||
@@ -421,6 +422,7 @@ bool	evaluate_bracket(t_token *token)
 
 bool	evaluate_bracket2(t_token *token)
 {
+	round_bracket--;
 	if (strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (!token->next)
@@ -530,8 +532,11 @@ bool	evaluate_asterisk(t_token *token)
 	if (!pstack)
 	{
 		if (token->next && strcmp(token->next->name, "*") == 0 || 
-			token->next && strcmp(token->next->name, "ID") == 0)
+			token->next && strcmp(token->next->type, "ID") == 0)
+		{
+			asterisk_count++;
 			return (true);
+		}
 		else return (false_error(token, 21));	
 	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
@@ -546,7 +551,9 @@ bool	evaluate_asterisk(t_token *token)
 	}
 	else if (token->next && strcmp(token->next->type, "ID") != 0 &&
 			strcmp(token->next->name, "*") != 0)
+	{
 		return (false_error(token, 10));
+	}
 	else if (!token->next)
 		return (false_error(token, 13));
 	asterisk_count++;
@@ -589,7 +596,6 @@ bool	evaluate_block1(t_token *token)
 
 bool	evaluate_block2(t_token *token)
 {
-		
 	if (typing && strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0)
 	{
 		asterisk_count++;
@@ -677,8 +683,6 @@ bool	evaluate_semicolon(t_token *token)
 		if (current_call)
 		{
 			verify_function_call(current_call);
-			printf("current_call\n");
-			printf("Function : %s\n", current_call->name);
 			t_token *t = current_call->params;
 			while (t)
 			{
@@ -810,7 +814,9 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, "*") == 0) guidance = evaluate_asterisk(trav);
 			else if (strcmp(trav->name, ")") == 0) guidance = evaluate_bracket2(trav);
 			else if (strcmp(trav->name, ",") == 0) guidance = evaluate_comma(trav);
-			else if (strcmp(trav->type, "NUM") == 0) guidance = evaluate_number(trav);
+			else if (strcmp(trav->type, "NUM") == 0 || strcmp(trav->type, "CHAR") == 0 ||
+				strcmp(trav->type, "LITERAL") == 0) 
+				guidance = evaluate_number(trav);
 			else if (sum_tokens(trav->name) == true) guidance = evaluate_sum(trav);
 			else if (equ_tokens(trav->name) == true) guidance = evaluate_equ(trav);
 			else if (strcmp(trav->name, ";") == 0) guidance = evaluate_semicolon(trav);
@@ -818,7 +824,6 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
 			else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			else if (strcmp(trav->name, "}") == 0) guidance = evaluate_curly2(trav);
-			
 			if (guidance == false) 
 			{
 				error_cleanup();

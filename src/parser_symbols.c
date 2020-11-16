@@ -76,7 +76,9 @@ int		verify_function_call(t_fcall *fcall)
 	t_token		*trav;
 	t_variable	*variable;
 	t_variable	*fparam;
-	
+	extern int	asterisk_count;
+
+	printf("asterisk_count is %d\n", asterisk_count);	
 	against = search_function(fcall->name);	
 	if (!against)
 	{
@@ -107,12 +109,18 @@ int		verify_function_call(t_fcall *fcall)
 		{
 			variable = search_variable(trav->name);
 			printf("v type : %s f type : %s\n", variable->type, fparam->type);
-			printf("v depth : %d f depth : %d\n", variable->depth, fparam->depth);	
-			if (!(variable->depth == fparam->depth && strcmp(trav->type, fparam->type) == 0))
-			{
-				printf("datatype mismatch error\n");
+			printf("v depth : %d f depth : %d\n", variable->depth, fparam->depth);
+			asterisk_count = 0;
+			if (variable->depth != fparam->depth)
+			{	 
+				printf("depth mismatch\n");
 				return (4);
-			}	
+			}
+			if (strcmp(variable->type, fparam->type) != 0) 
+			{
+				printf("datatype mismatch\n");	
+				return (4);
+			}
 		}
 		fparam = fparam->next;
 		trav = trav->next;
