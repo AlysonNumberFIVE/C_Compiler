@@ -12,7 +12,6 @@ char *hello(int x, char c);
 int main()
 {
 	hello(hello(hello()));
-	return (0);
 }
 /*
 char *hello[42];
