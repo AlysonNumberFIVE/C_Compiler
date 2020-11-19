@@ -274,7 +274,12 @@ bool	evaluate_id(t_token *token)
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
+		printf("line 277 is here\n");
 		function_stack = push_to_stack(function_stack, token);
+		if (token->next && strcmp(token->next->name, ")") == 0 ||
+			strcmp(token->next->name, ",") == 0 ||
+			sum_tokens(token->next->name) == true)
+			return (true);
 	}
 	if (!pstack)
 	{	
@@ -407,6 +412,9 @@ bool	evaluate_bracket(t_token *token)
 	{
 		return (false_error(token, 4));
 	}
+	if (token->next && strcmp(token->next->type, "ID") == 0 ||
+		strcmp(token->next->name, ";") == 0)
+		return (true);
 	else if (token->next && legal_datatype(token->next->name) == false)
 	{
 		if (strcmp(token->name, "ID") != 0)
@@ -451,6 +459,7 @@ bool	evaluate_bracket2(t_token *token)
 
 bool	evaluate_comma(t_token *token)
 {
+	printf("typing (457) is %s\n", typing);
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && legal_datatype(token->next->name) == true)
@@ -461,6 +470,7 @@ bool	evaluate_comma(t_token *token)
 	{
 		function_stack = push_to_stack(function_stack, token);
 	}
+	return (true);
 }
 
 bool	evaluate_number(t_token *token)
@@ -708,6 +718,9 @@ bool	evaluate_semicolon(t_token *token)
 			printf(" %s ", s->name);
 			s = s->next;
 		}
+		printf("\nfree function_stack\n");
+		free_tokens(function_stack);
+		function_stack = NULL;
 		printf("\n\n");
 		asterisk_count = 0;
 		if (left) 

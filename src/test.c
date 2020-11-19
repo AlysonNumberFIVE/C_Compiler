@@ -11,7 +11,7 @@ int v(int x)
 char *hello(int x, char c);
 int main()
 {
-	hello(hello(hello()));
+	hello(hello(hello()), c + 42);
 	return (0);
 }
 /*

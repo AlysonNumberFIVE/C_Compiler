@@ -49,3 +49,18 @@ t_token *push_token(t_token *first, char *name, char *type, size_t line, char *f
     }
     return (last);
 }
+
+void	free_tokens(t_token *token)
+{
+	t_token	*trav;
+
+	while (token)
+	{
+		trav = token;
+		token = token->next;
+		free(trav->name);
+		free(trav->type);
+		free(trav->filename);
+		free(trav);
+	}
+}
