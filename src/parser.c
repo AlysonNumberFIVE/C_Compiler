@@ -381,6 +381,7 @@ bool	evaluate_bracket(t_token *token)
 {
 	asterisk_count = 0;
 	round_bracket++;
+	printf("typing is %s\n", typing);
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "DATATYPE") == 0 ||
@@ -402,6 +403,10 @@ bool	evaluate_bracket(t_token *token)
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
 		function_stack = push_to_stack(function_stack, token);
+		if (token->next && strcmp(token->next->type, "ID") == 0 ||
+			strcmp(token->next->type, "NUM") == 0 || 
+			strcmp(token->next->type, "LITERAL") == 0)
+			return (true);
 	}
 	if (token->next && (strcmp(token->next->type, "DATATYPE") == 0 ||
 		strcmp(token->next->name, ")") == 0))
@@ -527,6 +532,8 @@ bool	evaluate_number(t_token *token)
 	}
 	else if (!typing)
 	{
+		if (strcmp(token->next->name, ")") == 0)
+			return (true);
 		return (false_error(token, 19));
 	}
 	return (true);
@@ -536,7 +543,13 @@ bool	evaluate_asterisk(t_token *token)
 {
 	if (typing && strcmp(typing, "CALL") == 0)
 	{
-		function_stack = push_to_stack(function_stack, token);
+		if (token->next && strcmp(token->next->type, "ID") == 0 ||
+			strcmp(token->next->name, "*") == 0)
+		{
+			function_stack = push_to_stack(function_stack, token);
+			asterisk_count++;
+			return (true);
+		}
 	}
 	if (!pstack)
 	{
