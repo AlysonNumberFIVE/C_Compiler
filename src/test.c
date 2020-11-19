@@ -1,9 +1,10 @@
 
-
+char *str = "42";
+str[0];
 
 
 //int 	empty();
-int c = 0;
+/*int c = 0;
 int v(int x)
 {
 	return 42;
@@ -11,10 +12,13 @@ int v(int x)
 char *hello(int x, char c);
 int main()
 {
-	hello(hello(hello()), c + 42);
+	char *str = "42";
+	str[0];
+	1 + hello(hello(hello()), c + 42);
+	
 	return (0);
 }
-/*
+*//*
 char *hello[42];
 char str[] 212
 char *str;

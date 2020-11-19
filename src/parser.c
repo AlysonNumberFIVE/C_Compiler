@@ -216,6 +216,7 @@ bool	evaluate_datatype(t_token *token)
 }
 bool	false_error(t_token *token, int message)
 {
+	printf("?\n");
 	printf("%s:%d: ", token->filename, token->line);
 	if (message == 1) printf("error : expected ';', ',' or 'asm' before '%s' token\n\n", token->next->name);
 	else if (message == 2) printf("error : unknown type name '%s'\n\n", token->next->name);
@@ -253,6 +254,7 @@ bool	false_error(t_token *token, int message)
 	else if (message == 25) printf("error : lvalue required as left operand of assignment\n\n");
 	else if (message == 26) printf("error : array '%s' assumed to have one element\n\n", 
 		token->name); 
+
 	clear_pstack();
 	return (false);
 }
@@ -274,7 +276,6 @@ bool	evaluate_id(t_token *token)
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
-		printf("line 277 is here\n");
 		function_stack = push_to_stack(function_stack, token);
 		if (token->next && strcmp(token->next->name, ")") == 0 ||
 			strcmp(token->next->name, ",") == 0 ||
@@ -282,7 +283,8 @@ bool	evaluate_id(t_token *token)
 			return (true);
 	}
 	if (!pstack)
-	{	
+	{
+	
 		if (token->next)
 		{
 			if (strcmp(token->next->name, "(") == 0)
@@ -290,6 +292,10 @@ bool	evaluate_id(t_token *token)
 				function_stack = push_to_stack(function_stack, token);
 				typing = strdup("CALL");
 				return (true);	
+			}
+			else if (strcmp(token->next->name, "[") == 0)
+			{
+				return (true);
 			}
 			flag = search_for_label(token->name, token->next->name);
 			if (flag == 1) return (false_error(token, 23));	
@@ -532,7 +538,8 @@ bool	evaluate_number(t_token *token)
 	}
 	else if (!typing)
 	{
-		if (strcmp(token->next->name, ")") == 0)
+		if (strcmp(token->next->name, ")") == 0 ||
+			strcmp(token->next->name, "]") == 0)
 			return (true);
 		return (false_error(token, 19));
 	}
@@ -622,7 +629,7 @@ bool	evaluate_block1(t_token *token)
 
 bool	evaluate_block2(t_token *token)
 {
-	if (typing && strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0)
+	if (typing && (strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0))
 	{
 		asterisk_count++;
 		if (token->next && strcmp(token->next->name, "[") == 0 ||
@@ -636,6 +643,10 @@ bool	evaluate_block2(t_token *token)
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
 		function_stack = push_to_stack(function_stack, token);
+		return (true);
+	}
+	else if (token->next && strcmp(token->next->name, ";") == 0)
+	{
 		return (true);
 	}
 	return (false_error(token, 1));
@@ -708,10 +719,11 @@ bool	evaluate_semicolon(t_token *token)
 	extern t_token *left;
 	extern t_token *right;
 
+
 	if (strcmp(token->name, ";") == 0)
 	{
 		// print current_var
-		if (asterisk_count > 0)
+		if (asterisk_count > 0 && current_variable)
 			current_variable = add_index_depth(current_variable, asterisk_count);
 		t_current_var *trav = current_variable;
 		while (trav)
@@ -723,8 +735,11 @@ bool	evaluate_semicolon(t_token *token)
 		symtab_manager = symbol_table_manager(current_variable, typing);	
 		free_curr_var(current_variable);
 		current_variable = NULL;
-		free(typing);
-		typing = NULL;
+		if (typing)	
+		{
+			free(typing);
+			typing = NULL;
+		}
 		t_token *s = function_stack;
 		while (s)
 		{
@@ -732,9 +747,12 @@ bool	evaluate_semicolon(t_token *token)
 			s = s->next;
 		}
 		printf("\nfree function_stack\n");
-		free_tokens(function_stack);
-		function_stack = NULL;
-		printf("\n\n");
+		if (function_stack)
+		{
+			free_tokens(function_stack);
+			function_stack = NULL;
+			printf("\n\n");
+		}
 		asterisk_count = 0;
 		if (left) 
 		{
@@ -857,6 +875,7 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
 			else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			else if (strcmp(trav->name, "}") == 0) guidance = evaluate_curly2(trav);
+			printf("after\n");
 			if (guidance == false) 
 			{
 				error_cleanup();
