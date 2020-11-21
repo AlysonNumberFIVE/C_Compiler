@@ -23,7 +23,6 @@ char datatypes[13][10] = {
 };
 
 char		*this_var = NULL; // for printing out defective variable naming stuff.
-
 t_function	*functions = NULL;
 int		stack_height = 0;
 t_pstack	*pstack = NULL;
@@ -36,8 +35,8 @@ int		datatype_len = 0;
 t_current_var	*current_variable = NULL;
 int		asterisk_count = 0;
 t_token		*function_stack = NULL;
-
-
+bool		typecasting = false;
+t_typecast	*typecast = NULL;
 
 bool		false_error(t_token *token, int message);
 
@@ -216,7 +215,6 @@ bool	evaluate_datatype(t_token *token)
 }
 bool	false_error(t_token *token, int message)
 {
-	printf("?\n");
 	printf("%s:%d: ", token->filename, token->line);
 	if (message == 1) printf("error : expected ';', ',' or 'asm' before '%s' token\n\n", token->next->name);
 	else if (message == 2) printf("error : unknown type name '%s'\n\n", token->next->name);
@@ -254,7 +252,10 @@ bool	false_error(t_token *token, int message)
 	else if (message == 25) printf("error : lvalue required as left operand of assignment\n\n");
 	else if (message == 26) printf("error : array '%s' assumed to have one element\n\n", 
 		token->name); 
-
+	else if (message == 27) printf("error : expected expression before '%s' token\n\n",
+		token->next->name);
+	else if (message == 28) printf("error : expected ')' before '%s' token\n",
+		token->next->name);
 	clear_pstack();
 	return (false);
 }
@@ -272,7 +273,8 @@ bool	evaluate_id(t_token *token)
 	}
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
-		return (search_for_label(token->name, token->next->name));
+		search_for_label(token->name, token->next->name);
+		return (true);
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
@@ -283,8 +285,7 @@ bool	evaluate_id(t_token *token)
 			return (true);
 	}
 	if (!pstack)
-	{
-	
+	{	
 		if (token->next)
 		{
 			if (strcmp(token->next->name, "(") == 0)
@@ -385,9 +386,23 @@ bool	peek(t_token *token)
 
 bool	evaluate_bracket(t_token *token)
 {
+	extern bool inside_for;
+
 	asterisk_count = 0;
 	round_bracket++;
-	printf("typing is %s\n", typing);
+	if (inside_for == true)
+	{
+		if (token->next && strcmp(token->next->name, ";") == 0)
+			return (true);
+	}
+	if ((typing && strcmp(typing, "FUNCTION") != 0) || !typing)
+	{
+		typecasting = true;
+		printf("TYPECAST DETECTED\n");
+		typecast = (t_typecast *)malloc(sizeof(t_typecast));
+		typecast->type = NULL;
+		typecast->depth = 0;
+	}
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "DATATYPE") == 0 ||
@@ -426,6 +441,11 @@ bool	evaluate_bracket(t_token *token)
 	if (token->next && strcmp(token->next->type, "ID") == 0 ||
 		strcmp(token->next->name, ";") == 0)
 		return (true);
+	else if (token->next && legal_datatype(token->next->name) == true)
+	{
+		typecasting = true;
+		return (true);	
+	}
 	else if (token->next && legal_datatype(token->next->name) == false)
 	{
 		if (strcmp(token->name, "ID") != 0)
@@ -437,8 +457,33 @@ bool	evaluate_bracket(t_token *token)
 
 bool	evaluate_bracket2(t_token *token)
 {
+	extern bool inside_for;
 	round_bracket--;
-	if (strcmp(typing, "FUNCTION") == 0) 
+
+	if (typecasting == true)
+	{
+		typecasting = false;
+		if (pstack)
+			clear_pstack();
+		if (token->next && strcmp(token->next->type, "ID") == 0 ||
+			strcmp(token->next->type, "NUM") == 0 ||
+			strcmp(token->next->type, "LITERAL") == 0)
+		{
+			if (current_variable) 
+			{
+				free_curr_var(current_variable); 
+				current_variable = NULL;
+			}
+			asterisk_count = 0;
+			return (true);
+		}
+		else { printf("incorrect typecast usage\n"); return (false);}
+	}	
+	if (round_bracket == 0)
+	{
+		if (inside_for == true) inside_for = false;	
+	}
+	if (typing && strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (!token->next)
 		{
@@ -470,7 +515,6 @@ bool	evaluate_bracket2(t_token *token)
 
 bool	evaluate_comma(t_token *token)
 {
-	printf("typing (457) is %s\n", typing);
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		if (token->next && legal_datatype(token->next->name) == true)
@@ -538,9 +582,12 @@ bool	evaluate_number(t_token *token)
 	}
 	else if (!typing)
 	{
-		if (strcmp(token->next->name, ")") == 0 ||
-			strcmp(token->next->name, "]") == 0)
+		if (token->next && strcmp(token->next->name, ")") == 0 ||
+			strcmp(token->next->name, "]") == 0 ||
+			strcmp(token->next->name, ";") == 0)
+		{
 			return (true);
+		}
 		return (false_error(token, 19));
 	}
 	return (true);
@@ -548,6 +595,19 @@ bool	evaluate_number(t_token *token)
 
 bool	evaluate_asterisk(t_token *token)
 {
+	if (typecasting == true)
+	{
+		asterisk_count++;	
+		if (token->next && strcmp(token->next->name, ")") == 0)
+		{
+			typecast->depth = asterisk_count;
+			asterisk_count++;
+		}
+		if (token->next && strcmp(token->next->name, "*") == 0 ||
+			strcmp(token->next->name, ")") == 0)
+			return (true);
+		else return (false_error(token, 28));
+	}
 	if (typing && strcmp(typing, "CALL") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "ID") == 0 ||
@@ -607,10 +667,9 @@ bool	evaluate_block1(t_token *token)
 		}
 		if (token->next && strcmp(token->next->name, "]") == 0)
 			return (true);
-			
 		else if (token->next && strcmp(token->next->type, "NUM") == 0)
 			return (true);
-
+		
 		if (token->next && strcmp(token->next->type, "ID") == 0)
 			return (true);
 		if (token->next && strcmp(token->next->type, "NUM") != 0 ||
@@ -711,6 +770,7 @@ bool	evaluate_equ(t_token *token)
 			return (true);
 		}
 	}
+	return (true);
 }
 
 bool	evaluate_semicolon(t_token *token)
@@ -718,23 +778,37 @@ bool	evaluate_semicolon(t_token *token)
 	int symtab_manager;
 	extern t_token *left;
 	extern t_token *right;
+	extern bool inside_for;
+	extern int forloop_count;
 
-
+	printf("HERE\n");
+	if (inside_for == true)
+	{
+		if (forloop_count < 2)
+			forloop_count++;
+		else 
+			return (false_error(token, 26));
+	}
 	if (strcmp(token->name, ";") == 0)
 	{
 		// print current_var
+		printf("FIRST (786)\n");
 		if (asterisk_count > 0 && current_variable)
 			current_variable = add_index_depth(current_variable, asterisk_count);
 		t_current_var *trav = current_variable;
+		printf("SECOND\n");
 		while (trav)
 		{
 			printf(" %s | ", trav->str);
 			trav = trav->next;
 		} 
-		printf(" %s\n\n\n", typing);
 		symtab_manager = symbol_table_manager(current_variable, typing);	
-		free_curr_var(current_variable);
-		current_variable = NULL;
+		printf("THIRD\n");
+		if (current_variable)
+		{
+			free_curr_var(current_variable);
+			current_variable = NULL;
+		}
 		if (typing)	
 		{
 			free(typing);
@@ -746,7 +820,6 @@ bool	evaluate_semicolon(t_token *token)
 			printf(" %s ", s->name);
 			s = s->next;
 		}
-		printf("\nfree function_stack\n");
 		if (function_stack)
 		{
 			free_tokens(function_stack);
@@ -786,11 +859,11 @@ bool	evaluate_curly(t_token *token)
 			strcmp(token->next->type, "DATATYPE") == 0 ||
 			strcmp(token->next->name, "*") == 0 ||
 			strcmp(token->next->name, "}") == 0 ||
-			strcmp(token->next->name, "NUM") == 0)
+			strcmp(token->next->name, "NUM") == 0 ||
+			strcmp(token->next->name, "for") == 0)
 			return (true);
 			
-	}
-	
+	}	
 	return (false);
 }
 
@@ -838,6 +911,11 @@ void	error_cleanup(void)
 		free_curr_var(current_variable);
 		current_variable = NULL;
 	}
+	if (typing)
+	{
+		free(typing);
+		typing = NULL;
+	}
 	asterisk_count = 0;
 }
 
@@ -851,7 +929,7 @@ bool	parser(t_token *token)
 	trav = token;
 	while (trav)
 	{
-		printf(" %s\n", trav->name);
+		printf("%s   %s\n", typing, trav->name);
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
 
@@ -875,7 +953,11 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, "]") == 0) guidance = evaluate_block2(trav);
 			else if (strcmp(trav->name, "{") == 0) guidance = evaluate_curly(trav);
 			else if (strcmp(trav->name, "}") == 0) guidance = evaluate_curly2(trav);
-			printf("after\n");
+			else if (strcmp(trav->name, "if") == 0) guidance = evaluate_if(trav);
+			else if (strcmp(trav->name, "else") == 0) guidance = evaluate_else(trav);
+			else if (strcmp(trav->name, "while") == 0) guidance = evaluate_while(trav);
+			else if (strcmp(trav->name, "return") == 0) guidance = evaluate_return(trav);
+			else if (strcmp(trav->name, "for") == 0) guidance = evaluate_for(trav);
 			if (guidance == false) 
 			{
 				error_cleanup();

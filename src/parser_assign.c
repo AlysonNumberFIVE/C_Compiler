@@ -180,7 +180,13 @@ bool	evaluate_equation(void)
 {
 	t_variable	*left_side;
 	t_variable	*right_side;
-
+	extern t_typecast *typecasting;
+	
+	if (typecasting) 
+	{
+		printf("typecast type  : %s\n", typecasting->type);
+		printf("typecast depth : %d\n", typecasting->depth);
+	}
 	if (left && right)
 	{
 		if (left && strcmp(left->type, "ID") == 0) 

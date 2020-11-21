@@ -40,6 +40,13 @@ typedef struct	s_function_call
 	t_token	*params;
 }	t_fcall;
 
+typedef struct	s_typecast
+{
+	char 	*type;
+	int 	depth;
+}	t_typecast;
+
+
 t_function      *push_function(t_function *function, char *name, char *type, int depth);
 t_str_uni       *push_struct_union(t_str_uni *struct_union, char *name);
 t_variable      *push_variable(t_variable *variable, char *name, char *type, int depth);

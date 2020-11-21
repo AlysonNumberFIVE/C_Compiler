@@ -189,6 +189,8 @@ bool	is_datatype_correct(t_pstack *stack, int datatype_len)
 	int i;
 	char **clist;
 	extern t_current_var	*current_variable;
+	extern bool		typecasting;
+	extern t_typecast	*typecast;	
 	
 	trav = stack;
 	i = 0;
@@ -197,7 +199,10 @@ bool	is_datatype_correct(t_pstack *stack, int datatype_len)
 		clist = split(c_datatypes[i], ' ');
 		if (evaluate_datatype_line(clist, stack, datatype_len) == true)
 		{
-			current_variable = push_curr_var(current_variable, c_datatypes[i]);
+			if (typecasting == true)
+				typecast->type = strdup(c_datatypes[i]);
+			else
+				current_variable = push_curr_var(current_variable, c_datatypes[i]);
 			free2d(clist);
 			return (true);
 		}

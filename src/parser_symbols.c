@@ -78,7 +78,6 @@ int		verify_function_call(t_fcall *fcall)
 	t_variable	*fparam;
 	extern int	asterisk_count;
 
-	printf("asterisk_count is %d\n", asterisk_count);	
 	against = search_function(fcall->name);	
 	if (!against)
 	{
@@ -280,6 +279,8 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 	extern char *this_var;
 	extern t_function *functions;
 
+	name = NULL;
+	type = NULL;
 	count = 0;
 	flag = 0;
 	if (!current_variable)
@@ -297,16 +298,20 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 		count++;
 		traverse = traverse->next;
 	}
-	this_var = strdup(name);
-	flag = search_for_variable(name, type, depth, typing);
-	free(name);
-	free(type);
+	if (name) this_var = strdup(name);
+	if (name && type)
+	{
+		flag = search_for_variable(name, type, depth, typing);
+	}
 	if (flag > 0) return (flag);
-	traverse = traverse->next;
+	if (traverse)
+		traverse = traverse->next;
 	if (traverse)
 	{
 		variable_chain(traverse, this_var);
 	}
+	printf("hasdhiifa\n");
+	printf("TYPING is %s\n", typing);
 	return (0);	
 }
 /*

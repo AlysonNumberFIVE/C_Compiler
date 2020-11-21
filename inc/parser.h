@@ -36,7 +36,38 @@ bool	evaluate_equation(void);
 bool    equ_tokens(char *name);
 bool    sum_tokens(char *name);
 
+bool	false_error(t_token *token, int number);
+
 bool	evaluate_literal(t_token *token);
+bool    evaluate_for(t_token *token);
+bool    evaluate_return(t_token *token);
+bool    evaluate_while(t_token *token);
+bool    evaluate_do(t_token *token);
+bool    evaluate_return(t_token *token);
+bool    evaluate_else(t_token *token);
+bool    evaluate_if(t_token *token);
+
+
 t_current_var *add_index_depth(t_current_var *current_var, int index_depth);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif
