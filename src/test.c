@@ -1,4 +1,4 @@
-
+/*
 char *str = "42";
 (int)str[0];
 
@@ -9,7 +9,7 @@ int v(int x)
 {
 	
 	return 42;
-}
+} */
 char *hello(int x, char c);
 int main()
 {

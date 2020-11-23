@@ -200,8 +200,8 @@ bool	evaluate_equation(void)
 			strcmp(right->type, "LITERAL") == 0)
 			right_side = convert_literal_data(right);
 		datatype_comparison(left_side, right_side);
-		printf("left datatype  : %s\n", left_side->type);
-		printf("right datatype : %s\n", right_side->type);
+	//	printf("left datatype  : %s\n", left_side->type);
+	//	printf("right datatype : %s\n", right_side->type);
 		left->type = strdup(right->type);
 		left->name = strdup(right->name);
 		free(right->name);

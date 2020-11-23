@@ -257,9 +257,14 @@ bool	false_error(t_token *token, int message)
 		token->name); 
 	else if (message == 27) printf("error : expected expression before '%s' token\n\n",
 		token->next->name);
-	else if (message == 28) printf("error : expected ')' before '%s' token\n",
+	else if (message == 28) printf("error : expected ')' before '%s' token\n\n",
 		token->next->name);
 	clear_pstack();
+	if (current_variable)
+	{
+		free_curr_var(current_variable);
+		current_variable = NULL;
+	}
 	inside_for = false;
 	return (false);
 }
@@ -407,7 +412,6 @@ bool	evaluate_bracket(t_token *token)
 			strcmp(typing, "CALL") != 0 || !typing)
 	{
 		typecasting = true;
-		printf("TYPECAST DETECTED\n");
 		typecast = (t_typecast *)malloc(sizeof(t_typecast));
 		typecast->type = NULL;
 		typecast->depth = 0;
@@ -471,8 +475,8 @@ bool	evaluate_bracket2(t_token *token)
 
 	if (typecasting == true)
 	{
-		printf("typecast name %d\n", typecast->depth);
-		printf("typecast depth %s\n", typecast->type);
+	//	printf("typecast name %d\n", typecast->depth);
+	//	printf("typecast depth %s\n", typecast->type);
 		typecasting = false;
 		if (pstack)
 			clear_pstack();
@@ -810,6 +814,7 @@ bool	evaluate_semicolon(t_token *token)
 			printf(" %s | ", trav->str);
 			trav = trav->next;
 		} 
+		if (current_variable) printf("%s\n\n\n", typing);
 		symtab_manager = symbol_table_manager(current_variable, typing);	
 		if (current_variable)
 		{

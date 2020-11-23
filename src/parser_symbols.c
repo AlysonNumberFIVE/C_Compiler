@@ -310,8 +310,6 @@ int	symbol_table_manager(t_current_var *current_variable, char *typing)
 	{
 		variable_chain(traverse, this_var);
 	}
-	printf("hasdhiifa\n");
-	printf("TYPING is %s\n", typing);
 	return (0);	
 }
 /*
