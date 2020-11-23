@@ -11,18 +11,18 @@ int v(int x)
 	return 42;
 }
 char *hello(int x, char c);
-/*int main()
+int main()
 {
 	char *str = "42";
 	str[0];
 	1 + hello(hello(hello()), c + 42);
-	*/
-/*	(int *sdaf)i;
+	
+	(int *sdaf)i;
 	for (;42;) {
 		if (42  / 2) {}
 	}
 	return (0);
-}*/
+}
 /*
 char *hello[42];
 char str[] 212

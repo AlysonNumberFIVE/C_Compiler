@@ -215,6 +215,9 @@ bool	evaluate_datatype(t_token *token)
 }
 bool	false_error(t_token *token, int message)
 {
+	extern bool inside_for;
+
+	inside_for = false;
 	printf("%s:%d: ", token->filename, token->line);
 	if (message == 1) printf("error : expected ';', ',' or 'asm' before '%s' token\n\n", token->next->name);
 	else if (message == 2) printf("error : unknown type name '%s'\n\n", token->next->name);
@@ -257,6 +260,7 @@ bool	false_error(t_token *token, int message)
 	else if (message == 28) printf("error : expected ')' before '%s' token\n",
 		token->next->name);
 	clear_pstack();
+	inside_for = false;
 	return (false);
 }
 
@@ -264,8 +268,10 @@ bool	evaluate_id(t_token *token)
 {
 	char *pointer_number;
 	int flag;
+	int call_trigger;
 	pointer_number = NULL;
 
+	call_trigger = false;
 	if (!typing)
 	{
 		if (brackets < 0)
@@ -273,11 +279,12 @@ bool	evaluate_id(t_token *token)
 	}
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
-		search_for_label(token->name, token->next->name);
+		search_for_label(token->name, token->next->name);	
 		return (true);
 	}
 	else if (typing && strcmp(typing, "CALL") == 0)
 	{
+		call_trigger = true;
 		function_stack = push_to_stack(function_stack, token);
 		if (token->next && strcmp(token->next->name, ")") == 0 ||
 			strcmp(token->next->name, ",") == 0 ||
@@ -290,7 +297,8 @@ bool	evaluate_id(t_token *token)
 		{
 			if (strcmp(token->next->name, "(") == 0)
 			{
-				function_stack = push_to_stack(function_stack, token);
+				if (call_trigger == false)
+					function_stack = push_to_stack(function_stack, token);
 				typing = strdup("CALL");
 				return (true);	
 			}
@@ -395,7 +403,8 @@ bool	evaluate_bracket(t_token *token)
 		if (token->next && strcmp(token->next->name, ";") == 0)
 			return (true);
 	}
-	if ((typing && strcmp(typing, "FUNCTION") != 0) || !typing)
+	if ((typing && strcmp(typing, "FUNCTION") != 0) &&
+			strcmp(typing, "CALL") != 0 || !typing)
 	{
 		typecasting = true;
 		printf("TYPECAST DETECTED\n");
@@ -462,6 +471,8 @@ bool	evaluate_bracket2(t_token *token)
 
 	if (typecasting == true)
 	{
+		printf("typecast name %d\n", typecast->depth);
+		printf("typecast depth %s\n", typecast->type);
 		typecasting = false;
 		if (pstack)
 			clear_pstack();
@@ -781,7 +792,6 @@ bool	evaluate_semicolon(t_token *token)
 	extern bool inside_for;
 	extern int forloop_count;
 
-	printf("HERE\n");
 	if (inside_for == true)
 	{
 		if (forloop_count < 2)
@@ -792,18 +802,15 @@ bool	evaluate_semicolon(t_token *token)
 	if (strcmp(token->name, ";") == 0)
 	{
 		// print current_var
-		printf("FIRST (786)\n");
 		if (asterisk_count > 0 && current_variable)
 			current_variable = add_index_depth(current_variable, asterisk_count);
 		t_current_var *trav = current_variable;
-		printf("SECOND\n");
 		while (trav)
 		{
 			printf(" %s | ", trav->str);
 			trav = trav->next;
 		} 
 		symtab_manager = symbol_table_manager(current_variable, typing);	
-		printf("THIRD\n");
 		if (current_variable)
 		{
 			free_curr_var(current_variable);
@@ -817,7 +824,7 @@ bool	evaluate_semicolon(t_token *token)
 		t_token *s = function_stack;
 		while (s)
 		{
-			printf(" %s ", s->name);
+			printf(" -%s ", s->name);
 			s = s->next;
 		}
 		if (function_stack)
@@ -925,11 +932,9 @@ bool	parser(t_token *token)
 	bool guidance;
 
 	guidance = true;
-	ff_list = first_and_follow();
 	trav = token;
 	while (trav)
 	{
-		printf("%s   %s\n", typing, trav->name);
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
 
@@ -938,7 +943,6 @@ bool	parser(t_token *token)
 		else if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
 		if (guidance == true)
 		{
-		//	if (strcmp(trav->type, "ID") == 0) guidance = evaluate_id(trav);
 			if (strcmp(trav->name, "(") == 0) guidance = evaluate_bracket(trav);
 			else if (strcmp(trav->name, "*") == 0) guidance = evaluate_asterisk(trav);
 			else if (strcmp(trav->name, ")") == 0) guidance = evaluate_bracket2(trav);
