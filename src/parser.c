@@ -1,4 +1,5 @@
 
+#include "../inc/tac.h"
 #include "../inc/token.h"
 #include "../inc/symbol.h"
 #include <stdio.h>
@@ -446,10 +447,10 @@ bool	evaluate_bracket(t_token *token)
 		strcmp(token->next->name, ")") == 0))
 	{
 		return (true);
-	}
+	} 
 	else if (token->next && strcmp(token->next->type, "NUM") == 0)
 	{
-		return (false_error(token, 4));
+		return (true);
 	}
 	if (token->next && strcmp(token->next->type, "ID") == 0 ||
 		strcmp(token->next->name, ";") == 0)
@@ -935,11 +936,18 @@ bool	parser(t_token *token)
 {
 	t_token *trav;
 	bool guidance;
+	t_tree *ast;
+	t_token *tree_piece;
+	int curly_count;
 
+	curly_count = -1;
+	tree_piece = NULL;
+	ast = NULL;
 	guidance = true;
 	trav = token;
 	while (trav)
 	{
+		printf(" %s \n", trav->name);
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
 
@@ -968,10 +976,25 @@ bool	parser(t_token *token)
 			else if (strcmp(trav->name, "return") == 0) guidance = evaluate_return(trav);
 			else if (strcmp(trav->name, "for") == 0) guidance = evaluate_for(trav);
 			if (guidance == false) 
-			{
 				error_cleanup();
+		}
+		if (strcmp(trav->name, "{") == 0)
+		{
+			if (curly_count == -1) curly_count = 1;
+			else curly_count++;
+		}
+		else if (strcmp(trav->name, "}") == 0)
+		{
+			curly_count--;
+			if (curly_count == 0)
+			{	
+				print_linear(tree_piece);
+				tree_piece = NULL;
+				curly_count = -1;
 			}
 		}
+		tree_piece = push_token(tree_piece, trav->name, trav->type, trav->line,
+			trav->filename);
 		trav = trav->next;
 	}
 }

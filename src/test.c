@@ -1,4 +1,4 @@
-/*
+
 char *str = "42";
 (int)str[0];
 
@@ -9,7 +9,7 @@ int v(int x)
 {
 	
 	return 42;
-} */
+} 
 char *hello(int x, char c);
 int main()
 {
@@ -23,7 +23,7 @@ int main()
 	}
 	return (0);
 }
-/*
+
 char *hello[42];
 char str[] 212
 char *str;
@@ -54,4 +54,4 @@ int against(void *h);
 char i;
 char *value(int x));
 int x = 24;
-unsigned char hello(unsigned char x, int y); */
+unsigned char hello(unsigned char x, int y); 

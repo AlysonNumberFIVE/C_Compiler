@@ -44,6 +44,19 @@ char    *read_file(char *filename)
     return (content);
 }
 
+void	print_linear(t_token *token)
+{
+	t_token	*trav;
+
+	trav = token;
+	while (trav)
+	{
+		printf(" %s -> ", trav->name);
+		trav = trav->next;
+	}
+	printf("\n");
+}
+
 void    print_token(t_token *token)
 {
     t_token *trav;

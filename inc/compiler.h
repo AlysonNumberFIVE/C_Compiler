@@ -207,6 +207,8 @@ t_token	    *panic_mode(t_token *trav, t_token *back, int brackets);
 t_token	    *error_mode(t_token *token, char *message);
 int	    type_length(t_token *token);
 void	    free_tokens(t_token *token);
+void	    print_token(t_token *token);
+void	    print_linear(t_token *token);
 
 #endif
 
