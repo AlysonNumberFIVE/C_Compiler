@@ -339,7 +339,9 @@ bool	evaluate_id(t_token *token)
 		pstack->construct = strdup("VARIABLE");
 		typing = strdup("VARIABLE");
 	}
-	else if (token->next && strcmp(token->next->name, "=") == 0)
+	else if (token->next && (sum_tokens(token->next->name) == true  || 
+			equ_tokens(token->next->name) == true))
+		//strcmp(token->next->name, "=") == 0)
 	{
 		pstack = push_ptoken(pstack, token->name, token->type);
 		pstack->construct = strdup("ASSIGN");
@@ -360,6 +362,7 @@ bool	evaluate_id(t_token *token)
 	}
 	else
 	{
+		printf("here\n");
 		if (!pstack) return (false_error(token, 2));
 		else return (false_error(token, 12));
 	}
@@ -549,6 +552,7 @@ bool	evaluate_number(t_token *token)
 	extern t_token *left;
 	extern t_token *right;
 
+	printf("typing is %s (555)\n", typing);
 	if (typing && strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (brackets > 0)
@@ -574,7 +578,6 @@ bool	evaluate_number(t_token *token)
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
 		
-		printf("1\n");
 		if (!left) {
 			left = push_token(left, token->name, 
 			token->type, -1, token->filename);	
@@ -583,8 +586,11 @@ bool	evaluate_number(t_token *token)
 			right = push_token(right, token->name, 
 			token->type, -1, token->filename);
 		}
-		printf("2\n");	
-		evaluate_equation();
+	//	evaluate_equation();
+		if (token->next && strcmp(token->next->name, ")") == 0)
+		{
+			return (true);
+		}	
 		if (token->next && equ_tokens(token->next->name) == true)
 		{
 			return (false_error(token, 25));
@@ -597,6 +603,7 @@ bool	evaluate_number(t_token *token)
 		{
 			return (false_error(token, 8));
 		}
+
 	}
 	else if (!typing)
 	{
@@ -745,7 +752,8 @@ bool	evaluate_equ(t_token *token)
 		trav = trav->next;
 	}
 	printf("%s\n\n\n", typing);
-	left = push_token(left, current_variable->next->next->str, "ID", -1, token->filename);
+	if (current_variable && current_variable->next->next)
+		left = push_token(left, current_variable->next->next->str, "ID", -1, token->filename);
 	symtab_manager = symbol_table_manager(current_variable, typing);
 	free_curr_var(current_variable);
 	current_variable = NULL;
@@ -886,9 +894,15 @@ bool	evaluate_curly2(t_token *token)
 {
 	extern int scope_depth;
 
-	if (scope_depth == 0)	
+	printf("EXITING..\n");
+	if (scope_depth == 0)
+	{	
+		if (token->next == NULL)
+			return (true);
 		return (false_error(token, 10));
+	}
 	drop_scope_block();
+	printf("second (901)\n");
 	if (typing)
 	{
 		free(typing);
@@ -949,7 +963,7 @@ bool	parser(t_token *token)
 	trav = token;
 	while (trav)
 	{
-		printf(" %s \n", trav->name);
+		printf(" %s\n", trav->name);
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
 
@@ -980,8 +994,6 @@ bool	parser(t_token *token)
 			if (guidance == false) 
 				error_cleanup();
 		}
-		if (guidance == true)
-		{
 			if (strcmp(trav->name, "{") == 0)
 			{
 				if (curly_count == -1) curly_count = 1;
@@ -993,17 +1005,14 @@ bool	parser(t_token *token)
 				if (curly_count == 0)
 				{	
 					print_linear(tree_piece);
+					ast = push_tree(ast, "COMPONENT", tree_piece);
 					tree_piece = NULL;
 					curly_count = -1;
 				}
 			}
-			tree_piece = push_token(tree_piece, trav->name, trav->type, trav->line, trav->filename);
-		}
-		else 
-		{
-			curly_count = -1;
-			tree_piece = NULL;
-		}
+			tree_piece = push_token(tree_piece, trav->name,
+				trav->type, trav->line, trav->filename);
+		printf(" %s\n", trav->name);
 		trav = trav->next;
 	}
 }

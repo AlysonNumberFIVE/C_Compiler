@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #define EQU_TOKEN_SIZE 10
-#define SUM_TOKEN_SIZE 8
+#define SUM_TOKEN_SIZE 12
 
 bool	equ_tokens(char *name)
 {
@@ -34,7 +34,7 @@ bool	equ_tokens(char *name)
 
 bool	sum_tokens(char *name)
 {
-	char tokens[10][4] = {
+	char tokens[12][4] = {
 		"+\0",
 		"-\0",
 		"/\0",
@@ -42,7 +42,11 @@ bool	sum_tokens(char *name)
 		"<<\0",
 		">>\0",
 		"||\0",
-		"&&\0"
+		"&&\0",
+		"<\0",
+		">\0",
+		"==\0",
+		"!=\0"
 	};
 	int count;
 	

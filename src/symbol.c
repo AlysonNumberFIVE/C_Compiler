@@ -241,7 +241,8 @@ bool	drop_scope_block(void)
 		return (false);
 	if (!scope_table)
 		return (true);
-	free_variables(scope_table[scope_depth]);
+	if (scope_table[scope_depth])
+		free_variables(scope_table[scope_depth]);
 	scope_depth--;
 	return (true);
 }
