@@ -22,7 +22,8 @@ bool	evaluate_return(t_token *token)
 {
 	if (token->next && strcmp(token->next->name, "(") == 0 ||
 		strcmp(token->next->type, "NUM") == 0 ||
-		strcmp(token->next->type, "ID") == 0)
+		strcmp(token->next->type, "ID") == 0 ||
+		strcmp(token->next->name, ";") == 0)
 		return (true);
 	return (false_error(token, 10));
 }

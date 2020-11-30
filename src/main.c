@@ -111,6 +111,7 @@ void	print_files(t_file *files)
 int	main(int argc, char **argv)
 {
 	t_token *tokens;
+	t_tree	*tree;
 	if (argc < 2)
 	{
 		printf("Usage: %s [c_files]\n", argv[0]);
@@ -120,7 +121,9 @@ int	main(int argc, char **argv)
 
 	tokens = lexer(files);
 
-	parser(tokens);
+	tree = parser(tokens);
+
+	create_tac_structure(tree);
 //	tokens = resolve_typedefs(tokens);
 
 //	semantic_analysis(tokens);

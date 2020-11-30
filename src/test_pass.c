@@ -10,6 +10,7 @@ char	printf(char *str)
 int	main()
 {
 	int y;
+	int z;
 	printf("Hello world");
 	while (42) {
 		printf("false\n");
@@ -18,8 +19,7 @@ int	main()
 			printf("EXECUTOR\n");
 		}
 		else if (z == 100) 
-			printf("FALSE\n");
-			
+			printf("FALSE\n");	
 	}
 	return 0;
 }

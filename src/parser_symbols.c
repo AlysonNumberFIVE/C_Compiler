@@ -156,6 +156,28 @@ t_variable	*search_variable(char *name)
 	return (NULL);
 }
 
+void	print_all_vars(void)
+{
+	extern int scope_depth;
+	extern t_variable **scope_table;
+	int count = scope_depth;
+	t_variable *trav;
+
+	printf("print all vars\n");
+	while (count > -1)
+	{
+		printf("depth : %d\n", count);
+		trav = scope_table[count];
+		while (trav)
+		{
+			printf("%s ", trav->name);
+			trav = trav->next;
+		}
+		printf("\n\n");
+		count--;
+	}
+}
+
 int	search_for_label(char *name, char *next_token)
 {
 	extern t_function	*functions;
@@ -185,6 +207,7 @@ int	search_for_label(char *name, char *next_token)
 	{
 		if (!scope_table)
 			return (2);
+		print_all_vars();
 		counter = scope_depth;
 		while (counter > -1)
 		{	
@@ -229,6 +252,7 @@ int 	search_for_variable(char *name, char *type, int depth, char *typing)
 	}
 	else if (typing && strcmp(typing, "VARIABLE") == 0 || strcmp(typing, "ASSIGN") == 0)
 	{
+		printf("add to table %s\n", name);
 		if (add_variable_to_table(name, type, depth) == false)
 		{
 			return (1);

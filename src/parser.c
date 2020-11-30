@@ -362,7 +362,6 @@ bool	evaluate_id(t_token *token)
 	}
 	else
 	{
-		printf("here\n");
 		if (!pstack) return (false_error(token, 2));
 		else return (false_error(token, 12));
 	}
@@ -496,7 +495,8 @@ bool	evaluate_bracket2(t_token *token)
 			asterisk_count = 0;
 			return (true);
 		}
-		else { printf("incorrect typecast usage\n"); return (false);}
+		return (true);
+	//	else { printf("incorrect typecast usage\n"); return (false);}
 	}	
 	if (round_bracket == 0)
 	{
@@ -552,7 +552,6 @@ bool	evaluate_number(t_token *token)
 	extern t_token *left;
 	extern t_token *right;
 
-	printf("typing is %s (555)\n", typing);
 	if (typing && strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (brackets > 0)
@@ -570,7 +569,6 @@ bool	evaluate_number(t_token *token)
 				return (true);
 			else
 			{
-				printf("CALL ERROR (498)\n");
 				return (false_error(token, 4));
 			}
 		}
@@ -870,9 +868,10 @@ bool	evaluate_semicolon(t_token *token)
 bool	evaluate_curly(t_token *token)
 {
 	extern int scope_depth;
+	scope_depth++;
+	printf("(876) scope is { %d\n", scope_depth);
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
-		scope_depth++;
 		free(typing);
 		typing = NULL;
 		free_curr_var(current_variable);
@@ -887,7 +886,7 @@ bool	evaluate_curly(t_token *token)
 			return (true);
 			
 	}	
-	return (false);
+	return (true);
 }
 
 bool	evaluate_curly2(t_token *token)
@@ -902,7 +901,7 @@ bool	evaluate_curly2(t_token *token)
 		return (false_error(token, 10));
 	}
 	drop_scope_block();
-	printf("second (901)\n");
+	printf("(904) scope is } %d\n", scope_depth);
 	if (typing)
 	{
 		free(typing);
@@ -948,12 +947,13 @@ void	error_cleanup(void)
 	asterisk_count = 0;
 }
 
-bool	parser(t_token *token)
+t_tree	*parser(t_token *token)
 {
 	t_token *trav;
 	bool guidance;
 	t_tree *ast;
 	t_token *tree_piece;
+	char *block_name;
 	int curly_count;
 
 	curly_count = -1;
@@ -994,25 +994,35 @@ bool	parser(t_token *token)
 			if (guidance == false) 
 				error_cleanup();
 		}
-			if (strcmp(trav->name, "{") == 0)
-			{
-				if (curly_count == -1) curly_count = 1;
-				else curly_count++;
+		if (strcmp(trav->name, "{") == 0)
+		{
+			if (curly_count == -1) curly_count = 1;
+			else curly_count++;
+		}
+		else if (strcmp(trav->name,";") == 0)
+		{
+			print_linear(tree_piece);
+			block_name = get_syntactic_name(tree_piece);
+			printf("block name is %s\n", block_name);
+			ast = push_tree(ast, block_name, tree_piece);
+			free(block_name);
+			tree_piece = NULL;
+		}
+		else if (strcmp(trav->name, "}") == 0)
+		{
+			curly_count--;
+			if (curly_count == 0)
+			{	
+				print_linear(tree_piece);
+				ast = push_tree(ast, "COMPONENT", tree_piece);
+				tree_piece = NULL;
+				curly_count = -1;
 			}
-			else if (strcmp(trav->name, "}") == 0)
-			{
-				curly_count--;
-				if (curly_count == 0)
-				{	
-					print_linear(tree_piece);
-					ast = push_tree(ast, "COMPONENT", tree_piece);
-					tree_piece = NULL;
-					curly_count = -1;
-				}
-			}
+		}
+		else if (strcmp(trav->name, ";") != 0)
 			tree_piece = push_token(tree_piece, trav->name,
 				trav->type, trav->line, trav->filename);
-		printf(" %s\n", trav->name);
 		trav = trav->next;
 	}
+	return (ast);
 }

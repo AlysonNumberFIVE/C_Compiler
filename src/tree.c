@@ -40,6 +40,43 @@ t_tree	*push_tree(t_tree *head, char *type, t_token *tokens)
 	return (trav);
 }
 
+char	*get_syntactic_name(t_token *token)
+{
+	char *type;
+	t_token *trav;
+	if (token->next)
+	{
+		if (strcmp(token->name, "else") == 0 &&
+			strcmp(token->next->name, "if") == 0)
+			return (strdup("ELSEIF"));
+		else if (strcmp(token->name, "while") == 0)
+			return (strdup("WHILE"));
+		else if (strcmp(token->name, "if") == 0)
+			return (strdup("IF"));
+		else if (strcmp(token->name, "else") == 0)
+			return (strdup("ELSE"));
+		trav = token;
+		
+		type = strdup(trav->type);
+		while (trav && strcmp(trav->type, "ID") != 0)
+			trav = trav->next;
+		if (!trav)
+			return (strdup("NONE"));
+		if (trav->next && strcmp(trav->next->name, "(") == 0 &&
+			strcmp(type, "DATATYPE") != 0)
+			return (strdup("CALL"));
+		else if (trav->next && strcmp(trav->next->name, "(") == 0 &&
+			strcmp(type, "DATATYPE") == 0)
+			return (strdup("LABEL"));
+		else if (trav->next && strcmp(trav->next->name, "=") == 0)
+			return (strdup("ASSIGN"));
+		else if (trav->next && strcmp(trav->next->name, ";") == 0)
+			return (strdup("CREATE"));
+	}
+	return (strdup("NONE"));
+}
+
+
 
 
 

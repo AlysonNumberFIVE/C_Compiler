@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "tac.h"
 
 typedef struct s_parse_stack
 {
@@ -24,7 +25,7 @@ typedef struct	s_current_variable
 	struct s_current_variable *next;
 }	t_current_var;
 
-bool	parser(t_token *tokens);
+t_tree	*parser(t_token *tokens);
 bool	is_datatype_correct(t_pstack *stack, int datatype_len);
 char 	**psplit(char *str, char c);
 t_current_var *push_curr_var(t_current_var *head, char *name);
