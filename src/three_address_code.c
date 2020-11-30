@@ -1,11 +1,11 @@
 
-#include "intermediate.h"
+#include "../inc/intermediate.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "alylibc/inc/lib.h"
+#include "../inc/compiler.h"
 
 int 	number = 1;
-int	line = 1;
+int	endline = 1;
 int	label = 1;
 t_code	*assembly = NULL;
 
@@ -76,7 +76,7 @@ char	*address_line(char *op1, char *sym, char *op2)
 
 	buffer = (char *)malloc(4096);
 	bzero(buffer, 4096);
-	snprintf(buffer, 4096, "t%d = %s  %s  %s", line, op1, sym, op2);
+	snprintf(buffer, 4096, "t%d = %s  %s  %s", endline, op1, sym, op2);
 //	printf("t%d = %s  %s  %s\n", line, op1, sym, op2);
 	assembly = push_line(assembly, number, buffer);
 	number++; 
@@ -103,8 +103,8 @@ char 	**print_address_line(char **equation, int counter)
 	char **second_half;
 
 	address_line(equation[counter], equation[counter + 1], equation[counter + 2]);
-	t = join("t", itoa(line));
-	line++;
+	t = join("t", itoa(endline));
+	endline++;
 	first_half = extract(equation, 0, counter);
 	second_half = extract(&equation[counter + 3], counter, arraylen(equation) - 3);
 	equation = insertion(first_half, t, second_half);
@@ -166,7 +166,7 @@ char 	*mathematics(char **equation)
 			counter++;
 		}
 	}
-	t = join("t", itoa(line - 1));
+	t = join("t", itoa(endline - 1));
 	return (t);
 }
 
@@ -268,12 +268,12 @@ bool	tac_conditional(t_code *assembly, int condition)
 
 	}
 }
-
+/*
 int main(void)
 {
-	char **equation = split("1 * 2 + 5 * tao * 8 + 4 / 18 + 42 < ( 11 - 1 ) * ( 4 + 7 * 2 )", ' ');
-	printf("1 * 2 + 5 * tao * 8 + 4 / 18 + 42 < ( 11 - 1 ) * ( 4 + 7 * 2 ) \n\n");
+	char **equation = split("1 * 2 + 5 * 3 * 8 + 4 / 18 + 42 < ( 11 - 1 ) * ( 4 + 7 * 2 )", ' ');
+	printf("1 * 2 + 5 * 3 * 8 + 4 / 18 + 42 < ( 11 - 1 ) * ( 4 + 7 * 2 ) \n\n");
 	three_address_code(equation);
 	print_asm(assembly);
 	return (0);
-}
+}*/

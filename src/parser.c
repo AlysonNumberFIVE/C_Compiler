@@ -1004,7 +1004,7 @@ t_tree	*parser(t_token *token)
 			print_linear(tree_piece);
 			block_name = get_syntactic_name(tree_piece);
 			printf("block name is %s\n", block_name);
-			ast = push_tree(ast, block_name, tree_piece);
+			ast = push_tree(ast, block_name, tree_piece, curly_count);
 			free(block_name);
 			tree_piece = NULL;
 		}
@@ -1014,14 +1014,16 @@ t_tree	*parser(t_token *token)
 			if (curly_count == 0)
 			{	
 				print_linear(tree_piece);
-				ast = push_tree(ast, "COMPONENT", tree_piece);
+				//ast = push_tree(ast, "COMPONENT", tree_piece);
 				tree_piece = NULL;
 				curly_count = -1;
 			}
 		}
-		else if (strcmp(trav->name, ";") != 0)
+	        else if (strcmp(trav->name, ";") != 0)
+		{
 			tree_piece = push_token(tree_piece, trav->name,
 				trav->type, trav->line, trav->filename);
+		}
 		trav = trav->next;
 	}
 	return (ast);

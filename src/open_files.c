@@ -2,7 +2,7 @@
 #include "../inc/compiler.h"
 
 
-char	**new_line(char *content)
+char	**new_xline(char *content)
 {
 	char **array;
 	char *str;
@@ -33,7 +33,7 @@ t_file	*new_file(char *filename, char *file_content)
 
 	new = (t_file *)malloc(sizeof(t_file));
 	new->filename = strdup(filename);
-	new->content = new_line(file_content);
+	new->content = new_xline(file_content);
 	new->solidcontent = strdup(file_content);
 	new->next = NULL;
 	return (new);
