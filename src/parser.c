@@ -548,7 +548,7 @@ bool	evaluate_number(t_token *token)
 {
 	extern t_token *left;
 	extern t_token *right;
-	
+
 	if (typing && strcmp(typing, "FUNCTION") == 0) 
 	{
 		if (brackets > 0)
@@ -573,6 +573,8 @@ bool	evaluate_number(t_token *token)
 	}
 	else if (typing && strcmp(typing, "ASSIGN") == 0)
 	{
+		
+		printf("1\n");
 		if (!left) {
 			left = push_token(left, token->name, 
 			token->type, -1, token->filename);	
@@ -581,7 +583,7 @@ bool	evaluate_number(t_token *token)
 			right = push_token(right, token->name, 
 			token->type, -1, token->filename);
 		}
-			
+		printf("2\n");	
 		evaluate_equation();
 		if (token->next && equ_tokens(token->next->name) == true)
 		{
@@ -978,23 +980,30 @@ bool	parser(t_token *token)
 			if (guidance == false) 
 				error_cleanup();
 		}
-		if (strcmp(trav->name, "{") == 0)
+		if (guidance == true)
 		{
-			if (curly_count == -1) curly_count = 1;
-			else curly_count++;
-		}
-		else if (strcmp(trav->name, "}") == 0)
-		{
-			curly_count--;
-			if (curly_count == 0)
-			{	
-				print_linear(tree_piece);
-				tree_piece = NULL;
-				curly_count = -1;
+			if (strcmp(trav->name, "{") == 0)
+			{
+				if (curly_count == -1) curly_count = 1;
+				else curly_count++;
 			}
+			else if (strcmp(trav->name, "}") == 0)
+			{
+				curly_count--;
+				if (curly_count == 0)
+				{	
+					print_linear(tree_piece);
+					tree_piece = NULL;
+					curly_count = -1;
+				}
+			}
+			tree_piece = push_token(tree_piece, trav->name, trav->type, trav->line, trav->filename);
 		}
-		tree_piece = push_token(tree_piece, trav->name, trav->type, trav->line,
-			trav->filename);
+		else 
+		{
+			curly_count = -1;
+			tree_piece = NULL;
+		}
 		trav = trav->next;
 	}
 }

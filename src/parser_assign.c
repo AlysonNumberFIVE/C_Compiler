@@ -15,7 +15,7 @@ t_hashtable	*type_and_their_sizes(void)
 	int 		count;
 	char 		*size;
 
-	typelist = create_table(500);
+	typelist = create_table(1000);
 	size = itoa(sizeof(char));
 	ht_insert(typelist, "char", size); free(size);
 	size = itoa(sizeof(signed char));
@@ -62,7 +62,7 @@ t_hashtable	*type_and_their_sizes(void)
 	ht_insert(typelist, "long logn int", size); free(size);
 	size = itoa(sizeof(signed long long));
 	ht_insert(typelist, "signed long long", size); free(size);
-	size = itoa(sizeof(signed long long int));
+	size = itoa(sizeof(signed long long int));\
 	ht_insert(typelist, "signed long long int", size); free(size);
 	size = itoa(sizeof(unsigned long long));
 	ht_insert(typelist, "unsigned long long", size); free(size);
@@ -148,7 +148,9 @@ t_variable	*convert_literal_data(t_token *literal_data)
 
 	new = NULL;
 	if (typesize_list == NULL)
+	{
 		typesize_list = type_and_their_sizes();
+	}
 	if (strcmp(literal_data->type, "NUM") == 0)
 	{
 		depth = 0;
@@ -181,7 +183,8 @@ bool	evaluate_equation(void)
 	t_variable	*left_side;
 	t_variable	*right_side;
 	extern t_typecast *typecasting;
-	
+
+	return (true);	
 	if (typecasting) 
 	{
 		printf("typecast type  : %s\n", typecasting->type);
@@ -194,14 +197,14 @@ bool	evaluate_equation(void)
 		else if (left && strcmp(left->type, "NUM") == 0 || 
 			strcmp(left->type, "LITERAL") == 0)
 			left_side = convert_literal_data(left);
-		if (strcmp(right->type, "ID") == 0)
+		if (right && strcmp(right->type, "ID") == 0)
 			right_side = search_variable(right->name);
-		else if (strcmp(right->type, "NUM") == 0 ||
+		else if (right && strcmp(right->type, "NUM") == 0 ||
 			strcmp(right->type, "LITERAL") == 0)
 			right_side = convert_literal_data(right);
 		datatype_comparison(left_side, right_side);
-	//	printf("left datatype  : %s\n", left_side->type);
-	//	printf("right datatype : %s\n", right_side->type);
+		printf("left datatype  : %s\n", left_side->type);
+		printf("right datatype : %s\n", right_side->type);
 		left->type = strdup(right->type);
 		left->name = strdup(right->name);
 		free(right->name);
