@@ -4,6 +4,28 @@
 #include "../inc/tac.h"
 
 int	if_depth = 0;
+int 	elseif = 0;
+int	current = 0;
+t_block	*blocks = NULL;
+int	labelname = 0;
+int	loopcount = 0;
+
+
+t_code	*copy_asm(t_code *assembly)
+{
+	t_code	*new;
+	t_code	*trav;
+
+	new = NULL;
+	trav = assembly;
+	while (trav)
+	{
+		new = push_line(new, trav->line_number, trav->line);
+		trav = trav->next;
+	}
+	return (new);
+}
+
 char	**token_to_2d(t_token *tokens)
 {
 	char **list;
@@ -72,7 +94,7 @@ void	call_stack(t_token *token)
 		if (strcmp(trav->name, ",") == 0)
 		{
 			stack = arraypush(stack, param);		
-			param = NULL; 
+			param = (char *)malloc(sizeof(char)); 
 		}
 		else
 		{
@@ -81,7 +103,8 @@ void	call_stack(t_token *token)
 		}
 		trav = trav->next;
 	}
-	stack = arraypush(stack, param);
+	if (param)
+		stack = arraypush(stack, param);
 	
 	i = arraylen(stack) - 1;
 	while (i > 0)
@@ -121,6 +144,8 @@ void	resolve(t_token *token, int depth)
 	if (strcmp(token->name, "if") == 0)
 	{
 		assembly = NULL;
+		blocks = push_block(blocks, "IF", labelname, -1, depth);
+		labelname++;
 		if_test(token, depth + 1);
 	}
 	else if (strcmp(token->name, "while") == 0)
@@ -139,14 +164,16 @@ void	if_test(t_token *tokens, int depth)
 	extern t_code *assembly;
 	char **list;
 
-	printf("L%d: (depth: %d)\n", if_depth, depth); 
+	printf("L%d:\n", depth); 
 	list = token_to_2d(tokens);
 	three_address_code(list);
-	print_asm(assembly);
-	printf("jne L%d\n", if_depth + 1);
+	blocks->assembly = copy_asm(assembly);
+//	print_asm(assembly);
+	printf("jne L%d\n", depth + 1);
 	tokens = skip(tokens);
 	resolve(tokens, depth);
 	if_depth++;
+	assembly = NULL;
 }
 
 void	while_test(t_token *tokens, int depth)
@@ -156,14 +183,16 @@ void	while_test(t_token *tokens, int depth)
 	char **list;
 	
 	trav = tokens;
-	printf("R%d: (depth: %d)\n", depth, depth);
+//	printf("R%d: (depth: %d)\n", depth, depth);
 	list = token_to_2d(trav);
 	three_address_code(list);
-	print_asm(assembly);
+	blocks->assembly = copy_asm(assembly);
+//	print_asm(assembly);
 	tokens = skip(tokens);
 	printf("cmp\n");
 	printf("jne L%d:\n", depth - 1);
 	resolve(tokens, depth);
+	assembly = NULL;
 }	
 
 
@@ -174,14 +203,7 @@ void 	create_tac_structure(t_tree *ast)
 	int 	datatype;
 	char 	*type;
 	int 	depth;
-	int 	r;
-	int 	l;
 	
-	r = 0;
-	l = 0;
-	int left = 1;
-	int right = 1;
-	depth = -1;
 	type = NULL;
 //	print_tree(ast);
 	datatype = 0;
@@ -189,33 +211,31 @@ void 	create_tac_structure(t_tree *ast)
 	while (trav)
 	{
 		token = trav->tokens;
-	//	print_linear(token);
-		
-		left = trav->scope;
+		printf(" %d :", trav->scope); print_linear(token);
 		if (strcmp(trav->type, "WHILE") == 0)
 		{
-			type = strdup(trav->type);
-			depth = trav->scope;
-			while_test(token, trav->scope + r);
+			blocks = push_block(blocks, "WHILE", loopcount, -1, trav->scope);
+			blocks = patch_elseif(blocks);
+			loopcount++;
+			while_test(token, trav->scope);
 		}
 		else if (strcmp(trav->type, "CALL") == 0)
 			call_stack(token);
 		else if (strcmp(trav->type, "IF") == 0)
+		{
+			blocks = push_block(blocks, "IF", labelname, -1, trav->scope - 1);
+			labelname++;
 			if_test(token, trav->scope);
+		}
 		else if (strcmp(trav->type, "ELSEIF") == 0)
 		{
+			blocks = push_block(blocks, "ELSEIF", labelname, -1, trav->scope);
+			blocks = patch_elseif(blocks);
 			token = token->next;
-			if_test(token, trav->scope);
+			labelname++;
+			if_test(token, current);
 		}
-		if (type && strcmp(type, "WHILE") == 0 && depth == trav->scope &&
-			left < right)
-		{
-			printf("jmp R%d\n", depth);	
-			r++;
-			depth = -1;
-			type = NULL;
-		}
-		right = trav->scope;
 		trav = trav->next;
-	} 
+	}
+	print_blocks(blocks); 
 }
