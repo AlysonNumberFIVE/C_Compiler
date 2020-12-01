@@ -536,6 +536,9 @@ bool	evaluate_comma(t_token *token)
 {
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
+		symbol_table_manager(current_variable, typing); 
+		free_curr_var(current_variable);
+		current_variable = NULL;
 		if (token->next && legal_datatype(token->next->name) == true)
 			return (true);
 		return (false_error(token, 4));
@@ -607,7 +610,8 @@ bool	evaluate_number(t_token *token)
 	{
 		if (token->next && strcmp(token->next->name, ")") == 0 ||
 			strcmp(token->next->name, "]") == 0 ||
-			strcmp(token->next->name, ";") == 0)
+			strcmp(token->next->name, ";") == 0 ||
+			sum_tokens(token->next->name) == true)
 		{
 			return (true);
 		}
@@ -618,8 +622,9 @@ bool	evaluate_number(t_token *token)
 
 bool	evaluate_asterisk(t_token *token)
 {
-	if (typecasting == true)
+	/*if (typecasting == true)
 	{
+		printf("TRUE\n");
 		asterisk_count++;	
 		if (token->next && strcmp(token->next->name, ")") == 0)
 		{
@@ -630,7 +635,7 @@ bool	evaluate_asterisk(t_token *token)
 			strcmp(token->next->name, ")") == 0)
 			return (true);
 		else return (false_error(token, 28));
-	}
+	} */
 	if (typing && strcmp(typing, "CALL") == 0)
 	{
 		if (token->next && strcmp(token->next->type, "ID") == 0 ||
@@ -640,6 +645,12 @@ bool	evaluate_asterisk(t_token *token)
 			asterisk_count++;
 			return (true);
 		}
+	}
+	else if (typing && strcmp(typing, "ASSIGN") == 0)
+	{
+		if (token->next && strcmp(token->next->type, "ID") == 0 ||
+			strcmp(token->next->type, "NUM") == 0)
+			return (true);
 	}
 	if (!pstack)
 	{
@@ -869,7 +880,6 @@ bool	evaluate_curly(t_token *token)
 {
 	extern int scope_depth;
 	scope_depth++;
-	printf("(876) scope is { %d\n", scope_depth);
 	if (typing && strcmp(typing, "FUNCTION") == 0)
 	{
 		free(typing);
@@ -885,7 +895,7 @@ bool	evaluate_curly(t_token *token)
 			strcmp(token->next->name, "for") == 0)
 			return (true);
 			
-	}	
+	}
 	return (true);
 }
 
@@ -963,7 +973,7 @@ t_tree	*parser(t_token *token)
 	trav = token;
 	while (trav)
 	{
-		printf(" %s\n", trav->name);
+		printf(" %s \n", trav->name);
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
 
@@ -1003,7 +1013,6 @@ t_tree	*parser(t_token *token)
 		{
 			print_linear(tree_piece);
 			block_name = get_syntactic_name(tree_piece);
-			printf("block name is %s\n", block_name);
 			ast = push_tree(ast, block_name, tree_piece, curly_count);
 			free(block_name);
 			tree_piece = NULL;

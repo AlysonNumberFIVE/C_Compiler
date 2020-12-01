@@ -231,13 +231,15 @@ bool		add_variable_to_table(char *name, char *type, int depth)
 		if (found == true)
 			return (false);
 	}
+	if (!name) printf("name is blank\n");
+	if (!type) printf("type is blank\n");
 	scope_table[scope_depth] = push_variable(scope_table[scope_depth], name, type, depth);
 	return (true);
 }
 
 bool	drop_scope_block(void)
 {
-	if (scope_depth < 0)
+	if (scope_depth <= 0)
 		return (false);
 	if (!scope_table)
 	{
@@ -246,7 +248,10 @@ bool	drop_scope_block(void)
 		return (true);
 	}
 	if (scope_table[scope_depth])
+	{
 		free_variables(scope_table[scope_depth]);
+		scope_table[scope_depth] = NULL;
+	}
 	scope_depth--;
 	return (true);
 }

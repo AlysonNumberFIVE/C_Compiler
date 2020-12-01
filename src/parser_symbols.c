@@ -163,11 +163,13 @@ void	print_all_vars(void)
 	int count = scope_depth;
 	t_variable *trav;
 
+	if (!scope_table)
+		return ;
 	printf("print all vars\n");
 	while (count > -1)
 	{
-		printf("depth : %d\n", count);
 		trav = scope_table[count];
+		if (!trav) return ;
 		while (trav)
 		{
 			printf("%s ", trav->name);
@@ -176,6 +178,7 @@ void	print_all_vars(void)
 		printf("\n\n");
 		count--;
 	}
+	printf("count\n");
 }
 
 int	search_for_label(char *name, char *next_token)
@@ -188,6 +191,7 @@ int	search_for_label(char *name, char *next_token)
 	int			counter;
 
 	counter = 0;
+	
 	if (next_token && strcmp(next_token, "(") == 0)
 	{
 		function = functions;
@@ -210,7 +214,7 @@ int	search_for_label(char *name, char *next_token)
 		print_all_vars();
 		counter = scope_depth;
 		while (counter > -1)
-		{	
+		{
 			traverse = scope_table[counter];
 			while (traverse)
 			{
@@ -279,7 +283,8 @@ t_variable	*variable_chain(t_current_var *traverse, char *function_name)
 		else if (count == VARIABLE_NAME)
 		{
 			name = strdup(traverse->str);
-			var = push_variable(var, name, type, depth); 
+			var = push_variable(var, name, type, depth);
+			add_variable_to_table(name, type, depth);
 			free(name);
 			free(type);
 			functions = add_function_params(functions, function_name, var);
