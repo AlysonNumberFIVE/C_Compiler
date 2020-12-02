@@ -68,13 +68,10 @@ t_block	*patch_elseif(t_block *block)
 	t_block *trav;	
 
 	save_depth = block->depth;
-	printf("depth is %d\n", block->depth);
-	printf("name is %s\n", trav->block);
 	save_togo = block->label;
 	trav = block->prev;
 	while (trav)
 	{
-		printf("trav is %s\n", trav->block);
 		if (trav->depth == save_depth)
 		{
 			trav->togo = save_togo;

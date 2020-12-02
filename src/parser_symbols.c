@@ -211,7 +211,6 @@ int	search_for_label(char *name, char *next_token)
 	{
 		if (!scope_table)
 			return (2);
-		print_all_vars();
 		counter = scope_depth;
 		while (counter > -1)
 		{

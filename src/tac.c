@@ -129,7 +129,6 @@ t_token	*skip(t_token *token)
 	token = token->next->next;
 	while (token)
 	{
-		printf(" t : %s\n", token->name);
 		if (strcmp(token->name, "(") == 0)
 			brackets++;
 		else if (strcmp(token->name, ")") == 0)
@@ -264,7 +263,6 @@ void 	create_tac_structure(t_tree *ast)
 	while (trav)
 	{
 		token = trav->tokens;
-		printf("%d  %s :", trav->scope, trav->type); print_linear(token);
 		trav->scope += size;
 		if (strcmp(trav->type, "WHILE") == 0)
 		{

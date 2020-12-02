@@ -755,12 +755,6 @@ bool	evaluate_equ(t_token *token)
 	if (asterisk_count > 0)
 		current_variable = add_index_depth(current_variable, asterisk_count);
 	trav = current_variable;
-	while (trav)
-	{
-		printf(" %s | ", trav->str);
-		trav = trav->next;
-	}
-	printf("%s\n\n\n", typing);
 	if (current_variable && current_variable->next->next)
 		left = push_token(left, current_variable->next->next->str, "ID", -1, token->filename);
 	symtab_manager = symbol_table_manager(current_variable, typing);
@@ -829,12 +823,6 @@ bool	evaluate_semicolon(t_token *token)
 		if (asterisk_count > 0 && current_variable)
 			current_variable = add_index_depth(current_variable, asterisk_count);
 		t_current_var *trav = current_variable;
-		while (trav)
-		{
-			printf(" %s | ", trav->str);
-			trav = trav->next;
-		} 
-		if (current_variable) printf("%s\n\n\n", typing);
 		symtab_manager = symbol_table_manager(current_variable, typing);	
 		if (current_variable)
 		{
@@ -846,17 +834,10 @@ bool	evaluate_semicolon(t_token *token)
 			free(typing);
 			typing = NULL;
 		}
-		t_token *s = function_stack;
-		while (s)
-		{
-			printf(" -%s ", s->name);
-			s = s->next;
-		}
 		if (function_stack)
 		{
 			free_tokens(function_stack);
 			function_stack = NULL;
-			printf("\n\n");
 		}
 		asterisk_count = 0;
 		if (left) 
@@ -903,7 +884,6 @@ bool	evaluate_curly2(t_token *token)
 {
 	extern int scope_depth;
 
-	printf("EXITING..\n");
 	if (scope_depth == 0)
 	{	
 		if (token->next == NULL)
@@ -911,7 +891,6 @@ bool	evaluate_curly2(t_token *token)
 		return (false_error(token, 10));
 	}
 	drop_scope_block();
-	printf("(904) scope is } %d\n", scope_depth);
 	if (typing)
 	{
 		free(typing);
@@ -973,7 +952,6 @@ t_tree	*parser(t_token *token)
 	trav = token;
 	while (trav)
 	{
-		printf(" %s \n", trav->name);
 		if (strcmp(trav->name, "(") == 0) brackets++;
 		else if (strcmp(trav->name, ")") == 0) brackets--;
 
@@ -1011,7 +989,6 @@ t_tree	*parser(t_token *token)
 		}
 		else if (strcmp(trav->name,";") == 0)
 		{
-			print_linear(tree_piece);
 			block_name = get_syntactic_name(tree_piece);
 			ast = push_tree(ast, block_name, tree_piece, curly_count);
 			free(block_name);
@@ -1022,7 +999,6 @@ t_tree	*parser(t_token *token)
 			curly_count--;
 			if (curly_count == 0)
 			{	
-				print_linear(tree_piece);
 				//ast = push_tree(ast, "COMPONENT", tree_piece);
 				tree_piece = NULL;
 				curly_count = -1;
