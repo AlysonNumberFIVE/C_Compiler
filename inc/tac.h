@@ -41,5 +41,6 @@ void	create_tac_structure(t_tree *ast);
 bool	three_address_code(char **str);
 void	print_asm(t_code *assembly);
 t_td	*push_td(t_td *head, char *name, int type);
+void	print_tac(t_block *blocks);
 
 #endif

@@ -308,5 +308,6 @@ void 	create_tac_structure(t_tree *ast)
 		}
 		trav = trav->next;
 	}
-	print_blocks(blocks); 
+	print_blocks(blocks);
+	print_tac(blocks); 
 }
