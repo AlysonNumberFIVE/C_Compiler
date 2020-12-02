@@ -9,7 +9,7 @@ int	current = 0;
 t_block	*blocks = NULL;
 int	labelname = 0;
 int	loopcount = 0;
-
+int 	size = 0;
 
 t_code	*copy_asm(t_code *assembly)
 {
@@ -265,6 +265,7 @@ void 	create_tac_structure(t_tree *ast)
 	{
 		token = trav->tokens;
 		printf("%d  %s :", trav->scope, trav->type); print_linear(token);
+		trav->scope += size;
 		if (strcmp(trav->type, "WHILE") == 0)
 		{
 			blocks = push_block(blocks, "WHILE", loopcount, -1, trav->scope);
@@ -298,6 +299,7 @@ void 	create_tac_structure(t_tree *ast)
 		}
 		else if (strcmp(trav->type, "LABEL") == 0)
 		{
+			size++;
 			blocks = push_block(blocks, "LABEL", labelname, -1, 1);
 			label_test(token, trav->scope);
 		}

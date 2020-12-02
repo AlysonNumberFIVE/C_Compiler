@@ -44,6 +44,13 @@ void	print_tac(t_block *blocks)
 			printf("R%d:\n", trav->label);
 		}
 		print_as(trav->assembly, to, trav->togo);
+		if (strcmp(trav->block, "IF") == 0 || strcmp(trav->block, "ELSEIF") == 0)
+		{
+			if (strcmp(trav->next->block, "LABEL") != 0)
+			{
+				printf("jmp L%d\n", trav->togo);
+			}
+		}
 		to = -1;
 		trav = trav->next;	
 	}
