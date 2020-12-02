@@ -76,6 +76,7 @@ void	call_stack(t_token *token)
 	char **stack;
 	char *param;
 	int brackets;
+	extern t_code *assembly;
 	int i;
 
 	brackets = 1;
@@ -109,10 +110,14 @@ void	call_stack(t_token *token)
 	i = arraylen(stack) - 1;
 	while (i > 0)
 	{
+		blocks->assembly = push_line(blocks->assembly, 0, join("push ", stack[i]));
 		printf("push %s\n", stack[i]);
 		i--;
 	}
+	blocks->assembly = push_line(blocks->assembly, 0, join("call ", stack[0]));
 	printf("call %s\n", stack[0]);
+//	blocks->assembly = copy_asm(assembly);
+	assembly = NULL;
 }
 
 
@@ -124,6 +129,7 @@ t_token	*skip(t_token *token)
 	token = token->next->next;
 	while (token)
 	{
+		printf(" t : %s\n", token->name);
 		if (strcmp(token->name, "(") == 0)
 			brackets++;
 		else if (strcmp(token->name, ")") == 0)
@@ -146,17 +152,35 @@ void	resolve(t_token *token, int depth)
 		assembly = NULL;
 		blocks = push_block(blocks, "IF", labelname, -1, depth);
 		labelname++;
-		if_test(token, depth + 1);
+		if_test(token, depth);
 	}
 	else if (strcmp(token->name, "while") == 0)
 	{
 		assembly = NULL;
 		while_test(token, depth + 1);
 	}
+	else if (strcmp(token->name, "else") == 0)
+	{
+		token = token->next;
+		if (strcmp(token->name, "if") == 0)
+		{
+			blocks = push_block(blocks, "ELSEIF", labelname, -1, depth);
+			blocks = patch_elseif(blocks);
+			labelname++;
+			if_test(token, depth);
+		}
+		else
+		{
+			blocks = push_block(blocks, "ELSE", labelname, -1, depth);
+			blocks = patch_elseif(blocks);
+			labelname++;
+			if_test(token, depth);
+		}	
+	}
 	else if (token->next && strcmp(token->next->name, "(") == 0)
 	{
 		call_stack(token);
-	}	
+	}
 }
 
 void	if_test(t_token *tokens, int depth)
@@ -173,6 +197,35 @@ void	if_test(t_token *tokens, int depth)
 	tokens = skip(tokens);
 	resolve(tokens, depth);
 	if_depth++;
+	assembly = NULL;
+}
+
+void	label_test(t_token *tokens, int depth)
+{
+	t_token	*trav;
+	char **list;
+	extern t_code *assembly;
+
+	trav = tokens->next;
+//	list = token_to_2d(tokens);
+//	three_address_code(list);
+
+	printf("LABEL TRAV IS %s\n", trav->name);
+	blocks->assembly = push_line(blocks->assembly, 0, join(trav->name, ":"));
+	tokens = skip(trav);
+	resolve(tokens, depth);
+	assembly = NULL;
+}
+
+void	assign_test(t_token *token, int depth)
+{
+	char **list;
+	extern t_code *assembly;
+	if (strcmp(token->type, "DATATYPE") == 0)
+		token = token->next;
+	blocks->assembly = push_line(blocks->assembly, 0, 
+		join(join(token->name, " = "),token->next->next->name)); 
+	resolve(token, depth);
 	assembly = NULL;
 }
 
@@ -211,7 +264,7 @@ void 	create_tac_structure(t_tree *ast)
 	while (trav)
 	{
 		token = trav->tokens;
-		printf(" %d :", trav->scope); print_linear(token);
+		printf("%d  %s :", trav->scope, trav->type); print_linear(token);
 		if (strcmp(trav->type, "WHILE") == 0)
 		{
 			blocks = push_block(blocks, "WHILE", loopcount, -1, trav->scope);
@@ -220,7 +273,9 @@ void 	create_tac_structure(t_tree *ast)
 			while_test(token, trav->scope);
 		}
 		else if (strcmp(trav->type, "CALL") == 0)
+		{
 			call_stack(token);
+		}
 		else if (strcmp(trav->type, "IF") == 0)
 		{
 			blocks = push_block(blocks, "IF", labelname, -1, trav->scope - 1);
@@ -234,6 +289,22 @@ void 	create_tac_structure(t_tree *ast)
 			token = token->next;
 			labelname++;
 			if_test(token, current);
+		}
+		else if (strcmp(trav->type, "ELSE") == 0)
+		{
+			blocks = push_block(blocks, "ELSE", labelname, -1, trav->scope);
+			blocks = patch_elseif(blocks);
+			
+		}
+		else if (strcmp(trav->type, "LABEL") == 0)
+		{
+			blocks = push_block(blocks, "LABEL", labelname, -1, 1);
+			label_test(token, trav->scope);
+		}
+		else if (strcmp(trav->type, "ASSIGN") == 0)
+		{
+			blocks = push_block(blocks, "ASSIGN", labelname, -1, trav->scope);
+			assign_test(token, trav->scope);
 		}
 		trav = trav->next;
 	}

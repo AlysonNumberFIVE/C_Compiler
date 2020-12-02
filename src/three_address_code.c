@@ -166,6 +166,19 @@ char 	*mathematics(char **equation)
 			counter++;
 		}
 	}
+	while (in(equation, "=") == true)
+	{
+		counter = 0;
+		while (equation[counter + 2])
+		{
+			if (strcmp(equation[counter + 1], "=") == 0)
+			{
+				equation = print_address_line(equation, counter);
+				break;
+			}
+			counter++;
+		}
+	}
 	t = join("t", itoa(endline - 1));
 	return (t);
 }
