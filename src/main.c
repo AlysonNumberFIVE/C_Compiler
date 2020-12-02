@@ -124,13 +124,6 @@ int	main(int argc, char **argv)
 	tree = parser(tokens);
 
 	create_tac_structure(tree);
-//	tokens = resolve_typedefs(tokens);
-
-//	semantic_analysis(tokens);
-
-//	print_token(tokens);	
-
-	//  three_address_code(tokens);
 
 	return (0);	
 }
